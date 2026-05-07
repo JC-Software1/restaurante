@@ -284,9 +284,67 @@
         /* Resto de estilos de productos.html... */
         .layout {
             display: grid;
-            grid-template-columns: 400px 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
             align-items: start;
+        }
+
+        /* Form Expansion Styles */
+        .form-expand-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), margin-bottom 0.5s ease, opacity 0.4s ease;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .form-expand-container.active {
+            max-height: 1200px; /* Large enough for the form */
+            opacity: 1;
+            margin-bottom: 2rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+        }
+
+        .btn-add-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-add-main:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-add-main:active {
+            transform: translateY(-1px);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .card {
@@ -362,8 +420,20 @@
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(1, 1fr);
             gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         .product-card {
@@ -601,16 +671,25 @@
     <div class="content-wrapper" id="contentWrapper">
         <div class="container">
             <div class="page-header">
-                <h1 class="page-title">📦 Gestión de Productos</h1>
-                <p class="page-subtitle">Administra tu catálogo de productos</p>
+                <div class="header-actions">
+                    <div>
+                        <h1 class="page-title">📦 Gestión de Productos</h1>
+                        <p class="page-subtitle">Administra tu catálogo de productos</p>
+                    </div>
+                    <button class="btn-add-main" id="btnToggleForm" onclick="toggleProductForm()">
+                        <span>✨</span> Nuevo Plato
+                    </button>
+                </div>
             </div>
 
             <div class="layout">
-                <!-- Formulario de productos -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2 id="formTitle">Agregar Producto</h2>
-                    </div>
+                <!-- Formulario de productos (Ahora expansible) -->
+                <div class="form-expand-container" id="formContainer">
+                    <div class="card glass-card">
+                        <div class="card-header" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                            <h2 id="formTitle" style="margin: 0;">Agregar Producto</h2>
+                            <button onclick="toggleProductForm()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #718096;">✕</button>
+                        </div>
                     <div class="card-body">
                         <form id="productForm">
                             <input type="hidden" id="productId">
@@ -656,6 +735,7 @@
                         </form>
                     </div>
                 </div>
+            </div>
 
                 <!-- Lista de productos -->
                 <div class="card">
@@ -929,6 +1009,7 @@
                     document.getElementById('formTitle').textContent = 'Agregar Producto';
                     resetImagePreview();
                     await loadProducts();
+                    toggleProductForm(false);
                 } else {
                     Swal.fire({ icon: (('Error: ' + (data.message || 'Error desconocido')).toLowerCase().includes("error") || ('Error: ' + (data.message || 'Error desconocido')).toLowerCase().includes("falla") || ('Error: ' + (data.message || 'Error desconocido')).toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Error: ' + (data.message || 'Error desconocido'), timer: 3000, showConfirmButton: false });
                 }
@@ -965,7 +1046,8 @@
                     }
 
                     document.getElementById('formTitle').textContent = 'Editar Producto';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    toggleProductForm(true);
+                    document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -1054,6 +1136,28 @@
             if (window.innerWidth > 1024) {
                 sidebar.classList.toggle('collapsed');
                 contentWrapper.classList.toggle('expanded');
+            }
+        }
+
+        // TOGGLE PRODUCT FORM
+        function toggleProductForm(show = null) {
+            const container = document.getElementById('formContainer');
+            const btn = document.getElementById('btnToggleForm');
+            
+            if (show === true) {
+                container.classList.add('active');
+            } else if (show === false) {
+                container.classList.remove('active');
+            } else {
+                container.classList.toggle('active');
+            }
+
+            if (container.classList.contains('active')) {
+                btn.innerHTML = '<span>✕</span> Cerrar';
+                btn.style.background = '#718096';
+            } else {
+                btn.innerHTML = '<span>✨</span> Nuevo Plato';
+                btn.style.background = ''; // Revert to CSS default
             }
         }
 

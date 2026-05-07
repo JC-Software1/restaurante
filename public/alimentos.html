@@ -499,8 +499,20 @@
         /* GRID DE ALIMENTOS */
         .alimentos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(1, 1fr);
             gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .alimentos-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .alimentos-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         .alimento-card {
