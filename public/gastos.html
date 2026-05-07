@@ -282,9 +282,62 @@
 
         .layout {
             display: grid;
-            grid-template-columns: 450px 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
             align-items: start;
+        }
+
+        /* Form Expansion Styles */
+        .form-expand-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), margin-bottom 0.5s ease, opacity 0.4s ease;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .form-expand-container.active {
+            max-height: 1500px; /* Large enough for multiple expense fields */
+            opacity: 1;
+            margin-bottom: 2rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+        }
+
+        .btn-add-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-add-main:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .card {
@@ -423,7 +476,20 @@
 
         .expenses-list {
             display: grid;
-            gap: 1rem;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .expenses-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .expenses-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
 
         .expense-card {
@@ -906,16 +972,25 @@
     <div class="content-wrapper" id="contentWrapper">
         <div class="container">
             <div class="page-header">
-                <h1 class="page-title">💰 Gestión de Gastos</h1>
-                <p class="page-subtitle">Registra y administra los gastos de tu restaurante</p>
+                <div class="header-actions">
+                    <div>
+                        <h1 class="page-title">💰 Gestión de Gastos</h1>
+                        <p class="page-subtitle">Registra y administra los gastos de tu restaurante</p>
+                    </div>
+                    <button class="btn-add-main" id="btnToggleForm" onclick="toggleExpenseForm()">
+                        <span>✨</span> Nuevo Gasto
+                    </button>
+                </div>
             </div>
 
             <div class="layout">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>➕ Registrar Gastos</h2>
-                        <p>Complete la información de los gastos del día</p>
-                    </div>
+                <!-- Formulario de gastos (Ahora expansible) -->
+                <div class="form-expand-container" id="formContainer">
+                    <div class="card glass-card">
+                        <div class="card-header" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="margin: 0;">➕ Registrar Gastos</h2>
+                            <button onclick="toggleExpenseForm()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #718096;">✕</button>
+                        </div>
                     <div class="card-body">
                         <form id="expenseForm">
                             <div class="form-group">
@@ -939,7 +1014,9 @@
                             <button type="submit" class="btn-submit" id="btnSubmit" disabled>Guardar Gastos</button>
                         </form>
                     </div>
+                    </div>
                 </div>
+            </div>
 
                 <div class="card">
                     <div class="card-header">
@@ -1244,6 +1321,7 @@
                     document.getElementById('fecha').valueAsDate = new Date();
                     expenseItems = [];
                     await loadExpenses();
+                    toggleExpenseForm(false);
                 } else {
                     Swal.fire({ icon: (('Error: ' + data.message).toLowerCase().includes("error") || ('Error: ' + data.message).toLowerCase().includes("falla") || ('Error: ' + data.message).toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Error: ' + data.message, timer: 3000, showConfirmButton: false });
                 }
