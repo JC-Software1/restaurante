@@ -4114,14 +4114,14 @@
             const notesBadge = document.getElementById('notesBadge');
 
             if (notas.length === 0) {
-                notesCount.textContent = '0';
+                notasCount.textContent = '0';
                 notesBadge.style.display = 'none';
                 notasList.innerHTML = '<div class="notas-empty">No hay notas en los pedidos mostrados</div>';
                 return;
             }
 
             // Actualizar badge y contador
-            notesCount.textContent = notas.length;
+            notasCount.textContent = notas.length;
             notesBadge.textContent = notas.length;
             notesBadge.style.display = 'inline-block';
 
