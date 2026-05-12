@@ -1597,74 +1597,84 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             user-select: none;
             -webkit-user-select: none;
+            padding: 4px;
         }
 
         .mesa-circle:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .mesa-circle:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         .mesa-icon {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+
+        .mesa-icon .mesa-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .mesa-icon .mesa-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .mesa-icon .mesa-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            background: #e53e3e;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 8px;
-            position: relative;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s;
+            border: 2px solid white;
+            z-index: 3;
+            box-shadow: 0 2px 6px rgba(229, 62, 62, 0.4);
         }
 
         .mesa-circle:hover .mesa-icon {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            filter: brightness(1.08);
         }
 
-        .mesa-icon.libre {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        .mesa-icon.ocupada .mesa-svg .table-surface {
+            animation: tablePulse 2s ease-in-out infinite;
         }
 
-        .mesa-icon.ocupada {
-            background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
-            animation: pulseOcupada 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseOcupada {
-
-            0%,
-            100% {
-                box-shadow: 0 6px 20px rgba(229, 62, 62, 0.3);
-            }
-
-            50% {
-                box-shadow: 0 6px 30px rgba(229, 62, 62, 0.6);
-            }
-        }
-
-        .mesa-icon::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            right: 3px;
-            bottom: 3px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+        @keyframes tablePulse {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(229, 62, 62, 0.3)); }
+            50% { filter: drop-shadow(0 0 12px rgba(229, 62, 62, 0.6)); }
         }
 
         .mesa-name {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #2d3748;
             text-align: center;
-            max-width: 90px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -1674,7 +1684,7 @@
             font-size: 10px;
             font-weight: 600;
             color: #718096;
-            margin-top: 2px;
+            margin-top: 1px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -1757,13 +1767,16 @@
             }
 
             .mesa-icon {
-                width: 70px;
-                height: 70px;
-                font-size: 24px;
+                width: 75px;
+                height: 75px;
+            }
+
+            .mesa-icon .mesa-label {
+                font-size: 17px;
             }
 
             .mesa-name {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .table-view-header {
@@ -1779,9 +1792,12 @@
             }
 
             .mesa-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 20px;
+                width: 65px;
+                height: 65px;
+            }
+
+            .mesa-icon .mesa-label {
+                font-size: 15px;
             }
         }
 
@@ -5805,18 +5821,60 @@
                 const isOcupada = pedidosActivos.length > 0;
                 const estadoClass = isOcupada ? 'ocupada' : 'libre';
 
-                // Icono dentro del círculo
+                // Label dentro de la mesa
                 const iconContent = mesa.nombre.match(/\d+/) ? mesa.nombre.match(/\d+/)[0] : mesa.nombre.charAt(0).toUpperCase();
-                const badge = pedidosActivos.length > 1 ? `<div style="position:absolute;top:-4px;right:-4px;background:#e53e3e;color:white;font-size:10px;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;">${pedidosActivos.length}</div>` : '';
+                const badge = pedidosActivos.length > 1 ? `<div class="mesa-badge">${pedidosActivos.length}</div>` : '';
                 
                 const stylePosition = (mesa.positionX != null && mesa.positionY != null) 
                     ? `position: absolute; left: ${mesa.positionX}px; top: ${mesa.positionY}px;`
                     : '';
 
+                // Colores de la mesa según estado
+                const tableColor = isOcupada ? '#e53e3e' : '#48bb78';
+                const tableLight = isOcupada ? '#fc8181' : '#68d391';
+                const tableDark = isOcupada ? '#c53030' : '#2f855a';
+                const chairColor = isOcupada ? '#c53030' : '#2f855a';
+                const chairLight = isOcupada ? '#e53e3e' : '#48bb78';
+
+                // SVG de mesa redonda con 4 sillas (vista superior)
+                const tableSVG = `
+                <svg class="mesa-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <g class="table-surface">
+                        <!-- Sombra de la mesa -->
+                        <ellipse cx="52" cy="52" rx="28" ry="28" fill="rgba(0,0,0,0.1)"/>
+                        
+                        <!-- Silla arriba -->
+                        <rect x="38" y="8" width="24" height="14" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="40" y="10" width="20" height="10" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Silla abajo -->
+                        <rect x="38" y="78" width="24" height="14" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="40" y="80" width="20" height="10" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Silla izquierda -->
+                        <rect x="8" y="38" width="14" height="24" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="10" y="40" width="10" height="20" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Silla derecha -->
+                        <rect x="78" y="38" width="14" height="24" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="80" y="40" width="10" height="20" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Mesa circular principal -->
+                        <circle cx="50" cy="50" r="26" fill="${tableColor}"/>
+                        <circle cx="50" cy="50" r="23" fill="${tableLight}" opacity="0.3"/>
+                        <circle cx="50" cy="50" r="22" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+                        
+                        <!-- Reflejo de luz -->
+                        <ellipse cx="43" cy="42" rx="10" ry="8" fill="rgba(255,255,255,0.12)" transform="rotate(-20,43,42)"/>
+                    </g>
+                </svg>`;
+
                 return `
                 <div class="mesa-circle" data-id="${mesa._id}" style="${stylePosition}" onclick="onMesaClick('${mesa._id}', '${mesa.nombre.replace(/'/g, "\\'")}', '${isOcupada}')">
                     <div class="mesa-icon ${estadoClass}" style="position:relative;">
-                        ${iconContent}${badge}
+                        ${tableSVG}
+                        <span class="mesa-label">${iconContent}</span>
+                        ${badge}
                     </div>
                     <div class="mesa-name">${mesa.nombre}</div>
                     <div class="mesa-status-text ${estadoClass}">${isOcupada ? (pedidosActivos.length > 1 ? pedidosActivos.length + ' pedidos' : 'Ocupada') : 'Libre'}</div>
