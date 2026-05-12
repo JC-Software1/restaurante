@@ -15,6 +15,14 @@ const mesaSchema = new mongoose.Schema({
   activa: {
     type: Boolean,
     default: true
+  },
+  positionX: {
+    type: Number,
+    default: null
+  },
+  positionY: {
+    type: Number,
+    default: null
   }
 }, {
   timestamps: true,

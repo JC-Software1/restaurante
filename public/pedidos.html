@@ -2318,10 +2318,16 @@
                     <h1 class="page-title" id="pageTitlePedidos">🍽️ Gestión de Pedidos</h1>
                     <p class="page-subtitle">Administra los pedidos de tu restaurante</p>
                 </div>
-                <button class="btn-change-view" id="btnChangeViewHeader" onclick="toggleTableView()">
-                    <span id="viewModeIconHeader">📋</span>
-                    <span id="viewModeTextHeader">Vista Normal</span>
-                </button>
+                <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                    <button class="btn-change-view" id="btnChangeViewHeader" onclick="toggleTableView()">
+                        <span id="viewModeIconHeader">📋</span>
+                        <span id="viewModeTextHeader">Vista Normal</span>
+                    </button>
+                    <button class="btn-organizar-mesas" id="btnOrganizarMesas" onclick="toggleOrganizeMesas()" style="display: none; background: #ed8936; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(237, 137, 54, 0.2); transition: all 0.2s;">
+                        <span id="organizeIcon">🔄</span>
+                        <span id="organizeText">Organizar</span>
+                    </button>
+                </div>
             </div>
 
             <!-- ===== VISTA POR DEFECTO ===== -->
@@ -5599,6 +5605,10 @@
         let mesaSeleccionadaNombre = '';
         let keySequence = [];
         let keySequenceTimer = null;
+        let isOrganizingMesas = false;
+        let draggingMesa = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
 
         // RESTAURAR MODO GUARDADO
         document.addEventListener('DOMContentLoaded', () => {
@@ -5657,18 +5667,22 @@
             const tableView = document.getElementById('tableView');
             const headerIcon = document.getElementById('viewModeIconHeader');
             const headerText = document.getElementById('viewModeTextHeader');
+            const btnOrganizar = document.getElementById('btnOrganizarMesas');
 
             if (isTableView) {
                 defaultView.classList.add('hidden');
                 tableView.classList.add('active');
                 if (headerIcon) headerIcon.textContent = '📋';
                 if (headerText) headerText.textContent = 'Vista Normal';
+                if (btnOrganizar) btnOrganizar.style.display = 'flex';
                 loadMesas();
             } else {
                 defaultView.classList.remove('hidden');
                 tableView.classList.remove('active');
                 if (headerIcon) headerIcon.textContent = '🪑';
                 if (headerText) headerText.textContent = 'Vista Mesas';
+                if (btnOrganizar) btnOrganizar.style.display = 'none';
+                if (isOrganizingMesas) toggleOrganizeMesas();
             }
 
             // Guardar modo en localStorage
@@ -5703,7 +5717,7 @@
         // RENDERIZAR MESAS CON ESTADO
         function renderMesas(mesas) {
             const grid = document.getElementById('mesasGrid');
-            const searchVal = document.getElementById('mesaSearchInput').value.toLowerCase().trim();
+            const searchVal = document.getElementById('mesaSearchInput') ? document.getElementById('mesaSearchInput').value.toLowerCase().trim() : '';
 
             let mesasFiltradas = mesas;
             if (searchVal) {
@@ -5720,10 +5734,16 @@
                 return;
             }
             
+            // Set min-height to grid to avoid collapse if mesas are absolutely positioned
+            if (mesasFiltradas.some(m => m.positionX != null && m.positionY != null)) {
+                grid.style.position = 'relative';
+                const maxY = Math.max(...mesasFiltradas.map(m => m.positionY || 0)) + 120; // 120 is approx height of circle
+                grid.style.minHeight = Math.max(maxY, 400) + 'px';
+            }
 
             grid.innerHTML = mesasFiltradas.map(mesa => {
                 // Contar TODOS los pedidos activos de esta mesa
-                const pedidosActivos = allLoadedOrders.filter(o =>
+                const pedidosActivos = (typeof allLoadedOrders !== 'undefined' ? allLoadedOrders : []).filter(o =>
                     o.mesa && String(o.mesa).toLowerCase().trim() === mesa.nombre.toLowerCase().trim() &&
                     !['entregado', 'cancelado'].includes(o.estado)
                 );
@@ -5733,9 +5753,13 @@
                 // Icono dentro del círculo
                 const iconContent = mesa.nombre.match(/\d+/) ? mesa.nombre.match(/\d+/)[0] : mesa.nombre.charAt(0).toUpperCase();
                 const badge = pedidosActivos.length > 1 ? `<div style="position:absolute;top:-4px;right:-4px;background:#e53e3e;color:white;font-size:10px;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;">${pedidosActivos.length}</div>` : '';
+                
+                const stylePosition = (mesa.positionX != null && mesa.positionY != null) 
+                    ? `position: absolute; left: ${mesa.positionX}px; top: ${mesa.positionY}px;`
+                    : '';
 
                 return `
-                <div class="mesa-circle" onclick="onMesaClick('${mesa._id}', '${mesa.nombre.replace(/'/g, "\\'")}', '${isOcupada}')">
+                <div class="mesa-circle" data-id="${mesa._id}" style="${stylePosition}" onclick="onMesaClick('${mesa._id}', '${mesa.nombre.replace(/'/g, "\\'")}', '${isOcupada}')">
                     <div class="mesa-icon ${estadoClass}" style="position:relative;">
                         ${iconContent}${badge}
                     </div>
@@ -5744,7 +5768,186 @@
                 </div>
             `;
             }).join('');
+            
+            if (isOrganizingMesas) {
+                // If rendering while organizing, re-apply organization styles
+                const circles = grid.querySelectorAll('.mesa-circle');
+                circles.forEach(circle => {
+                    circle.style.cursor = 'grab';
+                    circle.style.zIndex = '10';
+                });
+            }
         }
+        
+        function toggleOrganizeMesas() {
+            isOrganizingMesas = !isOrganizingMesas;
+            const btn = document.getElementById('btnOrganizarMesas');
+            const icon = document.getElementById('organizeIcon');
+            const text = document.getElementById('organizeText');
+            const grid = document.getElementById('mesasGrid');
+
+            if (isOrganizingMesas) {
+                btn.style.background = '#48bb78';
+                icon.textContent = '✅';
+                text.textContent = 'Guardar';
+                grid.classList.add('organizing-mode');
+                
+                const circles = grid.querySelectorAll('.mesa-circle');
+                const gridRect = grid.getBoundingClientRect();
+                
+                grid.style.position = 'relative';
+                grid.style.minHeight = Math.max(gridRect.height, 500) + 'px'; 
+
+                circles.forEach(circle => {
+                    const mesaId = circle.dataset.id;
+                    const mesa = mesasData.find(m => m._id === mesaId);
+                    
+                    if (mesa.positionX == null || mesa.positionY == null) {
+                        const rect = circle.getBoundingClientRect();
+                        const x = rect.left - gridRect.left;
+                        const y = rect.top - gridRect.top;
+                        circle.style.position = 'absolute';
+                        circle.style.left = x + 'px';
+                        circle.style.top = y + 'px';
+                        mesa.positionX = x;
+                        mesa.positionY = y;
+                    }
+                    
+                    circle.style.cursor = 'grab';
+                    circle.style.zIndex = '10';
+                });
+                
+            } else {
+                btn.style.background = '#ed8936';
+                icon.textContent = '🔄';
+                text.textContent = 'Organizar';
+                grid.classList.remove('organizing-mode');
+                
+                const circles = grid.querySelectorAll('.mesa-circle');
+                circles.forEach(circle => {
+                    circle.style.cursor = 'pointer';
+                    circle.style.zIndex = '1';
+                });
+                
+                guardarPosicionesMesas();
+            }
+        }
+
+        async function guardarPosicionesMesas() {
+            const token = localStorage.getItem('token');
+            const posiciones = mesasData.filter(m => m.positionX != null).map(m => ({
+                _id: m._id,
+                positionX: m.positionX,
+                positionY: m.positionY
+            }));
+            
+            if (posiciones.length === 0) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/mesas/positions`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ posiciones })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    const notif = document.createElement('div');
+                    notif.textContent = '✅ Posiciones de mesas guardadas';
+                    notif.style.cssText = 'position:fixed;top:80px;right:20px;background:#48bb78;color:white;padding:1rem 1.5rem;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 4px 12px rgba(72,187,120,0.4);z-index:10000;animation:slideInRight 0.3s ease-out;';
+                    document.body.appendChild(notif);
+                    setTimeout(() => notif.remove(), 2500);
+                }
+            } catch (err) {
+                console.error('Error al guardar posiciones:', err);
+            }
+        }
+
+        // Mouse Drag Events
+        document.addEventListener('mousedown', (e) => {
+            if (!isOrganizingMesas) return;
+            const circle = e.target.closest('.mesa-circle');
+            if (circle) {
+                draggingMesa = circle;
+                const rect = circle.getBoundingClientRect();
+                dragOffsetX = e.clientX - rect.left;
+                dragOffsetY = e.clientY - rect.top;
+                circle.style.cursor = 'grabbing';
+                circle.style.zIndex = '100';
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isOrganizingMesas || !draggingMesa) return;
+            const gridRect = document.getElementById('mesasGrid').getBoundingClientRect();
+            
+            let x = e.clientX - gridRect.left - dragOffsetX;
+            let y = e.clientY - gridRect.top - dragOffsetY;
+            
+            x = Math.max(0, Math.min(x, gridRect.width - draggingMesa.offsetWidth));
+            y = Math.max(0, Math.min(y, gridRect.height - draggingMesa.offsetHeight));
+            
+            draggingMesa.style.left = x + 'px';
+            draggingMesa.style.top = y + 'px';
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (!isOrganizingMesas || !draggingMesa) return;
+            draggingMesa.style.cursor = 'grab';
+            draggingMesa.style.zIndex = '10';
+            
+            const mesaId = draggingMesa.dataset.id;
+            const mesa = mesasData.find(m => m._id === mesaId);
+            if (mesa) {
+                mesa.positionX = parseFloat(draggingMesa.style.left);
+                mesa.positionY = parseFloat(draggingMesa.style.top);
+            }
+            draggingMesa = null;
+        });
+
+        // Touch Drag Events
+        document.addEventListener('touchstart', (e) => {
+            if (!isOrganizingMesas) return;
+            const circle = e.target.closest('.mesa-circle');
+            if (circle && e.touches.length === 1) {
+                draggingMesa = circle;
+                const rect = circle.getBoundingClientRect();
+                dragOffsetX = e.touches[0].clientX - rect.left;
+                dragOffsetY = e.touches[0].clientY - rect.top;
+                circle.style.zIndex = '100';
+            }
+        }, {passive: false});
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isOrganizingMesas || !draggingMesa) return;
+            e.preventDefault(); 
+            const gridRect = document.getElementById('mesasGrid').getBoundingClientRect();
+            
+            let x = e.touches[0].clientX - gridRect.left - dragOffsetX;
+            let y = e.touches[0].clientY - gridRect.top - dragOffsetY;
+            
+            x = Math.max(0, Math.min(x, gridRect.width - draggingMesa.offsetWidth));
+            y = Math.max(0, Math.min(y, gridRect.height - draggingMesa.offsetHeight));
+            
+            draggingMesa.style.left = x + 'px';
+            draggingMesa.style.top = y + 'px';
+        }, {passive: false});
+
+        document.addEventListener('touchend', (e) => {
+            if (!isOrganizingMesas || !draggingMesa) return;
+            draggingMesa.style.zIndex = '10';
+            
+            const mesaId = draggingMesa.dataset.id;
+            const mesa = mesasData.find(m => m._id === mesaId);
+            if (mesa) {
+                mesa.positionX = parseFloat(draggingMesa.style.left);
+                mesa.positionY = parseFloat(draggingMesa.style.top);
+            }
+            draggingMesa = null;
+        });
 
         // BUSCADOR DE MESAS
         document.addEventListener('DOMContentLoaded', () => {
@@ -5764,6 +5967,7 @@
         let mesaEditingOrderId = null; // ID del pedido que se está editando
 
         function onMesaClick(mesaId, mesaNombre, isOcupada) {
+            if (isOrganizingMesas) return; // Prevent click when organizing
             mesaSeleccionadaNombre = mesaNombre.trim();
             mesaEditingOrderId = null;
 

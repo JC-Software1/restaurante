@@ -134,6 +134,29 @@ router.post('/bulk', async (req, res) => {
   }
 });
 
+// PUT /api/mesas/positions - Guardar posiciones de las mesas
+router.put('/positions', async (req, res) => {
+  try {
+    const { posiciones } = req.body;
+    if (!Array.isArray(posiciones)) {
+      return res.status(400).json({ success: false, message: 'Formato de posiciones inválido' });
+    }
+
+    const updates = posiciones.map(p => 
+      Mesa.findOneAndUpdate(
+        { _id: p._id, userId: { $in: req.userIdsRestaurante } },
+        { positionX: p.positionX, positionY: p.positionY }
+      )
+    );
+    await Promise.all(updates);
+
+    res.json({ success: true, message: 'Posiciones guardadas exitosamente' });
+  } catch (error) {
+    console.error('❌ Error al guardar posiciones:', error);
+    res.status(500).json({ success: false, message: 'Error al guardar posiciones', error: error.message });
+  }
+});
+
 // DELETE /api/mesas/:id - Eliminar una mesa
 router.delete('/:id', async (req, res) => {
   try {
