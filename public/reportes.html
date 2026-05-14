@@ -1312,7 +1312,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h2>🏆 Productos Más Vendidos</h2>
+                    <h2>🏆 Top 3 Productos Más Vendidos</h2>
                 </div>
                 <div class="card-body">
                     <div class="products-ranking" id="productsRanking">
@@ -1663,8 +1663,21 @@
                 salesByDate[date] = (salesByDate[date] || 0) + order.total;
             });
 
-            const labels = Object.keys(salesByDate).sort((a, b) => new Date(a) - new Date(b));
-            const data = labels.map(label => salesByDate[label]);
+            const labels = Object.keys(salesByDate).sort((a, b) => {
+                // Ordenar fechas correctamente
+                const dateA = new Date(a.split('/').reverse().join('-'));
+                const dateB = new Date(b.split('/').reverse().join('-'));
+                return dateA - dateB;
+            });
+
+            const dataDaily = labels.map(label => salesByDate[label]);
+            
+            // Calcular datos acumulados
+            let runningTotal = 0;
+            const dataCumulative = dataDaily.map(value => {
+                runningTotal += value;
+                return runningTotal;
+            });
 
             if (salesChart) salesChart.destroy();
 
@@ -1672,30 +1685,84 @@
                 type: 'line',
                 data: {
                     labels,
-                    datasets: [{
-                        label: 'Ventas ($)',
-                        data,
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#667eea',
-                        pointRadius: 4
-                    }]
+                    datasets: [
+                        {
+                            label: 'Ventas del Día ($)',
+                            data: dataDaily,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#667eea',
+                            pointRadius: 4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Acumulado Total ($)',
+                            data: dataCumulative,
+                            borderColor: '#48bb78',
+                            backgroundColor: 'transparent',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4,
+                            pointBackgroundColor: '#48bb78',
+                            pointRadius: 4,
+                            yAxisID: 'y1'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
                     },
                     scales: {
                         y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
                             beginAtZero: true,
                             grid: { display: false },
                             ticks: {
-                                callback: value => '$' + value.toLocaleString()
+                                callback: value => '$' + value.toLocaleString(),
+                                color: '#667eea'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Ventas Diarias',
+                                color: '#667eea',
+                                font: { size: 10, weight: 'bold' }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false },
+                            ticks: {
+                                callback: value => '$' + value.toLocaleString(),
+                                color: '#48bb78'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Acumulado',
+                                color: '#48bb78',
+                                font: { size: 10, weight: 'bold' }
                             }
                         },
                         x: {
@@ -2004,7 +2071,7 @@
 
             const ranking = Object.values(productStats)
                 .sort((a, b) => b.cantidadTotal - a.cantidadTotal)
-                .slice(0, 5); // Mostrar los top 5
+                .slice(0, 3); // Mostrar exactamente el Top 3
 
             if (ranking.length === 0) {
                 container.innerHTML = `

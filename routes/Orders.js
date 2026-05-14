@@ -400,7 +400,7 @@ router.get('/', protect, checkPermission('verPedidos'), async (req, res) => {
     const { estado, mesa, fecha, page = 1, limit = 30, search } = req.query;
 
     const pageNum = parseInt(page) || 1;
-    const limitNum = Math.min(parseInt(limit) || 30, 100); // Límite máximo de 100
+    const limitNum = Math.min(parseInt(limit) || 30, 5000); // Aumentado para permitir reportes completos
     const skip = (pageNum - 1) * limitNum;
 
     let query = { userId: { $in: req.userIdsRestaurante } };
