@@ -38,10 +38,6 @@
             transform: translateX(0);
         }
 
-        .sidebar.collapsed {
-            transform: translateX(-280px);
-        }
-
         .sidebar-header {
             padding: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -256,15 +252,9 @@
             display: block;
         }
 
-        /* CONTENIDO PRINCIPAL */
         .content-wrapper {
-            margin-left: 0;
             transition: margin-left 0.3s ease;
             min-height: 100vh;
-        }
-
-        .content-wrapper.expanded {
-            margin-left: 0;
         }
 
         .container {
@@ -1197,15 +1187,9 @@
         function toggleMenu() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
-            const contentWrapper = document.getElementById('contentWrapper');
 
             sidebar.classList.toggle('active');
             overlay.classList.toggle('active');
-
-            if (window.innerWidth > 1024) {
-                sidebar.classList.toggle('collapsed');
-                contentWrapper.classList.toggle('expanded');
-            }
         }
 
         // LOGOUT
