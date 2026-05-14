@@ -575,10 +575,28 @@
         }
 
         .chart-container {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: #f7fafc;
-            border-radius: 8px;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            height: 300px;
+            position: relative;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 250px;
+            }
         }
 
         @media (max-width: 1024px) {
@@ -1064,6 +1082,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -1256,6 +1275,41 @@
 
             </div>
 
+            <div class="charts-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>📈 Tendencia de Ventas</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🍕 Distribución por Categoría</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>⚖️ Comparación con Período Anterior</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 350px;">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header">
                     <h2>🏆 Productos Más Vendidos</h2>
@@ -1328,6 +1382,11 @@
         let filteredOrders = [];
         let allProducts = [];
         let currentPeriod = 'hoy';
+        
+        // Chart instances
+        let salesChart = null;
+        let categoryChart = null;
+        let comparisonChart = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('token');
@@ -1582,9 +1641,176 @@
             console.log(`✅ Pedidos filtrados: ${filteredOrders.length} de ${allOrders.length}`);
 
             updateStatistics();
+            updateCharts();
             updateProductsRanking();
             displayOrders();
             displayOrdersCards();
+        }
+
+        function updateCharts() {
+            updateSalesChart();
+            updateCategoryChart();
+            updateComparisonChart();
+        }
+
+        function updateSalesChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            
+            // Agrupar ventas por fecha
+            const salesByDate = {};
+            filteredOrders.filter(o => o.estado !== 'cancelado').forEach(order => {
+                const date = new Date(order.createdAt).toLocaleDateString();
+                salesByDate[date] = (salesByDate[date] || 0) + order.total;
+            });
+
+            const labels = Object.keys(salesByDate).sort((a, b) => new Date(a) - new Date(b));
+            const data = labels.map(label => salesByDate[label]);
+
+            if (salesChart) salesChart.destroy();
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Ventas ($)',
+                        data,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: {
+                                callback: value => '$' + value.toLocaleString()
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            
+            const categoryStats = {};
+            filteredOrders.filter(o => o.estado !== 'cancelado').forEach(order => {
+                order.items.forEach(item => {
+                    const cat = (item.productoInfo && item.productoInfo.categoria) || 
+                                (item.producto && item.producto.categoria) || 
+                                item.categoriaProducto || 'Sin Categoría';
+                    categoryStats[cat] = (categoryStats[cat] || 0) + (item.precio * item.cantidad);
+                });
+            });
+
+            const labels = Object.keys(categoryStats);
+            const data = labels.map(l => categoryStats[l]);
+
+            if (categoryChart) categoryChart.destroy();
+
+            categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data,
+                        backgroundColor: [
+                            '#667eea', '#48bb78', '#ed8936', '#9f7aea', '#f56565', 
+                            '#4299e1', '#ecc94b', '#38b2ac', '#a0aec0'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15,
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateComparisonChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            // Obtener fechas para el período anterior
+            const fechaDesdeValue = document.getElementById('fechaDesde').value;
+            const fechaHastaValue = document.getElementById('fechaHasta').value;
+            
+            if (!fechaDesdeValue || !fechaHastaValue) return;
+
+            const fechaDesde = new Date(fechaDesdeValue + 'T00:00:00');
+            const fechaHasta = new Date(fechaHastaValue + 'T23:59:59.999');
+            const periodDiff = fechaHasta - fechaDesde;
+            
+            const prevDesde = new Date(fechaDesde.getTime() - periodDiff - 1000);
+            const prevHasta = new Date(fechaDesde.getTime() - 1000);
+
+            const currentTotal = filteredOrders.filter(o => o.estado !== 'cancelado')
+                                             .reduce((sum, o) => sum + o.total, 0);
+            
+            const prevTotal = allOrders.filter(o => {
+                const d = new Date(o.createdAt);
+                return d >= prevDesde && d <= prevHasta && o.estado !== 'cancelado';
+            }).reduce((sum, o) => sum + o.total, 0);
+
+            if (comparisonChart) comparisonChart.destroy();
+
+            comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Período Anterior', 'Período Actual'],
+                    datasets: [{
+                        label: 'Ingresos Totales',
+                        data: [prevTotal, currentTotal],
+                        backgroundColor: ['#e2e8f0', '#667eea'],
+                        borderRadius: 8,
+                        barThickness: 60
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '$' + value.toLocaleString()
+                            }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
         }
 
         function displayOrdersCards() {
@@ -1748,55 +1974,63 @@
 
         function updateProductsRanking() {
             const container = document.getElementById('productsRanking');
-            container.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Cargando...</p></div>';
+            
+            if (filteredOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <p>No hay productos vendidos en este período</p>
+                    </div>
+                `;
+                return;
+            }
 
-            const token = localStorage.getItem('token');
+            const productStats = {};
+            filteredOrders.filter(o => o.estado !== 'cancelado').forEach(order => {
+                order.items.forEach(item => {
+                    const pid = (item.producto && item.producto._id) || (item.productoInfo && item.productoInfo._id) || 'deleted';
+                    if (!productStats[pid]) {
+                        productStats[pid] = {
+                            nombre: (item.productoInfo && item.productoInfo.nombre) || (item.producto && item.producto.nombre) || item.nombreProducto || 'Producto',
+                            categoria: (item.productoInfo && item.productoInfo.categoria) || (item.producto && item.producto.categoria) || item.categoriaProducto || 'Categoría',
+                            cantidadTotal: 0,
+                            ingresosTotales: 0
+                        };
+                    }
+                    productStats[pid].cantidadTotal += item.cantidad;
+                    productStats[pid].ingresosTotales += (item.precio * item.cantidad);
+                });
+            });
 
-            fetch(`${API_URL}/orders/stats/productos-mas-vendidos?limit=3`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            })
-            .then(res => res.json())
-            .then(response => {
-                if (!response.success) {
-                    throw new Error(response.message);
-                }
-                const ranking = response.data;
+            const ranking = Object.values(productStats)
+                .sort((a, b) => b.cantidadTotal - a.cantidadTotal)
+                .slice(0, 5); // Mostrar los top 5
 
-                if (ranking.length === 0) {
-                    container.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">📊</div>
-                    <p>No hay productos vendidos aún</p>
-                </div>
-            `;
-                    return;
-                }
+            if (ranking.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <p>No hay productos vendidos aún</p>
+                    </div>
+                `;
+                return;
+            }
 
-                container.innerHTML = ranking.map((product, index) => `
-            <div class="product-rank-item">
-                <div class="product-rank-info">
-                    <div class="rank-number">${index + 1}</div>
-                    <div class="product-details">
-                        <h4>${product.nombre}</h4>
-                        <p>${product.categoria}</p>
+            container.innerHTML = ranking.map((product, index) => `
+                <div class="product-rank-item">
+                    <div class="product-rank-info">
+                        <div class="rank-number">${index + 1}</div>
+                        <div class="product-details">
+                            <h4>${product.nombre}</h4>
+                            <p>${product.categoria}</p>
+                        </div>
+                    </div>
+                    <div class="product-stats">
+                        <div class="product-quantity">${product.cantidadTotal} unidades</div>
+                        <div class="product-revenue">$${product.ingresosTotales.toLocaleString('es-CO')}</div>
                     </div>
                 </div>
-                <div class="product-stats">
-                    <div class="product-quantity">${product.cantidadTotal} unidades</div>
-                    <div class="product-revenue">$${product.ingresosTotales.toLocaleString('es-CO')}</div>
-                </div>
-            </div>
-        `).join('');
-            })
-            .catch(error => {
-                console.error('Error al cargar productos más vendidos:', error);
-                container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">❌</div>
-                <p>Error al cargar datos</p>
-            </div>
-        `;
-            });
+            `).join('');
         }
         function displayOrders() {
             const tbody = document.getElementById('ordersTableBody');
