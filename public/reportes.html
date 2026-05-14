@@ -1559,7 +1559,7 @@
             try {
                 console.log('🔍 Cargando pedidos para userId:', currentUser._id);
 
-                const response = await fetch(`${API_URL}/orders?userId=${currentUser._id}`, {
+                const response = await fetch(`${API_URL}/orders?userId=${currentUser._id}&limit=2000`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
@@ -1988,7 +1988,7 @@
             const totalProductos = filteredOrders
                 .filter(o => o.estado !== 'cancelado')
                 .reduce((sum, order) => {
-                    return sum + order.items.reduce((itemSum, item) => itemSum + item.cantidad, 0);
+                    return sum + order.items.reduce((itemSum, item) => itemSum + Number(item.cantidad || 0), 0);
                 }, 0);
 
             const ticketPromedio = totalPedidos > 0 ? totalIngresos / totalPedidos : 0;
@@ -2006,37 +2006,47 @@
 
 
             // Calcular cambios vs período anterior
-            const fechaDesde = new Date(document.getElementById('fechaDesde').value + 'T00:00:00');
-            const fechaHasta = new Date(document.getElementById('fechaHasta').value + 'T23:59:59.999');
-            const periodDays = Math.ceil((fechaHasta - fechaDesde) / (1000 * 60 * 60 * 24)) + 1;
+            const fechaDesdeVal = document.getElementById('fechaDesde').value;
+            const fechaHastaVal = document.getElementById('fechaHasta').value;
 
-            const previousStart = new Date(fechaDesde);
-            previousStart.setDate(previousStart.getDate() - periodDays);
-            const previousEnd = new Date(fechaDesde);
-            previousEnd.setDate(previousEnd.getDate() - 1);
+            if (fechaDesdeVal && fechaHastaVal) {
+                const fechaDesde = new Date(fechaDesdeVal + 'T00:00:00');
+                const fechaHasta = new Date(fechaHastaVal + 'T23:59:59.999');
+                const periodDays = Math.ceil((fechaHasta - fechaDesde) / (1000 * 60 * 60 * 24)) + 1;
 
-            const previousOrders = allOrders.filter(order => {
-                const orderDate = new Date(order.createdAt);
-                return orderDate >= previousStart && orderDate <= previousEnd;
-            });
+                const previousStart = new Date(fechaDesde);
+                previousStart.setDate(previousStart.getDate() - periodDays);
+                const previousEnd = new Date(fechaDesde);
+                previousEnd.setDate(previousEnd.getDate() - 1);
 
-            const previousTotal = previousOrders.filter(o => o.estado !== 'cancelado')
-                .reduce((sum, order) => sum + order.total, 0);
+                const previousOrders = allOrders.filter(order => {
+                    const orderDate = new Date(order.createdAt);
+                    return orderDate >= previousStart && orderDate <= previousEnd;
+                });
 
-            const changeIngresos = previousTotal > 0 ?
-                ((totalIngresos - previousTotal) / previousTotal * 100).toFixed(1) : 0;
-            const changePedidos = previousOrders.length > 0 ?
-                ((totalPedidos - previousOrders.length) / previousOrders.length * 100).toFixed(1) : 0;
+                const previousTotal = previousOrders.filter(o => o.estado !== 'cancelado')
+                    .reduce((sum, order) => sum + order.total, 0);
 
-            document.getElementById('changeIngresos').textContent =
-                `${changeIngresos >= 0 ? '+' : ''}${changeIngresos}% vs período anterior`;
-            document.getElementById('changeIngresos').className =
-                `stat-change ${changeIngresos >= 0 ? 'positive' : 'negative'}`;
+                const changeIngresos = previousTotal > 0 ?
+                    ((totalIngresos - previousTotal) / previousTotal * 100).toFixed(1) : 0;
+                const changePedidos = previousOrders.length > 0 ?
+                    ((totalPedidos - previousOrders.length) / previousOrders.length * 100).toFixed(1) : 0;
 
-            document.getElementById('changePedidos').textContent =
-                `${changePedidos >= 0 ? '+' : ''}${changePedidos}% vs período anterior`;
-            document.getElementById('changePedidos').className =
-                `stat-change ${changePedidos >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('changeIngresos').textContent =
+                    `${changeIngresos >= 0 ? '+' : ''}${changeIngresos}% vs período anterior`;
+                document.getElementById('changeIngresos').className =
+                    `stat-change ${changeIngresos >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('changeIngresos').style.display = 'block';
+
+                document.getElementById('changePedidos').textContent =
+                    `${changePedidos >= 0 ? '+' : ''}${changePedidos}% vs período anterior`;
+                document.getElementById('changePedidos').className =
+                    `stat-change ${changePedidos >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('changePedidos').style.display = 'block';
+            } else {
+                document.getElementById('changeIngresos').style.display = 'none';
+                document.getElementById('changePedidos').style.display = 'none';
+            }
         }
 
         function updateProductsRanking() {
@@ -2055,7 +2065,12 @@
             const productStats = {};
             filteredOrders.filter(o => o.estado !== 'cancelado').forEach(order => {
                 order.items.forEach(item => {
-                    const pid = (item.producto && item.producto._id) || (item.productoInfo && item.productoInfo._id) || 'deleted';
+                    // Resolver ID del producto de forma robusta
+                    const pid = (item.producto && typeof item.producto === 'object' ? item.producto._id : item.producto) || 
+                                (item.productoInfo && item.productoInfo._id) || 
+                                item.nombreProducto || 
+                                'deleted';
+
                     if (!productStats[pid]) {
                         productStats[pid] = {
                             nombre: (item.productoInfo && item.productoInfo.nombre) || (item.producto && item.producto.nombre) || item.nombreProducto || 'Producto',
@@ -2064,8 +2079,8 @@
                             ingresosTotales: 0
                         };
                     }
-                    productStats[pid].cantidadTotal += item.cantidad;
-                    productStats[pid].ingresosTotales += (item.precio * item.cantidad);
+                    productStats[pid].cantidadTotal += Number(item.cantidad || 0);
+                    productStats[pid].ingresosTotales += (Number(item.precio || 0) * Number(item.cantidad || 0));
                 });
             });
 
