@@ -528,6 +528,14 @@
             >
                 📅 Fecha Pago
             </button>
+            <button 
+                class="btn"
+                onclick="inspeccionarUsuario('${usuario._id}', '${usuario.nombre}')"
+                style="background: #3b82f6; color: white; white-space: nowrap;"
+                title="Iniciar sesión como este usuario"
+            >
+                🔍 Inspeccionar
+            </button>
         </div>
     ` : '<span style="color: var(--text-light);">-</span>'}
 </td>
@@ -721,6 +729,89 @@
                 Swal.fire({ icon: (('❌ Error de conexión').toLowerCase().includes("error") || ('❌ Error de conexión').toLowerCase().includes("falla") || ('❌ Error de conexión').toLowerCase().includes("incorrect")) ? "error" : "success", text: '❌ Error de conexión', timer: 3000, showConfirmButton: false });
             }
         });
+
+        async function inspeccionarUsuario(userId, nombreUsuario) {
+            const { value: password } = await Swal.fire({
+                title: `Inspeccionar a ${nombreUsuario}`,
+                text: 'Por seguridad, ingresa TU contraseña de SuperAdmin:',
+                input: 'password',
+                inputPlaceholder: 'Tu contraseña',
+                showCancelButton: true,
+                confirmButtonText: 'Ingresar',
+                cancelButtonText: 'Cancelar',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '¡Debes ingresar tu contraseña!'
+                    }
+                }
+            });
+
+            if (password) {
+                Swal.fire({
+                    title: 'Iniciando sesión...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`${API_URL}/superadmin/impersonate/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ password })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Guardar nueva sesión
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Sesión iniciada',
+                            text: `Ahora estás como ${data.usuario.nombre}`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(() => {
+                            // Redirigir según el rol
+                            if (data.usuario.rol === 'admin') {
+                                window.location.href = 'administrador.html';
+                            } else if (data.usuario.rol === 'superadmin') {
+                                window.location.href = 'superadmin.html';
+                            } else {
+                                window.location.href = 'productos.html';
+                            }
+                        }, 1500);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de conexión',
+                        text: 'No se pudo contactar con el servidor'
+                    });
+                }
+            }
+        }
     </script>
 
 </body>

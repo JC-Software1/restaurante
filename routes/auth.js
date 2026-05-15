@@ -825,6 +825,62 @@ router.patch('/superadmin/confirmar-pago/:userId', async (req, res) => {
   }
 });
 
+// Impersonar usuario (solo superadmin)
+router.post('/superadmin/impersonate/:userId', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    const { password } = req.body;
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No autorizado' });
+    }
+
+    if (!password) {
+      return res.status(400).json({ success: false, message: 'Se requiere la contraseña de SuperAdmin' });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || 'secreto-super-seguro-cambiar-en-produccion'
+    );
+
+    const superAdmin = await User.findById(decoded.id).select('+password');
+
+    if (!superAdmin || superAdmin.rol !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'No tiene permisos de superadmin' });
+    }
+
+    // Verificar contraseña del SuperAdmin
+    const passwordCorrecto = await superAdmin.compararPassword(password);
+    if (!passwordCorrecto) {
+      return res.status(401).json({ success: false, message: 'Contraseña de SuperAdmin incorrecta' });
+    }
+
+    const targetUser = await User.findById(req.params.userId);
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    // Generar token para el usuario destino
+    const nuevoToken = generarToken(targetUser._id);
+
+    // Iniciar sesión keep-alive para el nuevo usuario
+    startSession(targetUser._id.toString());
+
+    res.json({
+      success: true,
+      message: `Sesión iniciada como ${targetUser.nombre}`,
+      token: nuevoToken,
+      usuario: targetUser.obtenerDatosPublicos()
+    });
+
+  } catch (error) {
+    console.error('Error al impersonar usuario:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
+  }
+});
+
+
 
 // --- GESTIÓN DE SOLICITUDES DE INGRESO (Para Admins) ---
 
