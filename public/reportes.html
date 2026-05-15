@@ -1080,6 +1080,168 @@
                 opacity: 0;
             }
         }
+        .btn-text-discreet {
+            background: transparent;
+            border: none;
+            color: #718096;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 10px;
+        }
+
+        .btn-text-discreet:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        /* MODAL DESCRIPCIONES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            max-width: 800px;
+            max-height: 85vh;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-close-modal {
+            background: #f7fafc;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            color: #718096;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-close-modal:hover {
+            background: #edf2f7;
+            color: #e53e3e;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .desc-category-group {
+            margin-bottom: 30px;
+        }
+
+        .desc-category-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .desc-category-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #e2e8f0 0%, transparent 100%);
+        }
+
+        .desc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .desc-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #edf2f7;
+            transition: all 0.2s;
+        }
+
+        .desc-card:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .desc-card h4 {
+            font-size: 15px;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .desc-card p {
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.5;
+        }
+
+        .desc-empty {
+            font-style: italic;
+            color: #a0aec0;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
@@ -1321,6 +1483,11 @@
                             <p>Cargando datos...</p>
                         </div>
                     </div>
+                    <div class="card-footer-actions">
+                        <button class="btn-text-discreet" onclick="openFullRankingModal()">
+                            <span>📊</span> Ver informe completo de ventas por producto
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1371,6 +1538,18 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="descModal" class="modal-overlay" onclick="closeDescriptionsModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3><span>📊</span> Informe Detallado de Ventas</h3>
+                <button class="btn-close-modal" onclick="closeDescriptionsModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Se llena dinámicamente con el ranking completo -->
             </div>
         </div>
     </div>
@@ -1653,24 +1832,45 @@
             updateComparisonChart();
         }
 
+        function getWeek(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const yearStart = new Date(d.getFullYear(), 0, 1);
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            return { year: d.getFullYear(), week: weekNo };
+        }
+
+        function getStartOfWeek(date) {
+            const d = new Date(date);
+            const day = d.getDay() || 7;
+            if (day !== 1) d.setHours(-24 * (day - 1));
+            return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+        }
+
         function updateSalesChart() {
-            const ctx = document.getElementById('salesChart').getContext('2d');
+            const canvas = document.getElementById('salesChart');
+            const ctx = canvas.getContext('2d');
             
-            // Agrupar ventas por fecha
-            const salesByDate = {};
+            // Agrupar ventas por SEMANA
+            const salesByWeek = {};
             filteredOrders.filter(o => o.estado !== 'cancelado').forEach(order => {
-                const date = new Date(order.createdAt).toLocaleDateString();
-                salesByDate[date] = (salesByDate[date] || 0) + order.total;
+                const date = new Date(order.createdAt);
+                const weekInfo = getWeek(date);
+                const weekKey = `${weekInfo.year}-W${weekInfo.week.toString().padStart(2, '0')}`;
+                
+                if (!salesByWeek[weekKey]) {
+                    salesByWeek[weekKey] = {
+                        total: 0,
+                        label: `Sem ${weekInfo.week} (${getStartOfWeek(date)})`
+                    };
+                }
+                salesByWeek[weekKey].total += Number(order.total || 0);
             });
 
-            const labels = Object.keys(salesByDate).sort((a, b) => {
-                // Ordenar fechas correctamente
-                const dateA = new Date(a.split('/').reverse().join('-'));
-                const dateB = new Date(b.split('/').reverse().join('-'));
-                return dateA - dateB;
-            });
-
-            const dataDaily = labels.map(label => salesByDate[label]);
+            const sortedWeeks = Object.keys(salesByWeek).sort();
+            const labels = sortedWeeks.map(wk => salesByWeek[wk].label);
+            const dataDaily = sortedWeeks.map(wk => salesByWeek[wk].total);
             
             // Calcular datos acumulados
             let runningTotal = 0;
@@ -1681,21 +1881,30 @@
 
             if (salesChart) salesChart.destroy();
 
+            // Gradiente para la línea de ventas
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.3)');
+            gradient.addColorStop(1, 'rgba(102, 126, 234, 0)');
+
             salesChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels,
                     datasets: [
                         {
-                            label: 'Ventas del Día ($)',
+                            label: 'Ventas Semanales ($)',
                             data: dataDaily,
                             borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            backgroundColor: gradient,
                             borderWidth: 3,
                             fill: true,
-                            tension: 0.4,
+                            tension: 0.45,
                             pointBackgroundColor: '#667eea',
-                            pointRadius: 4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#667eea',
+                            pointHoverBorderWidth: 3,
                             yAxisID: 'y'
                         },
                         {
@@ -1703,12 +1912,12 @@
                             data: dataCumulative,
                             borderColor: '#48bb78',
                             backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            borderDash: [8, 4],
                             fill: false,
                             tension: 0.4,
-                            pointBackgroundColor: '#48bb78',
-                            pointRadius: 4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
                             yAxisID: 'y1'
                         }
                     ]
@@ -1716,18 +1925,42 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
                         legend: {
                             display: true,
                             position: 'top',
+                            align: 'end',
                             labels: {
-                                boxWidth: 12,
-                                font: { size: 11 }
+                                boxWidth: 10,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { size: 12, weight: '500', family: "'Inter', sans-serif" },
+                                padding: 20
                             }
                         },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#1a202c',
+                            bodyColor: '#4a5568',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -1736,16 +1969,11 @@
                             display: true,
                             position: 'left',
                             beginAtZero: true,
-                            grid: { display: false },
+                            grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
                             ticks: {
-                                callback: value => '$' + value.toLocaleString(),
+                                font: { size: 10 },
+                                callback: value => '$' + (value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : value.toLocaleString()),
                                 color: '#667eea'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Ventas Diarias',
-                                color: '#667eea',
-                                font: { size: 10, weight: 'bold' }
                             }
                         },
                         y1: {
@@ -1753,20 +1981,21 @@
                             display: true,
                             position: 'right',
                             beginAtZero: true,
-                            grid: { drawOnChartArea: false },
+                            grid: { display: false },
                             ticks: {
-                                callback: value => '$' + value.toLocaleString(),
+                                font: { size: 10 },
+                                callback: value => '$' + (value >= 1000000 ? (value/1000000).toFixed(1) + 'M' : value.toLocaleString()),
                                 color: '#48bb78'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Acumulado',
-                                color: '#48bb78',
-                                font: { size: 10, weight: 'bold' }
                             }
                         },
                         x: {
-                            grid: { display: false }
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 10 },
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 8 // Limita la cantidad de etiquetas para que no se amontonen
+                            }
                         }
                     }
                 }
@@ -2183,6 +2412,77 @@
 
         function printReport() {
             window.print();
+        }
+
+        function openFullRankingModal() {
+            const modal = document.getElementById('descModal');
+            const body = document.getElementById('modalBody');
+            modal.classList.add('active');
+
+            if (filteredOrders.length === 0) {
+                body.innerHTML = '<p style="text-align:center; padding:20px;">No hay datos para mostrar.</p>';
+                return;
+            }
+
+            // Usar la misma lógica que el Top 3 pero para TODOS
+            const productStats = {};
+            filteredOrders.filter(o => o.estado !== 'cancelado').forEach(order => {
+                order.items.forEach(item => {
+                    const pid = (item.producto && typeof item.producto === 'object' ? item.producto._id : item.producto) || 
+                                (item.productoInfo && item.productoInfo._id) || 
+                                item.nombreProducto || 
+                                'deleted';
+
+                    if (!productStats[pid]) {
+                        productStats[pid] = {
+                            nombre: (item.productoInfo && item.productoInfo.nombre) || (item.producto && item.producto.nombre) || item.nombreProducto || 'Producto',
+                            categoria: (item.productoInfo && item.productoInfo.categoria) || (item.producto && item.producto.categoria) || item.categoriaProducto || 'Categoría',
+                            cantidadTotal: 0,
+                            ingresosTotales: 0
+                        };
+                    }
+                    productStats[pid].cantidadTotal += Number(item.cantidad || 0);
+                    productStats[pid].ingresosTotales += (Number(item.precio || 0) * Number(item.cantidad || 0));
+                });
+            });
+
+            const fullRanking = Object.values(productStats)
+                .sort((a, b) => b.cantidadTotal - a.cantidadTotal);
+
+            let html = `
+                <div style="margin-bottom: 20px; font-size: 14px; color: #718096;">
+                    Mostrando el desempeño de <b>${fullRanking.length} productos</b> en el periodo seleccionado.
+                </div>
+                <div class="full-ranking-list">
+            `;
+
+            fullRanking.forEach((product, index) => {
+                html += `
+                    <div class="product-rank-item" style="border-bottom: 1px solid #f7fafc; padding: 12px 0;">
+                        <div class="product-rank-info">
+                            <div class="rank-number" style="background: ${index < 3 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#edf2f7'}; color: ${index < 3 ? 'white' : '#718096'}; min-width: 28px; height: 28px; font-size: 12px;">
+                                ${index + 1}
+                            </div>
+                            <div class="product-details">
+                                <h4 style="font-size: 14px;">${product.nombre}</h4>
+                                <p style="font-size: 11px;">${product.categoria}</p>
+                            </div>
+                        </div>
+                        <div class="product-stats" style="text-align: right;">
+                            <div class="product-quantity" style="font-size: 13px; font-weight: 600;">${product.cantidadTotal} und.</div>
+                            <div class="product-revenue" style="font-size: 12px; color: #48bb78;">$${product.ingresosTotales.toLocaleString('es-CO')}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            body.innerHTML = html;
+        }
+
+        function closeDescriptionsModal(event) {
+            const modal = document.getElementById('descModal');
+            modal.classList.remove('active');
         }
 
         function toggleMenu() {

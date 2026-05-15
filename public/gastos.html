@@ -297,7 +297,8 @@
         }
 
         .form-expand-container.active {
-            max-height: 1500px; /* Large enough for multiple expense fields */
+            max-height: 1500px;
+            /* Large enough for multiple expense fields */
             opacity: 1;
             margin-bottom: 2rem;
         }
@@ -987,114 +988,116 @@
                 <!-- Formulario de gastos (Ahora expansible) -->
                 <div class="form-expand-container" id="formContainer">
                     <div class="card glass-card">
-                        <div class="card-header" style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+                        <div class="card-header"
+                            style="background: transparent; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
                             <h2 style="margin: 0;">➕ Registrar Gastos</h2>
-                            <button onclick="toggleExpenseForm()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #718096;">✕</button>
+                            <button onclick="toggleExpenseForm()"
+                                style="background: none; border: none; cursor: pointer; font-size: 20px; color: #718096;">✕</button>
                         </div>
-                    <div class="card-body">
-                        <form id="expenseForm">
-                            <div class="form-group">
-                                <label class="form-label" for="fecha">Fecha *</label>
-                                <input type="date" id="fecha" class="form-input" required>
-                            </div>
+                        <div class="card-body">
+                            <form id="expenseForm">
+                                <div class="form-group">
+                                    <label class="form-label" for="fecha">Fecha *</label>
+                                    <input type="date" id="fecha" class="form-input" required>
+                                </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="cantidad">¿Cuántos gastos va a registrar? *</label>
-                                <input type="number" id="cantidad" class="form-input" required min="1" max="20"
-                                    placeholder="Ej: 5">
-                            </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cantidad">¿Cuántos gastos va a registrar? *</label>
+                                    <input type="number" id="cantidad" class="form-input" required min="1" max="20"
+                                        placeholder="Ej: 5">
+                                </div>
 
-                            <div class="expense-fields" id="expenseFields"></div>
+                                <div class="expense-fields" id="expenseFields"></div>
 
-                            <div class="summary-box" id="summaryBox" style="display: none;">
-                                <div class="summary-label">Total de gastos</div>
-                                <div class="summary-value" id="totalAmount">$0</div>
-                            </div>
+                                <div class="summary-box" id="summaryBox" style="display: none;">
+                                    <div class="summary-label">Total de gastos</div>
+                                    <div class="summary-value" id="totalAmount">$0</div>
+                                </div>
 
-                            <button type="submit" class="btn-submit" id="btnSubmit" disabled>Guardar Gastos</button>
-                        </form>
-                    </div>
+                                <button type="submit" class="btn-submit" id="btnSubmit" disabled>Guardar Gastos</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2>📋 Historial de Gastos</h2>
-                    </div>
-                    <div class="card-body" style="padding: 1.5rem 1.5rem 0 1.5rem;">
-                        <div class="filters-section" style="margin-bottom: 1.5rem;">
-                            <div class="filter-group">
-                                <label class="filter-label">Desde</label>
-                                <input type="date" id="filterFechaDesde" class="filter-input" onchange="applyFilters()">
-                            </div>
-                            <div class="filter-group">
-                                <label class="filter-label">Hasta</label>
-                                <input type="date" id="filterFechaHasta" class="filter-input" onchange="applyFilters()">
-                            </div>
-                            <div style="display: none;" class="filter-group">
-                                <label class="filter-label">Mes Rápido</label>
-                                <input type="month" id="filterMonth" class="filter-input" onchange="selectMonth()">
-                            </div>
-                            <div class="filter-group" style="display: flex; align-items: flex-end;">
-                                <button class="btn-clear-filters" onclick="clearFilters()">🗑️ Limpiar Filtros</button>
-                            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>📋 Historial de Gastos</h2>
+                </div>
+                <div class="card-body" style="padding: 1.5rem 1.5rem 0 1.5rem;">
+                    <div class="filters-section" style="margin-bottom: 1.5rem;">
+                        <div class="filter-group">
+                            <label class="filter-label">Desde</label>
+                            <input type="date" id="filterFechaDesde" class="filter-input" onchange="applyFilters()">
                         </div>
-
-                        <!-- ESTADÍSTICAS -->
-                        <div class="stats-summary">
-                            <div class="stat-summary-card">
-                                <div class="stat-summary-icon"
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📋</div>
-                                <div class="stat-summary-content">
-                                    <div class="stat-summary-label">Registros de Gastos</div>
-                                    <div class="stat-summary-value" id="statTotalRegistros">0</div>
-                                </div>
-                            </div>
-                            <div class="stat-summary-card">
-                                <div class="stat-summary-icon"
-                                    style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);">🧾</div>
-                                <div class="stat-summary-content">
-                                    <div class="stat-summary-label">Total de Gastos</div>
-                                    <div class="stat-summary-value" id="statTotalGastos">0</div>
-                                </div>
-                            </div>
-                            <div class="stat-summary-card">
-                                <div class="stat-summary-icon"
-                                    style="background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);">💰</div>
-                                <div class="stat-summary-content">
-                                    <div class="stat-summary-label">Monto Total</div>
-                                    <div class="stat-summary-value" id="statMontoTotal">$0</div>
-                                </div>
-                            </div>
-                            <div class="stat-summary-card">
-                                <div class="stat-summary-icon"
-                                    style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);">💳</div>
-                                <div class="stat-summary-content">
-                                    <div class="stat-summary-label">Total Transferencias</div>
-                                    <div class="stat-summary-value" id="statTotalTransferencias">$0</div>
-                                </div>
-                            </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Hasta</label>
+                            <input type="date" id="filterFechaHasta" class="filter-input" onchange="applyFilters()">
                         </div>
-
-
-                    </div>
-                    <div class="card-body">
-                        <div class="filter-bar">
-                            <input type="month" id="filterMonth" class="filter-select" onchange="loadExpenses()">
+                        <div style="display: none;" class="filter-group">
+                            <label class="filter-label">Mes Rápido</label>
+                            <input type="month" id="filterMonth" class="filter-input" onchange="selectMonth()">
+                        </div>
+                        <div class="filter-group" style="display: flex; align-items: flex-end;">
+                            <button class="btn-clear-filters" onclick="clearFilters()">🗑️ Limpiar Filtros</button>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="expenses-list" id="expensesList">
-                            <div class="empty-state">
-                                <div class="empty-icon">📋</div>
-                                <p>Cargando gastos...</p>
+
+                    <!-- ESTADÍSTICAS -->
+                    <div class="stats-summary">
+                        <div class="stat-summary-card">
+                            <div class="stat-summary-icon"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">📋</div>
+                            <div class="stat-summary-content">
+                                <div class="stat-summary-label">Registros de Gastos</div>
+                                <div class="stat-summary-value" id="statTotalRegistros">0</div>
                             </div>
+                        </div>
+                        <div class="stat-summary-card">
+                            <div class="stat-summary-icon"
+                                style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);">🧾</div>
+                            <div class="stat-summary-content">
+                                <div class="stat-summary-label">Total de Gastos</div>
+                                <div class="stat-summary-value" id="statTotalGastos">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-summary-card">
+                            <div class="stat-summary-icon"
+                                style="background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);">💰</div>
+                            <div class="stat-summary-content">
+                                <div class="stat-summary-label">Monto Total</div>
+                                <div class="stat-summary-value" id="statMontoTotal">$0</div>
+                            </div>
+                        </div>
+                        <div class="stat-summary-card">
+                            <div class="stat-summary-icon"
+                                style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);">💳</div>
+                            <div class="stat-summary-content">
+                                <div class="stat-summary-label">Total Transferencias</div>
+                                <div class="stat-summary-value" id="statTotalTransferencias">$0</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="card-body">
+                    <div class="filter-bar">
+                        <input type="month" id="filterMonth" class="filter-select" onchange="loadExpenses()">
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="expenses-list" id="expensesList">
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <p>Cargando gastos...</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="modal" id="editModal">
@@ -1114,7 +1117,8 @@
 
                     <div class="form-group">
                         <label class="form-label" for="editCantidad">Cantidad de gastos</label>
-                        <input type="number" id="editCantidad" class="form-input" min="1" max="20" oninput="adjustEditExpenseItems(this.value)">
+                        <input type="number" id="editCantidad" class="form-input" min="1" max="20"
+                            oninput="adjustEditExpenseItems(this.value)">
                     </div>
 
                     <div class="expense-fields" id="editExpenseFields"></div>
@@ -1164,7 +1168,7 @@
 
                 const data = await response.json();
                 currentUser = data.data;
-                
+
                 if (data.data) {
                     localStorage.setItem('usuario', JSON.stringify(data.data));
                 }
@@ -1278,6 +1282,26 @@
             document.getElementById('totalAmount').textContent = `$${total.toLocaleString('es-CO')}`;
         }
 
+        function toggleExpenseForm(show) {
+            const container = document.getElementById('formContainer');
+            const btn = document.getElementById('btnToggleForm');
+
+            if (show !== undefined) {
+                if (show) container.classList.add('active');
+                else container.classList.remove('active');
+            } else {
+                container.classList.toggle('active');
+            }
+
+            if (container.classList.contains('active')) {
+                btn.innerHTML = '<span>✕</span> Cerrar Formulario';
+                btn.style.background = 'linear-gradient(135deg, #718096 0%, #4a5568 100%)';
+            } else {
+                btn.innerHTML = '<span>✨</span> Nuevo Gasto';
+                btn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+        }
+
         document.getElementById('expenseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -1387,6 +1411,7 @@
             if (fechaHastaValue) {
                 fechaHasta = new Date(fechaHastaValue + 'T23:59:59.999');
             }
+
 
             filteredExpenses = allExpenses.filter(expense => {
                 const expenseDate = new Date(expense.fecha);
@@ -1522,10 +1547,10 @@
                     document.getElementById('editExpenseId').value = expense._id;
                     document.getElementById('editFecha').value = expense.fecha.split('T')[0];
                     document.getElementById('editCantidad').value = expense.gastos.length;
-                    
+
                     // Inicializar items de edición
                     currentEditItems = JSON.parse(JSON.stringify(expense.gastos));
-                    
+
                     renderEditExpenseFields();
                     document.getElementById('editModal').classList.add('active');
                 }
@@ -1537,7 +1562,7 @@
 
         function renderEditExpenseFields() {
             const container = document.getElementById('editExpenseFields');
-            
+
             container.innerHTML = currentEditItems.map((gasto, index) => `
                 <div class="expense-item" id="edit-item-${index}">
                     <div class="expense-item-header" style="display: flex; justify-content: space-between; align-items: center;">
@@ -1627,7 +1652,7 @@
 
         function selectEditPaymentMethod(index, method, button) {
             currentEditItems[index].metodoPago = method;
-            
+
             const parent = button.parentElement;
             parent.querySelectorAll('.payment-method-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -1732,7 +1757,7 @@
         }
     </script>
     <script src="scripts/restaurant-switcher.js"></script>
-<script src="scripts/print-monitor.js"></script>
+    <script src="scripts/print-monitor.js"></script>
 </body>
 
 </html>
