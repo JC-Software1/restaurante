@@ -754,17 +754,20 @@
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            font-size: 13px;
+            font-size: 15px;
         }
 
         .item-name {
-            color: #4a5568;
-            font-weight: 500;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 15px;
         }
 
         .item-qty {
-            color: #718096;
+            color: #667eea;
             margin: 0 8px;
+            font-size: 15px;
+            font-weight: 700;
         }
 
         .order-notes {
@@ -2572,7 +2575,7 @@
                                     ${item.nota ? `<div style="font-size: 11px; color: #e53e3e; font-weight: 700; margin-top: 2px;">📝 ${item.nota}</div>` : ''}
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="font-size: 14px; font-weight: 700; color: #1a202c;">$${(item.precio * grupo.cantidad).toLocaleString('es-CO')}</span>
+                                    <span style="font-size: 16px; font-weight: 700; color: #1a202c;">$${(item.precio * grupo.cantidad).toLocaleString('es-CO')}</span>
                                     ${order.estado !== 'entregado' && order.estado !== 'cancelado' ? `
                                         <span class="status-badge status-${grupo.estado}" style="font-size: 10px; padding: 4px 8px;">${grupo.estado}</span>
                                         <button onclick="cambiarEstadoProducto('${order._id}', ${itemIndex}, ${grupo.cantidad}, '${grupo.estado}')" 
