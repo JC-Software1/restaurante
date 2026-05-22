@@ -550,12 +550,13 @@
             if (showWhatsApp) {
                 const phoneNumber = '573016726199';
                 const whatsappMessage = encodeURIComponent('Hola, mi cuenta ha sido bloqueada y necesito ayuda');
+                const mensajeLimpio = message.replace(/3128540908/g, '3016726199');
 
                 Swal.fire({
                     icon: 'error',
                     title: 'Cuenta Suspendida',
                     html: `
-                        ${message}
+                        ${mensajeLimpio}
                         <br><br>
                         <a href="https://wa.me/${phoneNumber}?text=${whatsappMessage}" 
                            style="display: inline-block; background: #25d366; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold;"
