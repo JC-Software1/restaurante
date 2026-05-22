@@ -427,7 +427,7 @@ router.post('/login', async (req, res) => {
         success: false,
         message: 'Cuenta suspendida',
         bloqueado: true,
-        motivoBloqueo: usuario.motivoBloqueo || 'Su cuenta ha sido suspendida. Para más información contacte al equipo de soporte al número 3128540908'
+        motivoBloqueo: usuario.motivoBloqueo || 'Su cuenta ha sido suspendida. Para más información contacte al equipo de soporte al número 3016726199'
       });
     }
 
@@ -657,7 +657,7 @@ router.patch('/superadmin/toggle-bloqueo/:userId', async (req, res) => {
       { nombreRestaurante: usuario.nombreRestaurante },
       {
         bloqueado: nuevoEstado,
-        motivoBloqueo: nuevoEstado ? 'Su cuenta ha sido suspendida. Para más información contacte al equipo de soporte al número 3128540908' : '',
+        motivoBloqueo: nuevoEstado ? 'Su cuenta ha sido suspendida. Para más información contacte al equipo de soporte al número 3016726199' : '',
         fechaBloqueo: nuevoEstado ? new Date() : null
       }
     );
