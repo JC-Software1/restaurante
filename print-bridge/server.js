@@ -12,7 +12,7 @@ const PORT = 3001;
 const baseDir = process.pkg ? path.dirname(process.execPath) : __dirname;
 const CONFIG_PATH = path.join(baseDir, 'config.json');
 const PRINTED_PATH = path.join(baseDir, 'printed.json');
-const API_BASE = 'https://restaurante-cipd.onrender.com/api';
+const API_BASE = 'https://restaurante-1-1bo2.onrender.com/api';
 
 let config = {
     userId: '',
