@@ -7,7 +7,7 @@
 */
 
 (function () {
-    const API_BASE = 'https://restaurante-co77.onrender.com/api/auth';
+    const API_BASE = 'https://restaurante-cipd.onrender.com/api/auth';
     let isFetching = false;
 
     // switchRestaurant stays available globally for any UI that needs it

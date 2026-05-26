@@ -1,4 +1,4 @@
-const API_URL = 'https://restaurante-co77.onrender.com/api/auth';
+const API_URL = 'https://restaurante-cipd.onrender.com/api/auth';
 
 async function verificarSesion() {
     const token = localStorage.getItem('token');
