@@ -116,6 +116,10 @@ const orderSchema = new mongoose.Schema({
     fecha: {
       type: Date,
       default: Date.now
+    },
+    liquidado: {
+      type: Boolean,
+      default: false
     }
   }],
   totalPagado: {

@@ -1406,20 +1406,27 @@
                 if (data.success) {
                     datosPendientes = data.data;
 
-                    // Calcular transferencias de PEDIDOS (soporta pagos mixtos)
+                    // Calcular transferencias de PEDIDOS usando valores exactos del backend
                     let totalTransferencias = 0;
                     let countConTransferencia = 0;
                     datosPendientes.pedidos.forEach(p => {
                         if (p.estado === 'cancelado') return;
-                        if (p.pagos && p.pagos.length > 0) {
-                            const transfMonto = p.pagos.filter(pg => pg.metodo === 'transferencia').reduce((s, pg) => s + pg.monto, 0);
-                            if (transfMonto > 0) {
-                                totalTransferencias += transfMonto;
+                        if (p.pagosPendientesTr !== undefined) {
+                            if (p.pagosPendientesTr > 0) {
+                                totalTransferencias += p.pagosPendientesTr;
                                 countConTransferencia++;
                             }
-                        } else if (p.metodoPago === 'transferencia') {
-                            totalTransferencias += p.total;
-                            countConTransferencia++;
+                        } else {
+                            if (p.pagos && p.pagos.length > 0) {
+                                const transfMonto = p.pagos.filter(pg => pg.metodo === 'transferencia').reduce((s, pg) => s + pg.monto, 0);
+                                if (transfMonto > 0) {
+                                    totalTransferencias += transfMonto;
+                                    countConTransferencia++;
+                                }
+                            } else if (p.metodoPago === 'transferencia') {
+                                totalTransferencias += p.total;
+                                countConTransferencia++;
+                            }
                         }
                     });
 
@@ -1514,7 +1521,7 @@
                 <p>${new Date(pedido.createdAt).toLocaleString('es-CO')} | 
                    ${pedido.items.length} producto(s)${metodoDetalle ? ` | ${metodoDetalle}` : ''}</p>
             </div>
-            <div class="item-value">$${pedido.total.toLocaleString('es-CO')}</div>
+            <div class="item-value">$${pedido.montoALiquidar !== undefined ? pedido.montoALiquidar.toLocaleString('es-CO') : pedido.total.toLocaleString('es-CO')}</div>
         </div>
     `;
             }).join('');
@@ -1578,14 +1585,18 @@
                 return mov.tipo === 'ingreso' ? sum + mov.monto : sum - mov.monto;
             }, 0);
 
-            // Calcular transferencias de PEDIDOS (soporta pagos mixtos)
+            // Calcular transferencias de PEDIDOS usando valores exactos del backend
             let totalTransferencias = 0;
             datosPendientes.pedidos.forEach(p => {
                 if (p.estado === 'cancelado') return;
-                if (p.pagos && p.pagos.length > 0) {
-                    totalTransferencias += p.pagos.filter(pg => pg.metodo === 'transferencia').reduce((s, pg) => s + pg.monto, 0);
-                } else if (p.metodoPago === 'transferencia') {
-                    totalTransferencias += p.total;
+                if (p.pagosPendientesTr !== undefined) {
+                    totalTransferencias += p.pagosPendientesTr;
+                } else {
+                    if (p.pagos && p.pagos.length > 0) {
+                        totalTransferencias += p.pagos.filter(pg => pg.metodo === 'transferencia').reduce((s, pg) => s + pg.monto, 0);
+                    } else if (p.metodoPago === 'transferencia') {
+                        totalTransferencias += p.total;
+                    }
                 }
             });
 

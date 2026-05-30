@@ -43,26 +43,75 @@ router.get('/ultima', protect, async (req, res) => {
 // Obtener datos pendientes de liquidación
 router.get('/pendientes', protect, async (req, res) => {
   try {
-    const pedidos = await Order.find({
+    const pedidosEntregados = await Order.find({
       userId: { $in: req.userIdsRestaurante },
       estado: 'entregado',
       reciboDia: false
-    })
-      .populate('items.producto', 'nombre precio')
-      .sort({ createdAt: -1 });
+    }).populate('items.producto', 'nombre precio').sort({ createdAt: -1 });
+
+    const pedidosParciales = await Order.find({
+      userId: { $in: req.userIdsRestaurante },
+      estado: { $ne: 'entregado' },
+      'pagos.liquidado': false
+    }).populate('items.producto', 'nombre precio').sort({ createdAt: -1 });
+
+    const pedidosMap = new Map();
+    pedidosEntregados.forEach(p => pedidosMap.set(p._id.toString(), p));
+    pedidosParciales.forEach(p => pedidosMap.set(p._id.toString(), p));
+
+    const pedidosRaw = Array.from(pedidosMap.values());
+    // Ordenar de nuevo la mezcla
+    pedidosRaw.sort((a, b) => b.createdAt - a.createdAt);
+
+    let totalPedidos = 0;
+    const pedidosProcesados = pedidosRaw.map(p => {
+      const pedido = p.toObject();
+      let montoALiquidar = 0;
+      let pagosPendientesEf = 0;
+      let pagosPendientesTr = 0;
+
+      if (pedido.pagos && pedido.pagos.length > 0) {
+        pedido.pagos.forEach(pago => {
+          if (!pago.liquidado) {
+            montoALiquidar += pago.monto;
+            if (pago.metodo === 'efectivo') pagosPendientesEf += pago.monto;
+            if (pago.metodo === 'transferencia') pagosPendientesTr += pago.monto;
+          }
+        });
+      }
+
+      if (pedido.estado === 'entregado' && !pedido.reciboDia) {
+        const totalPagos = (pedido.pagos || []).reduce((s, pg) => s + pg.monto, 0);
+        const remaining = pedido.total - totalPagos;
+        if (remaining > 0) {
+          montoALiquidar += remaining;
+          if (pedido.metodoPago === 'transferencia') {
+            pagosPendientesTr += remaining;
+          } else {
+            pagosPendientesEf += remaining;
+          }
+        }
+      }
+
+      pedido.montoALiquidar = montoALiquidar;
+      pedido.pagosPendientesEf = pagosPendientesEf;
+      pedido.pagosPendientesTr = pagosPendientesTr;
+      totalPedidos += montoALiquidar;
+
+      return pedido;
+    }).filter(p => p.montoALiquidar > 0);
 
     const gastos = await Expense.find({
       userId: { $in: req.userIdsRestaurante },
       reciboDia: false
     }).sort({ fecha: -1 });
 
-    const totalPedidos = pedidos.reduce((sum, pedido) => sum + pedido.total, 0);
     const totalGastos = gastos.reduce((sum, gasto) => sum + gasto.total, 0);
 
     res.json({
       success: true,
       data: {
-        pedidos,
+        pedidos: pedidosProcesados,
         gastos,
         totalPedidos,
         totalGastos
@@ -325,12 +374,19 @@ router.post('/', protect, async (req, res) => {
       cerrada: true
     });
 
-    // Marcar pedidos como liquidados
+    // Marcar pedidos y pagos como liquidados
     const pedidosIds = (ingresos?.pedidos || []).map(p => p._id || p).filter(Boolean);
     if (pedidosIds.length > 0) {
+      // 1. Marcar reciboDia: true SOLO a los que estén entregados (para no volver a cobrar el restante luego)
       await Order.updateMany(
-        { _id: { $in: pedidosIds } },
+        { _id: { $in: pedidosIds }, estado: 'entregado' },
         { $set: { reciboDia: true } }
+      );
+      
+      // 2. Marcar todos los pagos parciales como liquidados
+      await Order.updateMany(
+        { _id: { $in: pedidosIds }, 'pagos.liquidado': false },
+        { $set: { 'pagos.$[].liquidado': true } }
       );
     }
 
