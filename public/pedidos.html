@@ -4043,25 +4043,30 @@
             }
 
             try {
-                // Crear elemento de impresión
-                crearElementoImpresion();
-
-                // Esperar un momento para que se renderice
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                // Imprimir
-                window.print();
-
-                // Remover después de imprimir o cancelar
-                window.onafterprint = () => {
-                    removerElementoImpresion();
+                const datosFactura = {
+                    _id: pedidoParaImprimir._id,
+                    mesa: pedidoParaImprimir.mesa,
+                    items: pedidoParaImprimir.items,
+                    total: pedidoParaImprimir.total,
+                    restauranteNombre: currentUser.nombreRestaurante || "RESTAURANTE"
                 };
 
-                console.log('✅ Diálogo de impresión abierto');
+                const response = await fetch('http://127.0.0.1:3001/print-factura', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosFactura)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log('✅ Diálogo de impresión ejecutado por el Bridge');
+                } else {
+                    throw new Error(data.message);
+                }
 
             } catch (error) {
                 console.error('Error al imprimir:', error);
-                removerElementoImpresion();
                 throw error;
             }
         }
