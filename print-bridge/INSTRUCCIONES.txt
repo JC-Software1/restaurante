@@ -1,0 +1,25 @@
+============================================
+   JC-RT CONECTOR DE IMPRESIÓN (Windows)
+============================================
+
+INSTRUCCIONES DE INSTALACIÓN:
+
+1. Extraer este archivo .zip en una carpeta (por ejemplo: C:\JC-RT-Print)
+
+2. Ejecutar el archivo "jc-rt-print-bridge-win.exe" haciendo doble clic.
+   - Windows puede mostrar una advertencia de seguridad, dale clic en "Más información" y luego "Ejecutar de todas formas".
+
+3. Se abrirá una ventana del navegador en http://localhost:3001
+   - Si no se abre automáticamente, abre tu navegador y ve a esa dirección.
+
+4. En la página de Ajustes de tu restaurante (en la web), genera el "Código de Vinculación".
+
+5. Copia ese código y pégalo en el campo de texto del conector, luego presiona "Vincular y Activar".
+
+6. ¡Listo! El conector comenzará a vigilar pedidos nuevos y los imprimirá automáticamente.
+
+
+NOTAS IMPORTANTES:
+- El programa debe estar ABIERTO para que funcione la impresión.
+- Asegúrate de que la impresora térmica esté conectada y encendida.
+- Si cierras el programa, simplemente vuelve a ejecutar el .exe.
