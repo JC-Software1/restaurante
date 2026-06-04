@@ -151,7 +151,7 @@
                 <td colspan="2" style="text-align:center;padding-bottom:10px;border-bottom:2px solid #000;">
                     <div style="font-size:18px;font-weight:bold;margin-bottom:3px;">${nombreRestaurante}</div>
                     ${nitRestaurante ? `<div style="font-size:12px;font-weight:bold;margin-bottom:3px;">${nitRestaurante}</div>` : ''}
-                    <div style="font-size:10px;color:#666;">FACTURA DE VENTA</div>
+                    <div style="font-size:10px;color:#000;font-weight:bold;">FACTURA DE VENTA</div>
                 </td>
             </tr>
         </table>
@@ -166,7 +166,7 @@
         
         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;margin:8px 0;">
             <tr>
-                <td style="text-align:center;font-size:12px;font-weight:bold;padding:6px 0;background:#f0f0f0;">💳 ${metodoPagoTexto}</td>
+                    <td style="text-align:center;font-size:12px;font-weight:bold;padding:6px 0;background:#000;color:#fff;">${metodoPagoTexto}</td>
             </tr>
         </table>
         
