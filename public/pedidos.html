@@ -4043,26 +4043,62 @@
             }
 
             try {
-                const datosFactura = {
-                    _id: pedidoParaImprimir._id,
-                    mesa: pedidoParaImprimir.mesa,
-                    items: pedidoParaImprimir.items,
-                    total: pedidoParaImprimir.total,
-                    restauranteNombre: currentUser.nombreRestaurante || "RESTAURANTE"
-                };
+                // Preparar los datos visuales
+                crearElementoImpresion();
+                
+                // Ocultar el modal de estado para evitar que bloquee la pantalla o el Swal
+                const modalImpresion = document.getElementById('modalEstadoImpresion');
+                if (modalImpresion) modalImpresion.style.display = 'none';
+                
+                const hasBridge = localStorage.getItem('autoPrintComanda') === 'true';
 
-                const response = await fetch('http://127.0.0.1:3001/print-factura', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datosFactura)
-                });
+                if (hasBridge) {
+                    const result = await Swal.fire({
+                        title: 'Imprimir Factura',
+                        text: 'Tienes el Print Bridge activado. ¿Cómo deseas imprimir?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonText: '🔌 Vía Print Bridge',
+                        denyButtonText: '🪟 Vía Windows',
+                        cancelButtonText: 'Cancelar'
+                    });
 
-                const data = await response.json();
-
-                if (data.success) {
-                    console.log('✅ Diálogo de impresión ejecutado por el Bridge');
+                    if (result.isConfirmed) {
+                        // Vía Bridge
+                        if (modalImpresion) {
+                            modalImpresion.style.display = 'flex';
+                            document.getElementById('impresionTitulo').textContent = 'Enviando a Bridge...';
+                        }
+                        const datosFactura = {
+                            _id: pedidoParaImprimir._id,
+                            mesa: pedidoParaImprimir.mesa,
+                            items: pedidoParaImprimir.items,
+                            total: pedidoParaImprimir.total,
+                            restauranteNombre: currentUser.nombreRestaurante || "RESTAURANTE"
+                        };
+                        try {
+                            const response = await fetch('http://127.0.0.1:3001/print-factura', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(datosFactura)
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                console.log('✅ Impresión enviada al Bridge exitosamente');
+                            } else {
+                                Swal.fire('Error del Bridge', data.message, 'error');
+                            }
+                        } catch (err) {
+                            Swal.fire('Error de Conexión', 'No se pudo contactar al Bridge. ¿Está abierto el programa?', 'error');
+                        }
+                    } else if (result.isDenied) {
+                        // Vía Windows directo
+                        window.print();
+                    }
                 } else {
-                    throw new Error(data.message);
+                    // No tiene bridge activo, saltar directo a Windows
+                    window.print();
                 }
 
             } catch (error) {
