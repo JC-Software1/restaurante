@@ -4087,10 +4087,26 @@
                             if (data.success) {
                                 console.log('✅ Impresión enviada al Bridge exitosamente');
                             } else {
-                                Swal.fire('Error del Bridge', data.message, 'error');
+                                console.warn('❌ Error del Bridge, usando fallback a Windows:', data.message);
+                                Swal.fire({
+                                    title: 'Bridge sin responder',
+                                    text: 'Hubo un error con el Bridge. Imprimiendo vía normal...',
+                                    icon: 'warning',
+                                    timer: 2500,
+                                    showConfirmButton: false
+                                });
+                                setTimeout(() => { window.print(); }, 500);
                             }
                         } catch (err) {
-                            Swal.fire('Error de Conexión', 'No se pudo contactar al Bridge. ¿Está abierto el programa?', 'error');
+                            console.warn('❌ Error de conexión al Bridge, usando fallback a Windows:', err);
+                            Swal.fire({
+                                title: 'Bridge no detectado',
+                                text: 'No se pudo conectar al Bridge. Imprimiendo vía normal...',
+                                icon: 'warning',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => { window.print(); }, 500);
                         }
                     } else if (result.isDenied) {
                         // Vía Windows directo

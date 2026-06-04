@@ -3971,25 +3971,82 @@
             }
 
             try {
-                // Crear elemento de impresión
+                // Preparar los datos visuales
                 crearElementoImpresion();
+                
+                // Ocultar el modal de estado para evitar que bloquee la pantalla o el Swal
+                const modalImpresion = document.getElementById('modalEstadoImpresion');
+                if (modalImpresion) modalImpresion.style.display = 'none';
+                
+                const hasBridge = localStorage.getItem('autoPrintComanda') === 'true';
 
-                // Esperar un momento para que se renderice
-                await new Promise(resolve => setTimeout(resolve, 300));
+                if (hasBridge) {
+                    const result = await Swal.fire({
+                        title: 'Imprimir Factura',
+                        text: 'Tienes el Print Bridge activado. ¿Cómo deseas imprimir?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonText: '🔌 Vía Print Bridge',
+                        denyButtonText: '🪟 Vía Windows',
+                        cancelButtonText: 'Cancelar'
+                    });
 
-                // Imprimir
-                window.print();
-
-                // Remover después de imprimir o cancelar
-                window.onafterprint = () => {
-                    removerElementoImpresion();
-                };
-
-                console.log('✅ Diálogo de impresión abierto');
+                    if (result.isConfirmed) {
+                        // Vía Bridge
+                        if (modalImpresion) {
+                            modalImpresion.style.display = 'flex';
+                            document.getElementById('impresionTitulo').textContent = 'Enviando a Bridge...';
+                        }
+                        const datosFactura = {
+                            _id: pedidoParaImprimir._id,
+                            mesa: pedidoParaImprimir.mesa,
+                            items: pedidoParaImprimir.items,
+                            total: pedidoParaImprimir.total,
+                            restauranteNombre: currentUser.nombreRestaurante || "RESTAURANTE"
+                        };
+                        try {
+                            const response = await fetch('http://127.0.0.1:3001/print-factura', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(datosFactura)
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                console.log('✅ Impresión enviada al Bridge exitosamente');
+                            } else {
+                                console.warn('❌ Error del Bridge, usando fallback a Windows:', data.message);
+                                Swal.fire({
+                                    title: 'Bridge sin responder',
+                                    text: 'Hubo un error con el Bridge. Imprimiendo vía normal...',
+                                    icon: 'warning',
+                                    timer: 2500,
+                                    showConfirmButton: false
+                                });
+                                setTimeout(() => { window.print(); }, 500);
+                            }
+                        } catch (err) {
+                            console.warn('❌ Error de conexión al Bridge, usando fallback a Windows:', err);
+                            Swal.fire({
+                                title: 'Bridge no detectado',
+                                text: 'No se pudo conectar al Bridge. Imprimiendo vía normal...',
+                                icon: 'warning',
+                                timer: 2500,
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => { window.print(); }, 500);
+                        }
+                    } else if (result.isDenied) {
+                        // Vía Windows directo
+                        window.print();
+                    }
+                } else {
+                    // No tiene bridge activo, saltar directo a Windows
+                    window.print();
+                }
 
             } catch (error) {
                 console.error('Error al imprimir:', error);
-                removerElementoImpresion();
                 throw error;
             }
         }
