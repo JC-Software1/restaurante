@@ -2805,13 +2805,10 @@
             modal.style.display = 'none';
 
             if (imprimir && pedidoParaImprimir) {
-                mostrarEstadoImpresion('imprimiendo');
                 try {
                     await imprimirFacturaPOS();
-                    mostrarEstadoImpresion('exito');
                 } catch (error) {
                     console.error('Error al imprimir:', error);
-                    mostrarEstadoImpresion('error');
                 }
             }
 

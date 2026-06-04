@@ -3861,15 +3861,10 @@
             modal.style.display = 'none';
 
             if (imprimir && pedidoParaImprimir) {
-                // Mostrar modal de estado de impresión
-                mostrarEstadoImpresion('imprimiendo');
-
                 try {
                     await imprimirFacturaPOS();
-                    mostrarEstadoImpresion('exito');
                 } catch (error) {
                     console.error('Error al imprimir:', error);
-                    mostrarEstadoImpresion('error');
                 }
             }
 
