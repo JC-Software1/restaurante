@@ -231,4 +231,43 @@ router.post('/seed', async (req, res) => {
   }
 });
 
+// PUT /api/mesas/:id - Actualizar nombre de una mesa
+router.put('/:id', async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre || !nombre.trim()) {
+      return res.status(400).json({ success: false, message: 'El nombre es obligatorio' });
+    }
+
+    const mesa = await Mesa.findOneAndUpdate(
+      { _id: req.params.id, userId: { $in: req.userIdsRestaurante } },
+      { nombre: nombre.trim() },
+      { new: true }
+    );
+
+    if (!mesa) {
+      return res.status(404).json({ success: false, message: 'Mesa no encontrada' });
+    }
+
+    res.json({ success: true, data: mesa, message: 'Mesa actualizada exitosamente' });
+  } catch (error) {
+    console.error('❌ Error al actualizar mesa:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: 'Ya existe una mesa con ese nombre' });
+    }
+    res.status(500).json({ success: false, message: 'Error al actualizar la mesa', error: error.message });
+  }
+});
+
+// DELETE /api/mesas/all/delete - Eliminar TODAS las mesas
+router.delete('/all/delete', async (req, res) => {
+  try {
+    await Mesa.deleteMany({ userId: { $in: req.userIdsRestaurante } });
+    res.json({ success: true, message: 'Todas las mesas han sido eliminadas' });
+  } catch (error) {
+    console.error('❌ Error al eliminar todas las mesas:', error);
+    res.status(500).json({ success: false, message: 'Error al eliminar las mesas', error: error.message });
+  }
+});
+
 module.exports = router;

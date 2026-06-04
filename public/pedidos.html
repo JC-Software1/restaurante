@@ -5576,10 +5576,14 @@
             </div>
 
             <!-- Lista de mesas -->
-            <div style="margin-bottom: 1rem;">
+            <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
                 <label
                     style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px;">Mesas
                     registradas</label>
+                <button onclick="eliminarTodasLasMesas()" 
+                    style="padding: 6px 12px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                    🗑️ Eliminar todas
+                </button>
             </div>
             <div id="listaMesasGestion" style="max-height: 300px; overflow-y: auto;">
                 <p style="text-align: center; color: #a0aec0; padding: 2rem;">Cargando mesas...</p>
@@ -6494,7 +6498,10 @@
                             </div>
                             <span style="font-weight: 600; color: #2d3748; font-size: 14px;">${mesa.nombre}</span>
                         </div>
-                        <button class="btn-delete-mesa" onclick="eliminarMesa('${mesa._id}')" title="Eliminar">🗑️</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn-edit-mesa" onclick="editarNombreMesa('${mesa._id}', '${mesa.nombre}')" title="Editar" style="background: none; border: none; font-size: 16px; cursor: pointer;">✏️</button>
+                            <button class="btn-delete-mesa" onclick="eliminarMesa('${mesa._id}')" title="Eliminar">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
                 } else {
@@ -6585,6 +6592,77 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
+            }
+        }
+
+        async function editarNombreMesa(mesaId, nombreActual) {
+            const { value: nuevoNombre } = await Swal.fire({
+                title: 'Editar nombre de la mesa',
+                input: 'text',
+                inputValue: nombreActual,
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) {
+                        return 'El nombre no puede estar vacío';
+                    }
+                }
+            });
+
+            if (nuevoNombre && nuevoNombre.trim() !== nombreActual) {
+                const token = localStorage.getItem('token');
+                try {
+                    const response = await fetch(`${API_URL}/mesas/${mesaId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ nombre: nuevoNombre.trim() })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        mostrarNotificacionExito('✅ Nombre actualizado');
+                        cargarListaMesasGestion();
+                    } else {
+                        Swal.fire({ icon: 'error', text: data.message, timer: 2000, showConfirmButton: false });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
+
+        async function eliminarTodasLasMesas() {
+            const confirmacion = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Se eliminarán TODAS las mesas registradas",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#718096',
+                confirmButtonText: 'Sí, eliminar todas',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (confirmacion.isConfirmed) {
+                const token = localStorage.getItem('token');
+                try {
+                    const response = await fetch(`${API_URL}/mesas/all/delete`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        mostrarNotificacionExito('✅ Todas las mesas eliminadas');
+                        cargarListaMesasGestion();
+                    } else {
+                        Swal.fire({ icon: 'error', text: data.message, timer: 2000, showConfirmButton: false });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
             }
         }
 
