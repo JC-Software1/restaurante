@@ -212,10 +212,8 @@
         }
 
         function removerElementoImpresion() {
-            const printContainer = document.getElementById('print-container');
-            if (printContainer) {
-                printContainer.remove();
-            }
+            const printContainers = document.querySelectorAll('#print-container');
+            printContainers.forEach(container => container.remove());
         }
         
         window.addEventListener('afterprint', () => {

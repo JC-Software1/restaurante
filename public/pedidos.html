@@ -1323,11 +1323,12 @@
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 15px;
+                table-layout: fixed;
             }
 
             .print-table th {
                 background: #f0f0f0;
-                padding: 8px 4px;
+                padding: 4px 2px;
                 text-align: left;
                 font-size: 11px;
                 font-weight: bold;
@@ -1336,10 +1337,16 @@
             }
 
             .print-table td {
-                padding: 8px 4px;
+                padding: 4px 2px;
                 font-size: 11px;
                 border-bottom: 1px dashed #ddd;
+                word-wrap: break-word;
             }
+
+            .print-table th:nth-child(1), .print-table td:nth-child(1) { width: 45%; }
+            .print-table th:nth-child(2), .print-table td:nth-child(2) { width: 15%; text-align: center; }
+            .print-table th:nth-child(3), .print-table td:nth-child(3) { width: 20%; text-align: right; }
+            .print-table th:nth-child(4), .print-table td:nth-child(4) { width: 20%; text-align: right; }
 
             .print-total-section {
                 margin-top: 15px;
@@ -4240,10 +4247,8 @@
         }
 
         function removerElementoImpresion() {
-            const printContainer = document.getElementById('print-container');
-            if (printContainer) {
-                printContainer.remove();
-            }
+            const printContainers = document.querySelectorAll('#print-container');
+            printContainers.forEach(container => container.remove());
         }
 
         function generarComandosESCPOS() {
