@@ -122,14 +122,8 @@
             const cliCcNit = typeof clienteCcNitSeleccionado !== 'undefined' ? clienteCcNitSeleccionado : '';
 
             const clienteHTML = pedidoParaImprimir.clienteNombre || cliNom ? `
-                <div class="print-info-row">
-                    <span class="print-info-label">Cliente:</span>
-                    <span>${(pedidoParaImprimir.clienteNombre || cliNom).toUpperCase()} 222222222222</span>
-                </div>
-                <div class="print-info-row">
-                    <span class="print-info-label">CC/NIT:</span>
-                    <span>${pedidoParaImprimir.clienteCcNit || cliCcNit || '---'}</span>
-                </div>
+                <tr><td style="font-weight:bold;padding:2px 0;">Cliente:</td><td style="text-align:right;padding:2px 0;">${(pedidoParaImprimir.clienteNombre || cliNom).toUpperCase()}</td></tr>
+                <tr><td style="font-weight:bold;padding:2px 0;">CC/NIT:</td><td style="text-align:right;padding:2px 0;">${pedidoParaImprimir.clienteCcNit || cliCcNit || '---'}</td></tr>
             ` : '';
 
             const productosHTML = pedidoParaImprimir.items.map(item => {
@@ -139,11 +133,12 @@
                 const subtotal = cantidad * precio;
 
                 return `
-            <tr>
-                <td>${nombre}</td>
-                <td style="text-align: center;">${cantidad}</td>
-                <td style="text-align: right;">$${precio.toLocaleString('es-CO')}</td>
-                <td style="text-align: right; font-weight: bold;">$${subtotal.toLocaleString('es-CO')}</td>
+            <tr style="border-bottom:1px dashed #ccc;">
+                <td colspan="2" style="font-weight:bold;padding:6px 0 2px 0;font-size:12px;">${nombre}</td>
+            </tr>
+            <tr style="border-bottom:1px dashed #ddd;">
+                <td style="padding:0 0 6px 0;font-size:11px;">Cant: ${cantidad} x $${precio.toLocaleString('es-CO')}</td>
+                <td style="text-align:right;padding:0 0 6px 0;font-weight:bold;font-size:11px;">$${subtotal.toLocaleString('es-CO')}</td>
             </tr>
         `;
             }).join('');
@@ -151,61 +146,45 @@
             const printContainer = document.createElement('div');
             printContainer.id = 'print-container';
             printContainer.innerHTML = `
-        <div class="print-header">
-            <h1>${nombreRestaurante}</h1>
-            ${nitRestaurante ? `<div style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">${nitRestaurante}</div>` : ''}
-            <div class="print-subtitle">FACTURA DE VENTA</div>
-        </div>
-        
-        <div class="print-info-section">
-            <div class="print-info-row">
-                <span class="print-info-label">Fecha:</span>
-                <span>${fechaStr}</span>
-            </div>
-            <div class="print-info-row">
-                <span class="print-info-label">Hora:</span>
-                <span>${horaStr}</span>
-            </div>
-            ${clienteHTML}
-            <div class="print-info-row">
-                <span class="print-info-label">Mesa:</span>
-                <span>${pedidoParaImprimir.mesa}</span>
-            </div>
-            <div class="print-info-row">
-                <span class="print-info-label">Pedido:</span>
-                <span>#${pedidoParaImprimir._id.slice(-6).toUpperCase()}</span>
-            </div>
-        </div>
-        
-        <div class="print-metodo-pago">
-            💳 ${metodoPagoTexto}
-        </div>
-        
-        <table class="print-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th style="text-align: center;">Cant.</th>
-                    <th style="text-align: right;">Precio</th>
-                    <th style="text-align: right;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${productosHTML}
-            </tbody>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;font-size:12px;">
+            <tr>
+                <td colspan="2" style="text-align:center;padding-bottom:10px;border-bottom:2px solid #000;">
+                    <div style="font-size:18px;font-weight:bold;margin-bottom:3px;">${nombreRestaurante}</div>
+                    ${nitRestaurante ? `<div style="font-size:12px;font-weight:bold;margin-bottom:3px;">${nitRestaurante}</div>` : ''}
+                    <div style="font-size:10px;color:#666;">FACTURA DE VENTA</div>
+                </td>
+            </tr>
         </table>
         
-        <div class="print-total-section">
-            <div class="print-total-row">
-                <span>TOTAL:</span>
-                <span>$${pedidoParaImprimir.total.toLocaleString('es-CO')}</span>
-            </div>
-        </div>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;font-size:11px;margin-top:10px;padding-bottom:10px;border-bottom:1px dashed #000;">
+            <tr><td style="font-weight:bold;padding:2px 0;">Fecha:</td><td style="text-align:right;padding:2px 0;">${fechaStr}</td></tr>
+            <tr><td style="font-weight:bold;padding:2px 0;">Hora:</td><td style="text-align:right;padding:2px 0;">${horaStr}</td></tr>
+            ${clienteHTML}
+            <tr><td style="font-weight:bold;padding:2px 0;">Mesa:</td><td style="text-align:right;padding:2px 0;">${pedidoParaImprimir.mesa}</td></tr>
+            <tr><td style="font-weight:bold;padding:2px 0;">Pedido:</td><td style="text-align:right;padding:2px 0;">#${pedidoParaImprimir._id.slice(-6).toUpperCase()}</td></tr>
+        </table>
         
-        <div class="print-footer">
-            <p><strong>¡Gracias por su compra!</strong></p>
-            <p>Vuelva pronto</p>
-        </div>
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;margin:8px 0;">
+            <tr>
+                <td style="text-align:center;font-size:12px;font-weight:bold;padding:6px 0;background:#f0f0f0;">💳 ${metodoPagoTexto}</td>
+            </tr>
+        </table>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;font-size:11px;border-top:1px solid #000;margin-bottom:10px;">
+            ${productosHTML}
+        </table>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;border-top:2px solid #000;margin-top:5px;">
+            <tr>
+                <td style="font-size:16px;font-weight:bold;padding:10px 0;">TOTAL:</td>
+                <td style="text-align:right;font-size:16px;font-weight:bold;padding:10px 0;">$${pedidoParaImprimir.total.toLocaleString('es-CO')}</td>
+            </tr>
+        </table>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-family:'Courier New',monospace;border-top:1px dashed #000;margin-top:10px;">
+            <tr><td style="text-align:center;padding:10px 0;font-size:11px;"><strong>¡Gracias por su compra!</strong></td></tr>
+            <tr><td style="text-align:center;padding:0 0 10px 0;font-size:11px;">Vuelva pronto</td></tr>
+        </table>
     `;
 
             document.body.appendChild(printContainer);

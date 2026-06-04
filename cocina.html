@@ -1176,128 +1176,33 @@
 
             #print-container {
                 display: block !important;
-            }
-
-            /* Configuración de página */
-            @page {
-                size: 80mm auto;
-                margin: 0;
-            }
-
-            body {
+                width: 100%;
                 margin: 0;
                 padding: 0;
+                box-sizing: border-box;
                 font-family: 'Courier New', monospace;
                 font-size: 12px;
                 line-height: 1.4;
+                color: #000;
             }
 
-            #print-container {
-                width: 100%;
-                max-width: 80mm;
-                padding: 5mm;
-                box-sizing: border-box;
-                margin: 0 auto;
+            /* Forzar que las tablas dentro del recibo usen todo el ancho */
+            #print-container table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                table-layout: fixed !important;
             }
 
-            .print-header {
-                text-align: center;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 2px solid #000;
-            }
-
-            .print-header h1 {
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-
-            .print-subtitle {
-                font-size: 10px;
-                color: #666;
-            }
-
-            .print-info-section {
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 1px dashed #000;
-            }
-
-            .print-info-row {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 3px;
-                font-size: 11px;
-            }
-
-            .print-info-label {
-                font-weight: bold;
-            }
-
-            .print-metodo-pago {
-                text-align: center;
-                font-size: 12px;
-                font-weight: bold;
-                padding: 8px;
-                background: #f0f0f0;
-                border-radius: 5px;
-                margin: 10px 0;
-            }
-
-            .print-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 15px;
-                table-layout: fixed;
-            }
-
-            .print-table th {
-                background: #f0f0f0;
-                padding: 4px 2px;
-                text-align: left;
-                font-size: 11px;
-                font-weight: bold;
-                border-top: 1px solid #000;
-                border-bottom: 1px solid #000;
-            }
-
-            .print-table td {
-                padding: 4px 2px;
-                font-size: 11px;
-                border-bottom: 1px dashed #ddd;
+            #print-container td {
+                vertical-align: top;
                 word-wrap: break-word;
+                overflow-wrap: break-word;
             }
 
-            .print-table th:nth-child(1), .print-table td:nth-child(1) { width: 45%; }
-            .print-table th:nth-child(2), .print-table td:nth-child(2) { width: 15%; text-align: center; }
-            .print-table th:nth-child(3), .print-table td:nth-child(3) { width: 20%; text-align: right; }
-            .print-table th:nth-child(4), .print-table td:nth-child(4) { width: 20%; text-align: right; }
-
-            .print-total-section {
-                margin-top: 15px;
-                padding-top: 10px;
-                border-top: 2px solid #000;
-            }
-
-            .print-total-row {
-                display: flex;
-                justify-content: space-between;
-                font-size: 16px;
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-
-            .print-footer {
-                text-align: center;
-                margin-top: 20px;
-                padding-top: 10px;
-                border-top: 1px dashed #000;
-                font-size: 11px;
-            }
-
-            .print-footer p {
-                margin: 5px 0;
+            /* Asegurar que no haya márgenes de página innecesarios */
+            @page {
+                margin: 2mm;
+                size: 58mm auto;
             }
         }
     </style>
