@@ -516,6 +516,11 @@
             -webkit-user-select: none;
         }
 
+        .order-card.unified-order {
+            border-left: 5px solid #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, white 100%);
+        }
+
         .order-card:hover {
             border-color: #cbd5e0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -2365,7 +2370,7 @@
                 });
 
                 return `
-            <div class="order-card ${isMandao ? 'mandao-order' : ''}" id="order-${order._id}" data-id="${order._id}" data-metodo="${order.metodoPago || ''}" data-recibo="${order.reciboDia || false}">
+            <div class="order-card ${isMandao ? 'mandao-order' : ''} ${order._isUnified ? 'unified-order' : ''}" id="order-${order._id}" data-id="${order._id}" data-metodo="${order.metodoPago || ''}" data-recibo="${order.reciboDia || false}" ${order._subOrderIds ? `data-sub-ids='${JSON.stringify(order._subOrderIds)}'` : ''} ${order._isUnified ? 'data-unified="true"' : ''}>
                 <div class="mesero-badge">👤 ${order.mesero || 'Mesero'}</div>
                 <div class="undo-indicator">↩️ DESHACER</div>
                 <div class="payment-method-indicator" id="payment-indicator-${order._id}">💳 CAMBIAR</div>
@@ -2374,6 +2379,7 @@
                         <div style="display: flex; align-items: center; gap: 8px;">
                             ${isMandao ? '<span class="source-badge source-mandao"><span class="mandao-icon">🚲</span> MANDAO</span>' : ''}
                             <h3>${String(order.mesa).toLowerCase().trim().startsWith('mesa') ? order.mesa : 'Mesa ' + order.mesa}</h3>
+                            ${order._isUnified ? `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: linear-gradient(135deg, #667eea, #764ba2); color: white; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">🏪 ${order._subOrderCount} Locales</span>` : ''}
                         </div>
                         <div class="order-meta">
                             <div class="meta-row">

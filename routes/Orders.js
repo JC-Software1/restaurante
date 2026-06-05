@@ -752,7 +752,40 @@ router.get('/:id', protect, async (req, res) => {
       });
     }
 
-    const orderObj = order.toObject();
+    let orderObj = order.toObject();
+
+    // ✅ MULTI-LOCAL HUB: Si es hub mesero y hay grupo, unificar datos
+    if (req.isHubMesero && order.hubOrderGroup) {
+      const siblingOrders = await Order.find({
+        hubOrderGroup: order.hubOrderGroup,
+        _id: { $ne: order._id }
+      })
+        .populate('items.producto', 'nombre categoria precio')
+        .populate('userId', 'nombre email');
+
+      const allOrders = [orderObj, ...siblingOrders.map(o => o.toObject())];
+
+      // Usar la primera orden como base y fusionar items + total
+      orderObj = { ...allOrders[0] };
+      orderObj.items = allOrders.flatMap(o => o.items);
+      orderObj.total = allOrders.reduce((sum, o) => sum + o.total, 0);
+      orderObj.totalPagado = allOrders.reduce((sum, o) => sum + (o.totalPagado || 0), 0);
+      orderObj._subOrderIds = allOrders.map(o => o._id);
+      orderObj._isUnified = true;
+      orderObj._subOrderCount = allOrders.length;
+
+      const estadoPrioridad = { pendiente: 0, preparando: 1, listo: 2, entregado: 3, cancelado: 4 };
+      orderObj.estado = allOrders.reduce((minEstado, o) => {
+        return (estadoPrioridad[o.estado] || 0) < (estadoPrioridad[minEstado] || 0) ? o.estado : minEstado;
+      }, allOrders[0].estado);
+
+      const ordenConPago = allOrders.find(o => o.metodoPago);
+      if (ordenConPago) orderObj.metodoPago = ordenConPago.metodoPago;
+
+      console.log(`🔗 Hub mesero: GET /:id unificó ${allOrders.length} órdenes del grupo ${order.hubOrderGroup}`);
+    }
+
+    // Normalizar items (productoInfo)
     orderObj.items = orderObj.items.map(item => {
       if (item.producto) {
         return {
@@ -768,7 +801,7 @@ router.get('/:id', protect, async (req, res) => {
           ...item,
           productoInfo: {
             nombre: item.nombreProducto || 'Producto eliminado',
-            categoria: item.categoriaProducto || 'Sin categorÃ­a',
+            categoria: item.categoriaProducto || 'Sin categoría',
             precio: item.precio
           }
         };
@@ -1165,85 +1198,97 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
       });
     }
 
-    const saldoRestante = order.total - (order.totalPagado || 0);
-
-    if (monto > saldoRestante + 1) {
-      return res.status(400).json({
-        success: false,
-        message: `El monto ($${monto.toLocaleString('es-CO')}) excede el saldo restante ($${saldoRestante.toLocaleString('es-CO')})`
-      });
-    }
-
-    // Registrar el pago
-    if (!order.pagos) order.pagos = [];
-    order.pagos.push({
-      metodo,
-      monto: Math.min(monto, saldoRestante),
-      fecha: new Date()
-    });
-
-    order.totalPagado = (order.totalPagado || 0) + Math.min(monto, saldoRestante);
-
-    const estaPagadoCompleto = order.totalPagado >= order.total;
-
-    if (estaPagadoCompleto) {
-      const metodos = [...new Set(order.pagos.map(p => p.metodo))];
-      if (metodos.length === 1) {
-        order.metodoPago = metodos[0];
-      } else {
-        order.metodoPago = 'mixto';
-      }
-
-      order.estado = 'entregado';
-
-      order.items.forEach(item => {
-        item.estadosIndividuales = [{
-          cantidad: item.cantidad,
-          estado: 'entregado'
-        }];
-      });
-
-      if (clienteNombre) order.clienteNombre = clienteNombre;
-      if (clienteCcNit) order.clienteCcNit = clienteCcNit;
-    }
-
-    // MULTI-LOCAL HUB: Propagar si es hub mesero
-    if (req.isHubMesero && order.hubOrderGroup && estaPagadoCompleto) {
-      const groupOrders = await Order.find({
+    // ===== MULTI-LOCAL HUB: Reunir todas las sub-órdenes del grupo =====
+    let ordersToPay = [order];
+    if (req.isHubMesero && order.hubOrderGroup) {
+      const siblingOrders = await Order.find({
         hubOrderGroup: order.hubOrderGroup,
         _id: { $ne: order._id }
       });
+      ordersToPay = [order, ...siblingOrders];
+      console.log(`🔗 Hub mesero: Pagando grupo de ${ordersToPay.length} órdenes (grupo: ${order.hubOrderGroup})`);
+    }
 
-      for (const siblingOrder of groupOrders) {
-        siblingOrder.estado = 'entregado';
-        siblingOrder.metodoPago = order.metodoPago;
-        siblingOrder.pagos = order.pagos;
-        siblingOrder.totalPagado = siblingOrder.total;
-        siblingOrder.items.forEach(item => {
+    // Calcular total y pagado combinado de todas las sub-órdenes
+    const combinedTotal = ordersToPay.reduce((sum, o) => sum + o.total, 0);
+    const combinedPagado = ordersToPay.reduce((sum, o) => sum + (o.totalPagado || 0), 0);
+    const saldoRestanteCombinado = combinedTotal - combinedPagado;
+
+    // Validar el monto contra el total combinado
+    if (monto > saldoRestanteCombinado + 1) {
+      return res.status(400).json({
+        success: false,
+        message: `El monto ($${monto.toLocaleString('es-CO')}) excede el saldo restante combinado ($${saldoRestanteCombinado.toLocaleString('es-CO')})`
+      });
+    }
+
+    // Distribuir el pago entre todas las sub-órdenes
+    let montoRestante = monto;
+    let algunaCompleta = false;
+    let todasCompletas = true;
+
+    for (const currentOrder of ordersToPay) {
+      const saldoOrden = currentOrder.total - (currentOrder.totalPagado || 0);
+      const montoParaEstaOrden = Math.min(montoRestante, saldoOrden);
+
+      if (montoParaEstaOrden <= 0) continue;
+
+      // Registrar el pago en esta sub-orden
+      if (!currentOrder.pagos) currentOrder.pagos = [];
+      currentOrder.pagos.push({
+        metodo,
+        monto: montoParaEstaOrden,
+        fecha: new Date()
+      });
+
+      currentOrder.totalPagado = (currentOrder.totalPagado || 0) + montoParaEstaOrden;
+      montoRestante -= montoParaEstaOrden;
+
+      const estaCompleta = currentOrder.totalPagado >= currentOrder.total;
+
+      if (estaCompleta) {
+        algunaCompleta = true;
+        currentOrder.estado = 'entregado';
+
+        currentOrder.items.forEach(item => {
           item.estadosIndividuales = [{
             cantidad: item.cantidad,
             estado: 'entregado'
           }];
         });
-        if (clienteNombre) siblingOrder.clienteNombre = clienteNombre;
-        if (clienteCcNit) siblingOrder.clienteCcNit = clienteCcNit;
-        await siblingOrder.save();
+
+        if (clienteNombre) currentOrder.clienteNombre = clienteNombre;
+        if (clienteCcNit) currentOrder.clienteCcNit = clienteCcNit;
+      } else {
+        todasCompletas = false;
       }
+
+      // Unificar método de pago si todas las órdenes usan el mismo
+      const metodos = [...new Set(currentOrder.pagos.map(p => p.metodo))];
+      currentOrder.metodoPago = metodos.length === 1 ? metodos[0] : 'mixto';
+
+      await currentOrder.save();
     }
 
-    await order.save();
+    // Si quedó monto sin asignar (pago mayor al necesario), ignorar el sobrante
+    if (montoRestante > 1) {
+      console.log(`⚠️ Sobrante de $${montoRestante} sin asignar en pago de grupo hub`);
+    }
+
     await order.populate('items.producto', 'nombre categoria precio');
 
-    console.log(`✅ Pago registrado: $${monto} (${metodo}) en pedido ${order._id}. Total pagado: $${order.totalPagado}/${order.total}`);
+    const totalPagadoFinal = ordersToPay.reduce((sum, o) => sum + (o.totalPagado || 0), 0);
+    console.log(`✅ Pago de grupo hub: $${monto} (${metodo}) en ${ordersToPay.length} órdenes. Total pagado combinado: $${totalPagadoFinal}/${combinedTotal}`);
 
     res.json({
       success: true,
-      message: estaPagadoCompleto
-        ? 'Pedido pagado completamente'
-        : `Pago parcial registrado. Saldo restante: $${(order.total - order.totalPagado).toLocaleString('es-CO')}`,
+      message: todasCompletas
+        ? 'Pedido pagado completamente en todos los locales'
+        : `Pago registrado en ${ordersToPay.filter(o => o.totalPagado >= o.total).length}/${ordersToPay.length} locales`,
       data: order,
-      pagadoCompleto: estaPagadoCompleto,
-      saldoRestante: order.total - order.totalPagado
+      pagadoCompleto: todasCompletas,
+      saldoRestante: combinedTotal - totalPagadoFinal,
+      ordenesProcesadas: ordersToPay.length
     });
   } catch (error) {
     console.error('Error al registrar pago parcial:', error);
