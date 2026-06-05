@@ -1156,6 +1156,13 @@
 
         /* ==================== ESTILOS DE IMPRESIÓN (COMANDA) ==================== */
         @media print {
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+            }
+
             body * {
                 visibility: hidden;
             }
@@ -1170,11 +1177,11 @@
                 left: 0;
                 top: 0;
                 width: 100%;
-                max-width: 80mm;
+                padding: 5mm;
                 color: #000;
                 background: #fff;
-                padding: 10px;
                 font-family: 'Courier New', Courier, monospace;
+                box-sizing: border-box;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 color-adjust: exact !important;
@@ -1235,8 +1242,7 @@
             }
 
             @page {
-                margin: 3mm;
-                size: auto;
+                margin: 0;
             }
         }
 

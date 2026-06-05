@@ -1242,6 +1242,13 @@
         /* Estilos para cuando se imprime */
         @media print {
 
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+            }
+
             /* Ocultar todo excepto el contenedor de impresión */
             body>*:not(#print-container) {
                 display: none !important;
@@ -1250,17 +1257,11 @@
             #print-container {
                 display: block !important;
                 width: 100%;
-                max-width: 80mm;
-                margin: 0 auto;
-                padding: 0;
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
+                padding: 8mm 5mm;
                 box-sizing: border-box;
                 font-family: 'Courier New', monospace;
                 font-size: 12px;
-                line-height: 1.4;
+                line-height: 1.8;
                 color: #000;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -1271,13 +1272,14 @@
             #print-container table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                table-layout: auto !important;
+                margin-bottom: 6px !important;
             }
 
             #print-container td {
                 vertical-align: top;
                 word-wrap: break-word;
                 overflow-wrap: break-word;
+                padding: 3px 2px;
             }
 
             #print-container [style*="background"] {
@@ -1287,8 +1289,7 @@
             }
 
             @page {
-                margin: 3mm;
-                size: auto;
+                margin: 0;
             }
         }
     </style>
