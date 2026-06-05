@@ -573,6 +573,7 @@ router.get('/', protect, checkPermission('verPedidos'), async (req, res) => {
         const merged = { ...group[0] };
         merged.items = group.flatMap(o => o.items);
         merged.total = group.reduce((sum, o) => sum + o.total, 0);
+        merged.totalPagado = group.reduce((sum, o) => sum + (o.totalPagado || 0), 0);
         merged._subOrderIds = group.map(o => o._id);
         merged._isUnified = true;
         merged._subOrderCount = group.length;
@@ -1202,12 +1203,18 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
     let ordersToPay = [order];
     let esHub = false;
 
+    console.log(`🔍 PAGO-PARCIAL DEBUG: isHubMesero=${req.isHubMesero}, hubOrderGroup=${order.hubOrderGroup}, orderId=${order._id}, userId=${req.user?._id}, rol=${req.user?.rol}`);
+
     if (req.isHubMesero && order.hubOrderGroup) {
       esHub = true;
+      console.log(`🔍 Buscando hermanas con hubOrderGroup: ${order.hubOrderGroup} (excluyendo ${order._id})`);
       const siblingOrders = await Order.find({
         hubOrderGroup: order.hubOrderGroup,
         _id: { $ne: order._id }
       });
+
+      console.log(`🔍 Hermanas encontradas: ${siblingOrders.length}`);
+      siblingOrders.forEach(s => console.log(`   - Hermana: ${s._id}, total: $${s.total}, estado: ${s.estado}`));
 
       if (siblingOrders.length > 0) {
         ordersToPay = [order, ...siblingOrders];
@@ -1216,6 +1223,8 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
       } else {
         console.log(`🔗 Hub mesero: orden ${order._id} tiene hubOrderGroup pero no encontró hermanas`);
       }
+    } else {
+      console.log(`⚠️ NO es hub mesero O no tiene hubOrderGroup. isHubMesero=${req.isHubMesero}, hubOrderGroup=${order.hubOrderGroup}`);
     }
 
     // Calcular total y pagado combinado
