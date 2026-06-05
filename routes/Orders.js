@@ -1200,19 +1200,30 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
 
     // ===== MULTI-LOCAL HUB: Reunir todas las sub-órdenes del grupo =====
     let ordersToPay = [order];
+    let esHub = false;
+
     if (req.isHubMesero && order.hubOrderGroup) {
+      esHub = true;
       const siblingOrders = await Order.find({
         hubOrderGroup: order.hubOrderGroup,
         _id: { $ne: order._id }
       });
-      ordersToPay = [order, ...siblingOrders];
-      console.log(`🔗 Hub mesero: Pagando grupo de ${ordersToPay.length} órdenes (grupo: ${order.hubOrderGroup})`);
+
+      if (siblingOrders.length > 0) {
+        ordersToPay = [order, ...siblingOrders];
+        console.log(`🔗 Hub mesero: Pagando grupo de ${ordersToPay.length} órdenes (grupo: ${order.hubOrderGroup})`);
+        console.log(`🔗 Órdenes: ${ordersToPay.map(o => `${o._id} (total: $${o.total}, pagado: $${o.totalPagado || 0})`).join(' | ')}`);
+      } else {
+        console.log(`🔗 Hub mesero: orden ${order._id} tiene hubOrderGroup pero no encontró hermanas`);
+      }
     }
 
-    // Calcular total y pagado combinado de todas las sub-órdenes
+    // Calcular total y pagado combinado
     const combinedTotal = ordersToPay.reduce((sum, o) => sum + o.total, 0);
     const combinedPagado = ordersToPay.reduce((sum, o) => sum + (o.totalPagado || 0), 0);
     const saldoRestanteCombinado = combinedTotal - combinedPagado;
+
+    console.log(`💰 Pago: monto=$${monto}, totalCombinado=$${combinedTotal}, yaPagado=$${combinedPagado}, saldo=$${saldoRestanteCombinado}`);
 
     // Validar el monto contra el total combinado
     if (monto > saldoRestanteCombinado + 1) {
@@ -1224,14 +1235,24 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
 
     // Distribuir el pago entre todas las sub-órdenes
     let montoRestante = monto;
-    let algunaCompleta = false;
     let todasCompletas = true;
+    const ordenesPagadas = [];
 
     for (const currentOrder of ordersToPay) {
       const saldoOrden = currentOrder.total - (currentOrder.totalPagado || 0);
       const montoParaEstaOrden = Math.min(montoRestante, saldoOrden);
 
-      if (montoParaEstaOrden <= 0) continue;
+      console.log(`  ➡️ Procesando orden ${currentOrder._id}: total=$${currentOrder.total}, saldo=$${saldoOrden}, montoAsignar=$${montoParaEstaOrden}`);
+
+      if (montoParaEstaOrden <= 0) {
+        if (currentOrder.totalPagado >= currentOrder.total) {
+          console.log(`  ⏭️ Orden ${currentOrder._id} ya está pagada completamente`);
+        } else {
+          console.log(`  ⏭️ Orden ${currentOrder._id} no recibe pago (monto insuficiente)`);
+          todasCompletas = false;
+        }
+        continue;
+      }
 
       // Registrar el pago en esta sub-orden
       if (!currentOrder.pagos) currentOrder.pagos = [];
@@ -1247,7 +1268,6 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
       const estaCompleta = currentOrder.totalPagado >= currentOrder.total;
 
       if (estaCompleta) {
-        algunaCompleta = true;
         currentOrder.estado = 'entregado';
 
         currentOrder.items.forEach(item => {
@@ -1263,14 +1283,22 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
         todasCompletas = false;
       }
 
-      // Unificar método de pago si todas las órdenes usan el mismo
+      // Unificar método de pago
       const metodos = [...new Set(currentOrder.pagos.map(p => p.metodo))];
       currentOrder.metodoPago = metodos.length === 1 ? metodos[0] : 'mixto';
 
       await currentOrder.save();
+      ordenesPagadas.push({
+        _id: currentOrder._id,
+        total: currentOrder.total,
+        pagado: currentOrder.totalPagado,
+        estado: currentOrder.estado
+      });
+
+      console.log(`  ✅ Orden ${currentOrder._id} guardada: pagado=$${currentOrder.totalPagado}/${currentOrder.total}, estado=${currentOrder.estado}`);
     }
 
-    // Si quedó monto sin asignar (pago mayor al necesario), ignorar el sobrante
+    // Si quedó monto sin asignar
     if (montoRestante > 1) {
       console.log(`⚠️ Sobrante de $${montoRestante} sin asignar en pago de grupo hub`);
     }
@@ -1278,17 +1306,18 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
     await order.populate('items.producto', 'nombre categoria precio');
 
     const totalPagadoFinal = ordersToPay.reduce((sum, o) => sum + (o.totalPagado || 0), 0);
-    console.log(`✅ Pago de grupo hub: $${monto} (${metodo}) en ${ordersToPay.length} órdenes. Total pagado combinado: $${totalPagadoFinal}/${combinedTotal}`);
+    console.log(`✅ Pago finalizado: $${monto} (${metodo}) en ${ordersToPay.length} órdenes. Total combinado: $${totalPagadoFinal}/${combinedTotal}`);
 
     res.json({
       success: true,
       message: todasCompletas
         ? 'Pedido pagado completamente en todos los locales'
-        : `Pago registrado en ${ordersToPay.filter(o => o.totalPagado >= o.total).length}/${ordersToPay.length} locales`,
+        : `Pago registrado en ${ordenesPagadas.length}/${ordersToPay.length} locales`,
       data: order,
       pagadoCompleto: todasCompletas,
       saldoRestante: combinedTotal - totalPagadoFinal,
-      ordenesProcesadas: ordersToPay.length
+      ordenesProcesadas: ordersToPay.length,
+      ordenesPagadas: ordenesPagadas.map(o => o._id)
     });
   } catch (error) {
     console.error('Error al registrar pago parcial:', error);
