@@ -124,7 +124,7 @@
             padding: 12px 1.5rem;
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
             font-size: 14px;
             font-weight: 500;
             position: relative;
@@ -158,7 +158,7 @@
             width: 24px;
             text-align: center;
             opacity: 0.8;
-            transition: transform 0.2s;
+            transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
         .nav-item:hover .nav-icon {
@@ -215,7 +215,7 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease, color 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -243,11 +243,10 @@
             cursor: pointer;
             z-index: 1001;
             display: flex;
-            /* Oculto por defecto */
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transition: all 0.2s;
+            transition: transform 0.15s ease;
         }
 
         .menu-toggle:hover {
@@ -304,7 +303,7 @@
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -514,7 +513,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: border-color 0.15s ease, color 0.15s ease;
         }
 
         .qty-btn:hover {
@@ -544,7 +543,7 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease;
         }
 
         .btn-remove:hover {
@@ -585,7 +584,7 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .btn-submit:hover {
@@ -639,10 +638,11 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 1.5rem;
-            transition: all 0.2s;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
             user-select: none;
             -webkit-user-select: none;
             position: relative;
+            contain: layout style;
         }
 
         .mesero-badge {
@@ -800,7 +800,7 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease;
         }
 
         .btn-preparar {
@@ -2202,6 +2202,42 @@
             display: block;
             margin-bottom: 0.5rem;
         }
+
+        /* ✅ OPTIMIZACIONES RENDIMIENTO - Dispositivos de baja capacidad */
+        .perf-low .sidebar { background: #1a202c !important; transition: none !important; }
+        .perf-low .brand-icon { box-shadow: none !important; background: #667eea !important; }
+        .perf-low .menu-toggle { box-shadow: none !important; }
+        .perf-low .btn-change-view { box-shadow: none !important; }
+        .perf-low .order-card { box-shadow: none !important; border-radius: 8px !important; padding: 1rem !important; }
+        .perf-low .order-card:hover { box-shadow: none !important; }
+        .perf-low .mesero-badge { box-shadow: none !important; background: #667eea !important; }
+        .perf-low .order-actions { grid-template-columns: repeat(2, 1fr) !important; }
+        .perf-low .btn-action { padding: 8px !important; font-size: 11px !important; }
+        .perf-low .order-card * { transition: none !important; animation: none !important; }
+        .perf-low .gesture-active-jiggle { animation: none !important; }
+        .perf-low .ready-to-undo { animation: none !important; box-shadow: none !important; }
+        .perf-low .ready-to-change-payment { animation: none !important; box-shadow: none !important; }
+        .perf-low .undo-indicator { transition: opacity 0.1s ease !important; box-shadow: none !important; }
+        .perf-low .payment-method-indicator { transition: opacity 0.1s ease !important; box-shadow: none !important; }
+        .perf-low .modal-gestion-content,
+        .perf-low .modal-pedido-mesa-content,
+        .perf-low [class*="modal"] { box-shadow: none !important; }
+        .perf-low .onboarding-shortcut-popup { box-shadow: none !important; animation: none !important; }
+        .perf-low .notificacion-mandao-alert { animation: none !important; box-shadow: none !important; }
+        .perf-low body::before { display: none !important; }
+        .perf-low .content-wrapper { transition: none !important; }
+        .perf-low .sidebar-nav::-webkit-scrollbar { display: none; }
+        .perf-low .sidebar-nav { scrollbar-width: none; }
+        .perf-low table { font-size: 12px; }
+        .perf-low .alimentos-popup,
+        .perf-low .modal-content { box-shadow: none !important; }
+        .perf-low * { will-change: auto !important; }
+        .perf-low .orders-list { contain: layout style; }
+
+        /* Medium: reducir sombras */
+        .perf-medium .order-card { box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important; }
+        .perf-medium .mesero-badge { box-shadow: 0 2px 4px rgba(102,126,234,0.2) !important; }
+        .perf-medium .sidebar { box-shadow: 2px 0 10px rgba(0,0,0,0.08) !important; }
     </style>
 
 
@@ -2528,15 +2564,19 @@
                 Swal.fire({ icon: (('Error de conexión. Recargue la página.').toLowerCase().includes("error") || ('Error de conexión. Recargue la página.').toLowerCase().includes("falla") || ('Error de conexión. Recargue la página.').toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Error de conexión. Recargue la página.', timer: 3000, showConfirmButton: false });
             }
 
+            // ✅ Infinite scroll con throttle para no bloquear el hilo principal
+            let scrollThrottleTimer = null;
             window.addEventListener('scroll', () => {
-                if (isLoadingMore || !hasMoreOrders) return;
-
-                const scrollPosition = window.innerHeight + window.scrollY;
-                const documentHeight = document.documentElement.offsetHeight;
-
-                if (scrollPosition >= documentHeight - 200) {
-                    loadOrders(false);
-                }
+                if (scrollThrottleTimer) return;
+                scrollThrottleTimer = setTimeout(() => {
+                    scrollThrottleTimer = null;
+                    if (isLoadingMore || !hasMoreOrders) return;
+                    const scrollPosition = window.innerHeight + window.scrollY;
+                    const documentHeight = document.documentElement.offsetHeight;
+                    if (scrollPosition >= documentHeight - 200) {
+                        loadOrders(false);
+                    }
+                }, 150);
             });
 
             // GESTIÓN DE GESTOS (DESHACER ESTADO + CAMBIAR MÉTODO DE PAGO)
@@ -3364,7 +3404,10 @@
                     if (reset) {
                         allLoadedOrders = newOrders;
                     } else {
-                        allLoadedOrders = [...allLoadedOrders, ...newOrders];
+                        // ✅ Push en lugar de spread para no crear arrays nuevos
+                        for (let i = 0; i < newOrders.length; i++) {
+                            allLoadedOrders.push(newOrders[i]);
+                        }
                     }
 
                     displayOrders(allLoadedOrders, reset);
@@ -3384,183 +3427,156 @@
         }
 
 
+        // ✅ Cache de HTML para evitar re-render innecesario
+        let _lastOrdersHash = '';
+
         function displayOrders(orders, reset = false) {
             const list = document.getElementById('ordersList');
 
             if (orders.length === 0) {
-                list.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <p>No hay pedidos registrados</p>
-            </div>
-        `;
+                if (list.children.length > 0) {
+                    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No hay pedidos registrados</p></div>`;
+                }
                 return;
             }
 
-            // ORDENAR: Separar en tres grupos
-            const pendientesPreparando = orders.filter(o => ['pendiente', 'preparando'].includes(o.estado));
-            const listos = orders.filter(o => o.estado === 'listo');
-            const cancelados = orders.filter(o => o.estado === 'cancelado');
-            const entregados = orders.filter(o => o.estado === 'entregado');
+            // ✅ Hash ligero para detectar si realmente cambió algo
+            const ordersHash = orders.map(o => `${o._id}:${o.estado}:${o.items.length}:${o.total}:${(o.pagos||[]).length}`).join('|');
+            if (!reset && ordersHash === _lastOrdersHash) return; // No hay cambios, skip render
+            _lastOrdersHash = ordersHash;
 
-            pendientesPreparando.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            listos.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            cancelados.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            entregados.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            // ORDENAR: Separar en grupos
+            const pendientesPreparando = [];
+            const listos = [];
+            const cancelados = [];
+            const entregados = [];
 
-            const orderedOrders = [...pendientesPreparando, ...listos, ...cancelados, ...entregados];
+            for (let i = 0; i < orders.length; i++) {
+                const o = orders[i];
+                if (o.estado === 'pendiente' || o.estado === 'preparando') pendientesPreparando.push(o);
+                else if (o.estado === 'listo') listos.push(o);
+                else if (o.estado === 'cancelado') cancelados.push(o);
+                else if (o.estado === 'entregado') entregados.push(o);
+            }
 
-            // Filtrar por origen si se selecciona "mandao"
+            const sortByDate = (a, b) => new Date(a.createdAt) - new Date(b.createdAt);
+            pendientesPreparando.sort(sortByDate);
+            listos.sort(sortByDate);
+            cancelados.sort(sortByDate);
+            entregados.sort(sortByDate);
+
+            const orderedOrders = pendientesPreparando.concat(listos, cancelados, entregados);
+
             const filtroEstado = document.getElementById('filterEstado').value;
             const finalOrders = filtroEstado === 'mandao'
                 ? orderedOrders.filter(o => o.source === 'mandao')
                 : orderedOrders;
 
-            // Always overwrite innerHTML to prevent duplicates and maintain sorting across all loaded pages
-            list.innerHTML = finalOrders.map(order => {
-                const isMandao = order.source === 'mandao';
-                // Generar HTML para items con estados individuales
-                const itemsHTML = order.items.map((item, itemIndex) => {
-                    const nombre = item.productoInfo ? item.productoInfo.nombre :
-                        (item.producto && item.producto.nombre ? item.producto.nombre :
-                            (item.nombreProducto || 'Producto eliminado'));
+            // ✅ Usar DocumentFragment para batch DOM update
+            const fragment = document.createDocumentFragment();
 
-                    // Agrupar por estado
-                    const grupos = item.estadosIndividuales || [{ cantidad: item.cantidad, estado: 'pendiente' }];
+            for (let i = 0; i < finalOrders.length; i++) {
+                const order = finalOrders[i];
+                const div = document.createElement('div');
+                div.innerHTML = buildOrderCardHTML(order);
+                fragment.appendChild(div.firstElementChild);
+            }
 
-                    return grupos.map(grupo => `
-                <div class="order-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f7fafc; border-radius: 8px; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                        <span class="item-name" style="font-weight: 600; color: #2d3748;">${nombre}</span>
-                        <span class="item-qty" style="margin-left: 8px; color: #667eea; font-weight: 700;">x${grupo.cantidad}</span>
-                        ${item.nota ? `<div style="font-size: 11px; color: #e53e3e; font-weight: 700; margin-top: 2px;">📝 ${item.nota}</div>` : ''}
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 14px; font-weight: 700; color: #1a202c;">$${(item.precio * grupo.cantidad).toLocaleString('es-CO')}</span>
-                        ${order.estado !== 'entregado' && order.estado !== 'cancelado' ? `
-                            <span class="status-badge status-${grupo.estado}" style="font-size: 10px; padding: 4px 8px;">${grupo.estado}</span>
-                            <button onclick="cambiarEstadoProducto('${order._id}', ${itemIndex}, ${grupo.cantidad}, '${grupo.estado}')" 
-                                    style="padding: 4px 8px; background: #4299e1; color: white; border: none; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;">
-                                ▶️
-                            </button>
-                        ` : `
-                            <span class="status-badge status-${grupo.estado}" style="font-size: 10px; padding: 4px 8px;">${grupo.estado}</span>
-                        `}
-                    </div>
-                </div>
-            `).join('');
-                }).join('');
+            list.innerHTML = '';
+            list.appendChild(fragment);
+        }
 
-                return `
-            <div class="order-card ${isMandao ? 'mandao-order' : ''} ${order._isUnified ? 'unified-order' : ''}" id="order-card-${order._id}" data-id="${order._id}" data-metodo="${order.metodoPago || ''}" data-recibo="${order.reciboDia || false}" ${order._subOrderIds ? `data-sub-ids='${JSON.stringify(order._subOrderIds)}'` : ''} ${order._isUnified ? 'data-unified="true"' : ''}>
-                <div class="mesero-badge">👤 ${order.mesero || 'Mesero'}</div>
+        // ✅ Función separada para construir HTML de tarjeta (más ligera)
+        function buildOrderCardHTML(order) {
+            const isMandao = order.source === 'mandao';
+            const isActivo = order.estado !== 'entregado' && order.estado !== 'cancelado';
+            const mesero = order.mesero || 'Mesero';
+
+            // Items HTML inline
+            let itemsHTML = '';
+            for (let i = 0; i < order.items.length; i++) {
+                const item = order.items[i];
+                const nombre = item.productoInfo ? item.productoInfo.nombre :
+                    (item.producto?.nombre || item.nombreProducto || 'Prod eliminado');
+                const grupos = item.estadosIndividuales || [{ cantidad: item.cantidad, estado: 'pendiente' }];
+
+                for (let g = 0; g < grupos.length; g++) {
+                    const grupo = grupos[g];
+                    const precio = item.precio * grupo.cantidad;
+                    itemsHTML += `<div class="order-item" style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#f7fafc;border-radius:6px;margin-bottom:6px;">
+                        <div style="flex:1"><span class="item-name" style="font-weight:600;color:#2d3748">${nombre}</span><span class="item-qty" style="margin-left:6px;color:#667eea;font-weight:700">x${grupo.cantidad}</span>${item.nota ? `<div style="font-size:10px;color:#e53e3e;font-weight:700;margin-top:1px">📝 ${item.nota}</div>` : ''}</div>
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span style="font-size:13px;font-weight:700;color:#1a202c">$${precio.toLocaleString('es-CO')}</span>
+                            ${isActivo ? `<span class="status-badge status-${grupo.estado}" style="font-size:9px;padding:3px 6px">${grupo.estado}</span><button onclick="cambiarEstadoProducto('${order._id}',${i},${grupo.cantidad},'${grupo.estado}')" style="padding:3px 6px;background:#4299e1;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;font-weight:600">▶️</button>` : `<span class="status-badge status-${grupo.estado}" style="font-size:9px;padding:3px 6px">${grupo.estado}</span>`}
+                        </div>
+                    </div>`;
+                }
+            }
+
+            // Pagos info inline (simplificado)
+            let pagosHTML = '';
+            if (order.pagos && order.pagos.length > 0) {
+                const totalPagado = order.totalPagado || 0;
+                const porcentaje = Math.round((totalPagado / order.total) * 100);
+                const saldo = order.total - totalPagado;
+                pagosHTML = `<div style="background:#f0fff4;border:1px solid #c6f6d5;border-radius:8px;padding:8px;margin:6px 0">
+                    <div style="background:#e2e8f0;border-radius:4px;height:6px;margin:4px 0;overflow:hidden"><div style="background:#48bb78;height:100%;width:${porcentaje}%"></div></div>
+                    <div style="display:flex;justify-content:space-between;font-size:10px;color:#718096"><span>Pagado: $${totalPagado.toLocaleString('es-CO')} (${porcentaje}%)</span>${saldo > 0 ? `<span style="color:#e53e3e;font-weight:700">Falta: $${saldo.toLocaleString('es-CO')}</span>` : '<span style="color:#38a169;font-weight:700">✅</span>'}</div>
+                </div>`;
+            }
+
+            // Actions inline
+            let actionsHTML = '';
+            if (isActivo) {
+                actionsHTML = '<div class="order-actions">';
+                if (order.estado === 'pendiente') {
+                    actionsHTML += isMandao
+                        ? `<button class="btn-action" style="background:#f59e0b;color:white" onclick="updateOrderStatus('${order._id}','preparando')">✅ Aceptar</button>`
+                        : `<button class="btn-action btn-preparar" onclick="updateOrderStatus('${order._id}','preparando')">👨‍🍳 Preparar</button><button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}','listo')">✅ Listo</button>`;
+                } else if (order.estado === 'preparando') {
+                    actionsHTML += isMandao
+                        ? `<button class="btn-action" style="background:#10b981;color:white" onclick="updateOrderStatus('${order._id}','listo')">👨‍🍳 Listo</button>`
+                        : `<button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}','listo')">✅ Listo</button>`;
+                }
+
+                const tienePagosParciales = order.pagos && order.pagos.length > 0 && (order.totalPagado || 0) < order.total;
+                const saldoRestante = tienePagosParciales ? order.total - (order.totalPagado || 0) : order.total;
+                const pagarTexto = tienePagosParciales ? `💳 Restante: $${saldoRestante.toLocaleString('es-CO')}` : '💳 Pagar';
+
+                if (order.estado === 'listo') {
+                    actionsHTML += `<button class="btn-action btn-entregar" onclick="updateOrderStatus('${order._id}','entregado')">${pagarTexto}</button>`;
+                } else {
+                    actionsHTML += `<button class="btn-action btn-entregar" onclick="pagarDirecto('${order._id}')">${pagarTexto}</button>`;
+                }
+                actionsHTML += `<button class="btn-action btn-cancelar" onclick="cancelOrder('${order._id}')">❌ Cancelar</button></div>`;
+            }
+
+            const metodoColor = order.metodoPago === 'transferencia' ? '#667eea' : order.metodoPago === 'mixto' ? '#805ad5' : '#48bb78';
+            const metodoLabel = order.metodoPago === 'transferencia' ? 'Transferencia' : order.metodoPago === 'mixto' ? 'Mixto' : 'Efectivo';
+
+            return `<div class="order-card${isMandao ? ' mandao-order' : ''}${order._isUnified ? ' unified-order' : ''}" id="order-card-${order._id}" data-id="${order._id}" data-metodo="${order.metodoPago || ''}" data-recibo="${order.reciboDia || false}"${order._subOrderIds ? ` data-sub-ids='${JSON.stringify(order._subOrderIds)}'` : ''}${order._isUnified ? ' data-unified="true"' : ''}>
+                <div class="mesero-badge">👤 ${mesero}</div>
                 <div class="undo-indicator">↩️ DESHACER</div>
                 <div class="payment-method-indicator" id="payment-indicator-${order._id}">💳 CAMBIAR</div>
                 <div class="order-header">
                     <div class="order-info">
-                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
                             ${isMandao ? '<span class="source-badge source-mandao"><span class="mandao-icon">🚲</span> MANDAO</span>' : ''}
-                            ${order._isUnified ? `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: linear-gradient(135deg, #667eea, #764ba2); color: white; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">🏪 ${order._subOrderCount} Locales</span>` : ''}
+                            ${order._isUnified ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;background:#667eea;color:white">🏪 ${order._subOrderCount} Locales</span>` : ''}
                             <h3>Mesa ${order.mesa}</h3>
                         </div>
-                        <div class="order-meta">
-                            ${new Date(order.createdAt).toLocaleString('es-CO')}
-                            ${order.metodoPago ? `<br><strong style="color: ${order.metodoPago === 'transferencia' ? '#667eea' : order.metodoPago === 'mixto' ? '#805ad5' : '#48bb78'};">💳 ${order.metodoPago === 'transferencia' ? 'Transferencia' : order.metodoPago === 'mixto' ? 'Mixto' : 'Efectivo'}</strong>` : ''}
-                        </div>
+                        <div class="order-meta">${new Date(order.createdAt).toLocaleString('es-CO')}${order.metodoPago ? `<br><strong style="color:${metodoColor}">💳 ${metodoLabel}</strong>` : ''}</div>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="display:flex;gap:6px;align-items:center">
                         <span class="status-badge status-${order.estado}">${order.estado === 'entregado' ? 'pagado' : order.estado}</span>
-
-                        ${order.estado !== 'entregado' && order.estado !== 'cancelado' ? `
-                            <button onclick="abrirModalEditar('${order._id}')" style="padding: 6px 12px; background: #805ad5; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                ✏️ Editar
-                            </button>
-                        ` : ''}
+                        ${isActivo ? `<button onclick="abrirModalEditar('${order._id}')" style="padding:5px 10px;background:#805ad5;color:white;border:none;border-radius:5px;font-size:11px;cursor:pointer;font-weight:600">✏️ Editar</button>` : ''}
                     </div>
                 </div>
-                <div class="order-items">
-                    ${itemsHTML}
-                </div>
-                ${order.notas ? `<p style="font-size: 12px; color: #718096; font-style: italic; margin: 8px 0;">📝 ${order.notas}</p>` : ''}
-                <div class="order-total">
-                    <span>Total:</span>
-                    <span>$${order.total.toLocaleString('es-CO')}</span>
-                </div>
-                ${renderPagosInfo(order)}
-                ${getOrderActions(order)}
-            </div>
-        `;
-            }).join('');
-        }
-
-        // ✅ RENDERIZAR INFO DE PAGOS PARCIALES
-        function renderPagosInfo(order) {
-            if (!order.pagos || order.pagos.length === 0) return '';
-            const totalPagado = order.totalPagado || 0;
-            const saldoRestante = order.total - totalPagado;
-            const porcentaje = Math.round((totalPagado / order.total) * 100);
-
-            const pagosEfectivo = order.pagos.filter(p => p.metodo === 'efectivo').reduce((s, p) => s + p.monto, 0);
-            const pagosTransferencia = order.pagos.filter(p => p.metodo === 'transferencia').reduce((s, p) => s + p.monto, 0);
-
-            return `
-                <div style="background: linear-gradient(135deg, #f0fff4, #ebf8ff); border: 1px solid #c6f6d5; border-radius: 10px; padding: 10px 12px; margin: 8px 0;">
-                    <div style="font-size: 11px; font-weight: 700; color: #2d3748; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">💰 Pagos Realizados</div>
-                    ${pagosEfectivo > 0 ? `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #38a169; margin-bottom: 3px;"><span>💵 Efectivo</span><span style="font-weight: 700;">$${pagosEfectivo.toLocaleString('es-CO')}</span></div>` : ''}
-                    ${pagosTransferencia > 0 ? `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #667eea; margin-bottom: 3px;"><span>📱 Transferencia</span><span style="font-weight: 700;">$${pagosTransferencia.toLocaleString('es-CO')}</span></div>` : ''}
-                    <div style="background: #e2e8f0; border-radius: 6px; height: 8px; margin: 6px 0 4px; overflow: hidden;">
-                        <div style="background: linear-gradient(90deg, #48bb78, #38a169); height: 100%; width: ${porcentaje}%; border-radius: 6px; transition: width 0.5s ease;"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #718096;">
-                        <span>Pagado: $${totalPagado.toLocaleString('es-CO')} (${porcentaje}%)</span>
-                        ${saldoRestante > 0 ? `<span style="color: #e53e3e; font-weight: 700;">Falta: $${saldoRestante.toLocaleString('es-CO')}</span>` : '<span style="color: #38a169; font-weight: 700;">✅ Completo</span>'}
-                    </div>
-                </div>
-            `;
-        }
-
-        function getOrderActions(order) {
-            if (order.estado === 'entregado' || order.estado === 'cancelado') return '';
-
-            const isMandao = order.source === 'mandao';
-            const tienePagosParciales = order.pagos && order.pagos.length > 0 && (order.totalPagado || 0) < order.total;
-            const saldoRestante = tienePagosParciales ? order.total - (order.totalPagado || 0) : order.total;
-            let actions = '<div class="order-actions">';
-
-            if (order.estado === 'pendiente') {
-                if (isMandao) {
-                    actions += `<button class="btn-action" style="background: #f59e0b; color: white;" onclick="updateOrderStatus('${order._id}', 'preparando')">✅ Aceptar Mandao</button>`;
-                } else {
-                    actions += `<button class="btn-action btn-preparar" onclick="updateOrderStatus('${order._id}', 'preparando')">👨‍🍳 Preparar</button>`;
-                    actions += `<button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}', 'listo')">✅ Listo</button>`;
-                }
-            }
-
-            if (order.estado === 'preparando') {
-                if (isMandao) {
-                    actions += `<button class="btn-action" style="background: #10b981; color: white;" onclick="updateOrderStatus('${order._id}', 'listo')">👨‍🍳 Marcar Listo</button>`;
-                } else {
-                    actions += `<button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}', 'listo')">✅ Listo</button>`;
-                }
-            }
-
-            // Botón de Pagar - muestra saldo restante si hay pagos parciales
-            const pagarTexto = tienePagosParciales
-                ? `💳 Pagar Restante: $${saldoRestante.toLocaleString('es-CO')}`
-                : '💳 Pagar';
-
-            if (order.estado === 'listo') {
-                actions += `<button class="btn-action btn-entregar" onclick="updateOrderStatus('${order._id}', 'entregado')">${pagarTexto}</button>`;
-            } else {
-                actions += `<button class="btn-action btn-entregar" onclick="pagarDirecto('${order._id}')">${pagarTexto}</button>`;
-            }
-
-            if (order.estado !== 'entregado' && order.estado !== 'cancelado') {
-                actions += `<button class="btn-action btn-cancelar" onclick="cancelOrder('${order._id}')">❌ Cancelar</button>`;
-            }
-
-            actions += '</div>';
-            return actions;
+                <div class="order-items">${itemsHTML}</div>
+                ${order.notas ? `<p style="font-size:11px;color:#718096;font-style:italic;margin:6px 0">📝 ${order.notas}</p>` : ''}
+                <div class="order-total"><span>Total:</span><span>$${order.total.toLocaleString('es-CO')}</span></div>
+                ${pagosHTML}${actionsHTML}
+            </div>`;
         }
 
         async function pagarDirecto(orderId) {
@@ -4170,7 +4186,22 @@
 
                 if (data.success) {
                     console.log('✅ Pedido actualizado correctamente');
-                    await loadOrders(true);
+                    
+                    // ✅ Actualizar estado localmente sin recargar todo
+                    const orderIndex = allLoadedOrders.findIndex(o => o._id === orderId);
+                    if (orderIndex !== -1) {
+                        allLoadedOrders[orderIndex].estado = newStatus;
+                        if (metodoPago) allLoadedOrders[orderIndex].metodoPago = metodoPago;
+                        if (data.data) {
+                            if (data.data.pagos) allLoadedOrders[orderIndex].pagos = data.data.pagos;
+                            if (data.data.totalPagado !== undefined) allLoadedOrders[orderIndex].totalPagado = data.data.totalPagado;
+                            if (data.data.items) allLoadedOrders[orderIndex].items = data.data.items;
+                        }
+                    }
+                    _lastOrdersHash = ''; // Forzar re-render
+                    displayOrders(allLoadedOrders, true);
+                    
+                    mostrarNotificacionExito(`✅ Pedido actualizado a "${newStatus}"`);
                 } else {
                     console.error('❌ Error del servidor:', data.message);
                     Swal.fire({ icon: (('Error: ' + data.message).toLowerCase().includes("error") || ('Error: ' + data.message).toLowerCase().includes("falla") || ('Error: ' + data.message).toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Error: ' + data.message, timer: 3000, showConfirmButton: false });
@@ -4228,36 +4259,45 @@
 
 
         // ========================
-        // SISTEMA DE TIEMPO REAL PARA PEDIDOS
+        // SISTEMA DE TIEMPO REAL PARA PEDIDOS (OPTIMIZADO)
         // ========================
 
         let lastOrderCountPedidos = 0;
         let isFirstLoadPedidos = true;
         let pollingIntervalPedidos = null;
 
-        const notificationSoundPedidos = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGmi/7OSfTRAMUKvj8LJgGgU7k9XxxncpBSh+zPLaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBQ==');
+        const notificationSoundPedidos = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGmi/7OSfTRAMUKvj8LJgGgU7k9XxxncpBSh+zPLaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBQ==');
 
         function playNotificationSoundPedidos() {
             notificationSoundPedidos.play().catch(e => console.log('No se pudo reproducir el sonido:', e));
         }
 
-        async function autoRefreshOrdersPedidos() {
-            // Si no hay usuario, no hacer refresh
-            if (!currentUser || !currentUser._id) {
-                return;
+        // ✅ Comparación ligera sin JSON.stringify completo
+        function ordersChanged(oldOrders, newOrders) {
+            if (oldOrders.length !== newOrders.length) return true;
+            for (let i = 0; i < newOrders.length; i++) {
+                const o = oldOrders[i];
+                const n = newOrders[i];
+                if (!o || !n) return true;
+                if (o._id !== n._id || o.estado !== n.estado || o.total !== n.total || o.items.length !== n.items.length) return true;
+                if ((o.pagos || []).length !== (n.pagos || []).length) return true;
             }
+            return false;
+        }
+
+        async function autoRefreshOrdersPedidos() {
+            if (!currentUser || !currentUser._id) return;
+
+            // ✅ Pausar si la pestaña no está visible
+            if (document.hidden) return;
 
             const token = localStorage.getItem('token');
             if (!token) {
-                console.warn('⚠️ No hay token, deteniendo auto-refresh');
-                if (pollingIntervalPedidos) {
-                    clearInterval(pollingIntervalPedidos);
-                }
+                if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
                 return;
             }
 
             const estado = document.getElementById('filterEstado')?.value || '';
-
             let url = `${API_URL}/orders?userId=${currentUser._id}`;
             if (estado) url += `&estado=${estado}`;
 
@@ -4267,15 +4307,12 @@
                         'Authorization': `Bearer ${token}`,
                         'Cache-Control': 'no-cache'
                     },
-                    signal: AbortSignal.timeout(5000) // Timeout de 5 segundos
+                    signal: AbortSignal.timeout(8000)
                 });
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        console.warn('⚠️ Token expirado en auto-refresh');
-                        if (pollingIntervalPedidos) {
-                            clearInterval(pollingIntervalPedidos);
-                        }
+                        if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
                         return;
                     }
                     throw new Error(`HTTP ${response.status}`);
@@ -4286,36 +4323,16 @@
                 if (data.success) {
                     const newOrders = data.data;
 
-                    // Detectar cambios en los pedidos existentes
-                    const currentOrdersString = JSON.stringify(newOrders.map(o => ({
-                        id: o._id,
-                        estado: o.estado,
-                        itemsCount: o.items.length,
-                        total: o.total
-                    })));
-
-                    const previousOrdersString = JSON.stringify((window.previousOrders || []).map(o => ({
-                        id: o._id,
-                        estado: o.estado,
-                        itemsCount: o.items.length,
-                        total: o.total
-                    })));
-
-                    // Si hay cambios, actualizar
-                    if (currentOrdersString !== previousOrdersString) {
+                    // ✅ Comparación ligera en lugar de JSON.stringify completo
+                    if (ordersChanged(window.previousOrders || [], newOrders)) {
                         displayOrders(newOrders);
                         document.getElementById('orderCount').textContent = data.count;
 
-                        // Detectar nuevo pedido (Lógica original de notificación)
                         if (!isFirstLoadPedidos && newOrders.length > lastOrderCountPedidos) {
-                            const newestOrder = newOrders[0];
                             playNotificationSoundPedidos();
-
-                            if (newestOrder.source === 'mandao') {
+                            if (newOrders[0]?.source === 'mandao') {
                                 mostrarNotificacionExito('🚲 ¡TIENES UN MANDAO!');
-                                if (typeof alertarNuevoPedidoMandao === 'function') {
-                                    alertarNuevoPedidoMandao();
-                                }
+                                if (typeof alertarNuevoPedidoMandao === 'function') alertarNuevoPedidoMandao();
                             } else {
                                 mostrarNotificacionExito('🔔 Nuevo pedido recibido');
                             }
@@ -4327,26 +4344,36 @@
                     isFirstLoadPedidos = false;
                 }
             } catch (error) {
-                // Solo mostrar error si no es timeout o network error común
                 if (error.name !== 'TimeoutError' && error.name !== 'AbortError') {
-                    console.warn('⚠️ Error en auto-refresh (se reintentará):', error.message);
+                    console.warn('⚠️ Error en auto-refresh:', error.message);
                 }
-                // No hacer nada, simplemente esperar al siguiente ciclo
             }
         }
-        // Iniciar polling cuando currentUser esté listo
+
+        // ✅ Polling adaptativo: 3s normal, 8s en bajo rendimiento
+        const pollingDelay = (window.__deviceCaps && window.__deviceCaps.tier === 'low') ? 8000 :
+                             (window.__deviceCaps && window.__deviceCaps.tier === 'medium') ? 5000 : 3000;
+
         const waitForUserPedidos = setInterval(() => {
             if (currentUser && currentUser._id) {
                 clearInterval(waitForUserPedidos);
-                pollingIntervalPedidos = setInterval(autoRefreshOrdersPedidos, 3000);
-                console.log('✅ Sistema de tiempo real activado en Pedidos');
+                pollingIntervalPedidos = setInterval(autoRefreshOrdersPedidos, pollingDelay);
+                console.log(`✅ Sistema de tiempo real activado (polling: ${pollingDelay}ms)`);
             }
         }, 100);
 
-        window.addEventListener('beforeunload', () => {
-            if (pollingIntervalPedidos) {
-                clearInterval(pollingIntervalPedidos);
+        // ✅ Pausar/reanudar polling al cambiar visibilidad
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
+            } else if (currentUser && currentUser._id) {
+                pollingIntervalPedidos = setInterval(autoRefreshOrdersPedidos, pollingDelay);
+                autoRefreshOrdersPedidos(); // Refresh inmediato al volver
             }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
         });
 
 
@@ -4564,22 +4591,9 @@
             }, 2500);
         }
 
-        // Agregar estilos de animación
+        // ✅ Solo estilos que no existen en el bloque principal
         const style = document.createElement('style');
         style.textContent = `
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-    @keyframes slideUp {
-        from { transform: translateY(30px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
     .notificacion-mandao-alert {
         position: fixed;
         top: 50%;
@@ -4592,12 +4606,11 @@
         font-size: 24px;
         font-weight: 900;
         z-index: 20000;
-        box-shadow: 0 0 100px rgba(245, 158, 11, 0.5);
         border: 4px solid white;
         text-align: center;
-        animation: shake 0.5s infinite, fadeInOut 3s forwards;
         pointer-events: none;
     }
+    .perf-low .notificacion-mandao-alert { box-shadow: none !important; animation: none !important; }
 `;
         document.head.appendChild(style);
 
