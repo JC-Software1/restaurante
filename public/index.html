@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
+    <script src="/performance-mode.js" defer></script>
     <script src="/pwa-init.js" defer></script>
     <style>
         * {
@@ -721,7 +722,7 @@
             }
         }
 
-        // 🚀 SISTEMA DE PRECARGA CON PRIORIDAD
+        // 🚀 SISTEMA DE PRECARGA CON PRIORIDAD (optimizado para baja memoria)
         window.dataCache = {
             productos: null,
             pedidos: null,
@@ -730,7 +731,27 @@
             gastos: null,
             liquidaciones: null,
             usuarios: null,
-            loading: {}
+            loading: {},
+            _maxSize: 2000, // Límite máximo de items por categoría
+            
+            // ✅ Limpieza automática de memoria
+            _cleanup: function() {
+                const keys = Object.keys(this).filter(k => !k.startsWith('_') && k !== 'loading');
+                for (const key of keys) {
+                    if (this[key] && Array.isArray(this[key]) && this[key].length > this._maxSize) {
+                        console.log(`🧹 Memory cleanup: ${key} (${this[key].length} → ${this._maxSize})`);
+                        this[key] = this[key].slice(0, this._maxSize);
+                    }
+                }
+            },
+            
+            // ✅ Verificar uso de memoria approximate
+            _getMemoryUsage: function() {
+                try {
+                    const str = JSON.stringify(this);
+                    return Math.round(str.length / 1024); // KB
+                } catch(e) { return 0; }
+            }
         };
 
         async function precargarDatos(usuario) {
@@ -739,79 +760,90 @@
 
             const headers = { 'Authorization': `Bearer ${token}` };
             const userId = usuario._id;
+            
+            // ✅ Usar límites según capacidad del dispositivo
+            const perfLimit = window.getPerformanceLimit ? window.getPerformanceLimit() : { maxItems: 50000, staggerDelay: 100 };
+            const limit = perfLimit.maxItems;
+            const delay = perfLimit.staggerDelay;
 
             // PRIORIDAD 1: Productos (alta) - lo más necesario
             setTimeout(async () => {
                 try {
-                    const res = await fetch(`${API_URL}/products?userId=${userId}&limit=50000`, { headers });
+                    const res = await fetch(`${API_URL}/products?userId=${userId}&limit=${limit}`, { headers });
                     const data = await res.json();
                     if (data.success) {
                         window.dataCache.productos = data.data;
                         console.log('✅ Productos precargados:', data.data.length);
                     }
                 } catch (e) { console.error('Error precargando productos:', e); }
-            }, 100);
+            }, delay);
 
             // PRIORIDAD 2: Pedidos activos (alta)
             setTimeout(async () => {
                 try {
-                    const res = await fetch(`${API_URL}/orders?userId=${userId}&limit=50000`, { headers });
+                    const res = await fetch(`${API_URL}/orders?userId=${userId}&limit=${limit}`, { headers });
                     const data = await res.json();
                     if (data.success) {
                         window.dataCache.pedidos = data.data;
                         console.log('✅ Pedidos precargados:', data.data.length);
                     }
                 } catch (e) { console.error('Error precargando pedidos:', e); }
-            }, 300);
+            }, delay * 3);
 
-            // PRIORIDAD 3: Alimentos (media)
-            setTimeout(async () => {
-                try {
-                    const res = await fetch(`${API_URL}/alimentos?userId=${userId}&limit=50000`, { headers });
-                    const data = await res.json();
-                    if (data.success) {
-                        window.dataCache.alimentos = data.data;
-                        console.log('✅ Alimentos precargados:', data.data.length);
-                    }
-                } catch (e) { console.error('Error precargando alimentos:', e); }
-            }, 600);
-
-            // PRIORIDAD 4: Gastos (baja)
-            setTimeout(async () => {
-                try {
-                    const res = await fetch(`${API_URL}/expenses?userId=${userId}&limit=50000`, { headers });
-                    const data = await res.json();
-                    if (data.success) {
-                        window.dataCache.gastos = data.data;
-                        console.log('✅ Gastos precargados:', data.data.length);
-                    }
-                } catch (e) { console.error('Error precargando gastos:', e); }
-            }, 1200);
-
-            // PRIORIDAD 5: Liquidaciones (baja)
-            setTimeout(async () => {
-                try {
-                    const res = await fetch(`${API_URL}/liquidaciones?userId=${userId}&limit=50000`, { headers });
-                    const data = await res.json();
-                    if (data.success) {
-                        window.dataCache.liquidaciones = data.data;
-                        console.log('✅ Liquidaciones precargadas:', data.data.length);
-                    }
-                } catch (e) { console.error('Error precargando liquidaciones:', e); }
-            }, 2000);
-
-            // PRIORIDAD 6: Usuarios (solo admin/superadmin)
-            if (usuario.rol === 'admin' || usuario.rol === 'superadmin') {
+            // PRIORIDAD 3: Alimentos (media) - solo si no es dispositivo de muy baja capacidad
+            if (perfLimit.maxItems > 200) {
                 setTimeout(async () => {
                     try {
-                        const res = await fetch(`${API_URL}/superadmin/usuarios?limit=50000`, { headers });
+                        const res = await fetch(`${API_URL}/alimentos?userId=${userId}&limit=${limit}`, { headers });
+                        const data = await res.json();
+                        if (data.success) {
+                            window.dataCache.alimentos = data.data;
+                            console.log('✅ Alimentos precargados:', data.data.length);
+                        }
+                    } catch (e) { console.error('Error precargando alimentos:', e); }
+                }, delay * 6);
+            }
+
+            // PRIORIDAD 4: Gastos (baja) - solo si no es dispositivo de muy baja capacidad
+            if (perfLimit.maxItems > 200) {
+                setTimeout(async () => {
+                    try {
+                        const res = await fetch(`${API_URL}/expenses?userId=${userId}&limit=${limit}`, { headers });
+                        const data = await res.json();
+                        if (data.success) {
+                            window.dataCache.gastos = data.data;
+                            console.log('✅ Gastos precargados:', data.data.length);
+                        }
+                    } catch (e) { console.error('Error precargando gastos:', e); }
+                }, delay * 12);
+            }
+
+            // PRIORIDAD 5: Liquidaciones (baja) - solo en dispositivos normales/altos
+            if (perfLimit.maxItems > 500) {
+                setTimeout(async () => {
+                    try {
+                        const res = await fetch(`${API_URL}/liquidaciones?userId=${userId}&limit=${limit}`, { headers });
+                        const data = await res.json();
+                        if (data.success) {
+                            window.dataCache.liquidaciones = data.data;
+                            console.log('✅ Liquidaciones precargadas:', data.data.length);
+                        }
+                    } catch (e) { console.error('Error precargando liquidaciones:', e); }
+                }, delay * 20);
+            }
+
+            // PRIORIDAD 6: Usuarios (solo admin/superadmin, solo dispositivos normales/altos)
+            if ((usuario.rol === 'admin' || usuario.rol === 'superadmin') && perfLimit.maxItems > 500) {
+                setTimeout(async () => {
+                    try {
+                        const res = await fetch(`${API_URL}/superadmin/usuarios?limit=${limit}`, { headers });
                         const data = await res.json();
                         if (data.success) {
                             window.dataCache.usuarios = data.data;
                             console.log('✅ Usuarios precargados:', data.data.length);
                         }
                     } catch (e) { console.error('Error precargando usuarios:', e); }
-                }, 2500);
+                }, delay * 25);
             }
 
             console.log('🚀 Precarga iniciada en background...');
@@ -841,7 +873,20 @@
                 window.dataCache.usuarios = null;
                 console.log('🗑️ Todo el caché invalidado');
             }
+            // ✅ Ejecutar limpieza de memoria después de invalidar
+            if (window.dataCache._cleanup) window.dataCache._cleanup();
         };
+
+        // ✅ Monitoreo de memoria cada 30 segundos (solo en bajo rendimiento)
+        setInterval(() => {
+            if (window.__deviceCaps && window.__deviceCaps.tier === 'low') {
+                const memUsage = window.dataCache._getMemoryUsage();
+                if (memUsage > 500) { // Si usa más de 500KB
+                    console.log(`⚠️ High memory usage: ${memUsage}KB - running cleanup`);
+                    window.dataCache._cleanup();
+                }
+            }
+        }, 30000);
 
     </script>
 </body>

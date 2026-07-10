@@ -1,0 +1,151 @@
+/* ✅ Performance Optimizations - Shared CSS for low-end devices */
+/* This file is loaded by performance-mode.js and applies conditional optimizations */
+
+/* === BASE RESET (lightweight) === */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* === GPU-ACCELERATED ANIMATIONS ONLY === */
+.anim-fade {
+  animation: fadeIn 0.3s ease-out;
+  will-change: opacity;
+}
+
+.anim-slide {
+  animation: slideUp 0.3s ease-out;
+  will-change: transform, opacity;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === LOW-END DEVICE OVERRIDES === */
+.perf-low .sidebar {
+  background: #1a202c !important;
+  transition: none !important;
+}
+
+.perf-low .card,
+.perf-low .pedido-card,
+.perf-low .order-card {
+  box-shadow: none !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.perf-low .modal-content,
+.perf-low .modal {
+  box-shadow: none !important;
+}
+
+.perf-low .btn {
+  transition: none !important;
+}
+
+.perf-low .btn:hover {
+  transform: none !important;
+}
+
+.perf-low img {
+  loading: lazy;
+  decoding: async;
+}
+
+.perf-low table {
+  font-size: 13px;
+}
+
+.perf-low .sidebar-nav {
+  scrollbar-width: none;
+}
+
+.perf-low .sidebar-nav::-webkit-scrollbar {
+  display: none;
+}
+
+/* === MEDIUM-END DEVICE OVERRIDES === */
+.perf-medium .card,
+.perf-medium .pedido-card,
+.perf-medium .order-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+
+.perf-medium .btn {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* === SCROLL PERFORMANCE === */
+.perf-low * {
+  scroll-behavior: auto !important;
+}
+
+/* === REDUCE PAINT AREAS === */
+.perf-low .main-content {
+  contain: layout style;
+}
+
+.perf-medium .main-content {
+  contain: layout;
+}
+
+/* === OPTIMIZED TABLES (for low-end) === */
+.perf-low table {
+  table-layout: fixed;
+}
+
+.perf-low table td,
+.perf-low table th {
+  padding: 6px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+/* === OPTIMIZED LISTS === */
+.perf-low .pedido-list,
+.perf-low .orders-container {
+  contain: layout style;
+  will-change: auto;
+}
+
+/* === CONTAIN LAYOUT for large lists === */
+.perf-low .kitchen-grid,
+.perf-low .orders-grid {
+  contain: layout style;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* === REDUCE COMPLEX SELECTORS === */
+.perf-low .sidebar-nav .nav-item.active {
+  background: rgba(102, 126, 234, 0.2);
+  border-left: 3px solid #667eea;
+}
+
+/* === LOADING STATES === */
+.perf-low .skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.perf-low .skeleton {
+  animation: none;
+  background: #e0e0e0;
+}
+
+/* === CONTENT VISIBILITY for performance === */
+.perf-low section,
+.perf-low .tab-content,
+.perf-low .panel {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 300px;
+}
