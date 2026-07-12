@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>JC-RT Bridge Android</title>
+    <link rel="manifest" href="bridge-android-manifest.json">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #1e3a5f;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-icon { font-size: 1.5rem; }
+        .header-title { font-size: 1.1rem; font-weight: 700; }
+        .header-sub { font-size: 0.7rem; color: #64748b; }
+
+        .main { padding: 1rem; max-width: 600px; margin: 0 auto; }
+
+        .status-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid #334155;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-active { background: #064e3b; color: #34d399; }
+        .status-inactive { background: #7f1d1d; color: #f87171; }
+        .status-warn { background: #78350f; color: #fbbf24; }
+
+        .printer-status {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: #0f172a;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+        .printer-status .label { color: #94a3b8; margin-bottom: 4px; }
+        .printer-status .value { color: #38bdf8; font-weight: 600; }
+
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid #334155;
+        }
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-bluetooth { background: #2563eb; color: white; }
+        .btn-bluetooth:hover { background: #1d4ed8; }
+        .btn-usb { background: #7c3aed; color: white; }
+        .btn-usb:hover { background: #6d28d9; }
+        .btn-disconnect { background: #dc2626; color: white; }
+        .btn-disconnect:hover { background: #b91c1c; }
+        .btn-vincular { background: #059669; color: white; }
+        .btn-vincular:hover { background: #047857; }
+        .btn-test { background: #d97706; color: white; }
+        .btn-test:hover { background: #b45309; }
+        .btn-secondary { background: #334155; color: #e2e8f0; }
+
+        .btn-group { display: flex; gap: 8px; margin-top: 0.75rem; }
+        .btn-group .btn { flex: 1; }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 11px;
+            resize: none;
+        }
+        textarea:focus { outline: none; border-color: #3b82f6; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+        .stat-box {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .stat-number { font-size: 1.5rem; font-weight: 800; color: #38bdf8; }
+        .stat-label { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+        .log-container {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 0.75rem;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.7rem;
+            line-height: 1.6;
+        }
+        .log-entry { color: #94a3b8; }
+        .log-entry.success { color: #34d399; }
+        .log-entry.error { color: #f87171; }
+        .log-entry.info { color: #38bdf8; }
+        .log-entry.warn { color: #fbbf24; }
+
+        .connection-type-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0.75rem;
+        }
+        .conn-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            background: transparent;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+        .conn-btn.active { border-color: #3b82f6; color: #3b82f6; background: rgba(59,130,246,0.1); }
+
+        .wake-lock-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+        .wake-lock-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+        .wake-lock-dot.active { background: #34d399; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 380px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-icon">🛰️</div>
+        <div>
+            <div class="header-title">JC-RT Print Bridge</div>
+            <div class="header-sub">Centinela de Impresión - Android</div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- STATUS CARD -->
+        <div class="status-card">
+            <div id="pollingStatus" class="status-badge status-inactive">
+                ⏸️ SIN VINCULAR
+            </div>
+
+            <div class="printer-status">
+                <div class="label">🖨️ Impresora:</div>
+                <div class="value" id="printerName">No conectada</div>
+            </div>
+
+            <div class="printer-status" style="margin-top: 0.5rem;">
+                <div class="label">🔌 Método:</div>
+                <div class="value" id="printerMethod">Ninguno</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number" id="statImpresas">0</div>
+                    <div class="stat-label">Impresas hoy</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="statCola">0</div>
+                    <div class="stat-label">En cola</div>
+                </div>
+            </div>
+
+            <div class="wake-lock-indicator">
+                <div class="wake-lock-dot" id="wakeLockDot"></div>
+                <span id="wakeLockText">Pantalla: inactiva</span>
+            </div>
+        </div>
+
+        <!-- CONEXION PRINTER -->
+        <div class="card" id="printerSection">
+            <div class="card-title">🖨️ Conexión de Impresora</div>
+
+            <div class="connection-type-selector">
+                <button class="conn-btn active" id="btnTypeBluetooth" onclick="setConnectionType('bluetooth')">
+                    📡 Bluetooth
+                </button>
+                <button class="conn-btn" id="btnTypeUSB" onclick="setConnectionType('usb')">
+                    🔌 USB (OTG)
+                </button>
+            </div>
+
+            <button class="btn btn-bluetooth" id="btnConnect" onclick="connectPrinter()">
+                📡 Conectar Impresora Bluetooth
+            </button>
+
+            <button class="btn btn-usb hidden" id="btnConnectUSB" onclick="connectPrinterUSB()">
+                🔌 Conectar Impresora USB
+            </button>
+
+            <button class="btn btn-disconnect hidden" id="btnDisconnect" onclick="disconnectPrinter()">
+                ❌ Desconectar Impresora
+            </button>
+
+            <button class="btn btn-test hidden" id="btnTestPrint" onclick="testPrint()" style="margin-top: 8px;">
+                🧪 Imprimir Prueba
+            </button>
+        </div>
+
+        <!-- VINCULACION -->
+        <div class="card" id="vinculacionSection">
+            <div class="card-title">🔗 Vinculación</div>
+
+            <div id="vincularForm">
+                <textarea id="codeInput" placeholder="Pega aquí el código de vinculación desde Ajustes..."></textarea>
+                <button class="btn btn-vincular" onclick="saveConfig()" style="margin-top: 10px;">
+                    💾 Vincular y Activar
+                </button>
+            </div>
+
+            <div id="vinculadoInfo" class="hidden">
+                <div style="padding: 10px; background: #064e3b; border-radius: 8px; text-align: center; color: #34d399; font-weight: 600;">
+                    ✅ Vinculado correctamente
+                </div>
+                <button class="btn btn-secondary" onclick="showVincularForm()" style="margin-top: 10px;">
+                    🔄 Cambiar vinculación
+                </button>
+            </div>
+        </div>
+
+        <!-- CONTROLES -->
+        <div class="card hidden" id="controlsSection">
+            <div class="card-title">⚙️ Controles</div>
+
+            <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1e293b;">
+                <div>
+                    <div style="font-weight: 600; font-size: 0.85rem;">Polling Automático</div>
+                    <div style="font-size: 0.7rem; color: #64748b;">Buscar pedidos cada 5s</div>
+                </div>
+                <label style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                    <input type="checkbox" id="pollingToggle" onchange="togglePolling()" style="opacity: 0; width: 0; height: 0;">
+                    <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #334155; border-radius: 13px; transition: 0.3s;"></span>
+                    <span id="pollingSlider" style="position: absolute; cursor: pointer; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s;"></span>
+                </label>
+            </div>
+
+            <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1e293b;">
+                <div>
+                    <div style="font-weight: 600; font-size: 0.85rem;">Imprimir Clon</div>
+                    <div style="font-size: 0.7rem; color: #64748b;">Dos copias por comanda</div>
+                </div>
+                <label style="position: relative; display: inline-block; width: 50px; height: 26px;">
+                    <input type="checkbox" id="clonToggle" onchange="toggleClon()" style="opacity: 0; width: 0; height: 0;">
+                    <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #334155; border-radius: 13px; transition: 0.3s;"></span>
+                    <span id="clonSlider" style="position: absolute; cursor: pointer; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s;"></span>
+                </label>
+            </div>
+
+            <button class="btn btn-secondary" onclick="clearPrintedIds()" style="margin-top: 10px;">
+                🗑️ Limpiar Historial de Impresión
+            </button>
+        </div>
+
+        <!-- LOG -->
+        <div class="card" id="logSection">
+            <div class="card-title">📋 Actividad</div>
+            <div class="log-container" id="logContainer">
+                <div class="log-entry info">Iniciando bridge...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  JC-RT PRINT BRIDGE - ANDROID PWA
+        // ============================================================
+
+        const API_BASE = 'https://restaurante-1-1bo2.onrender.com/api';
+        const POLL_INTERVAL = 5000;
+
+        // State
+        let config = {
+            userId: '',
+            token: '',
+            imprimirClon: false,
+            printer: { tipo: 'epson', conexion: 'bluetooth', interface: '' },
+            active: false
+        };
+        let printedIds = [];
+        let pollingTimer = null;
+        let bluetoothDevice = null;
+        let bluetoothCharacteristic = null;
+        let usbDevice = null;
+        let connectionType = 'bluetooth';
+        let wakeLock = null;
+        let statsImpresas = 0;
+        let statsCola = 0;
+
+        // ============================================================
+        //  INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            loadPrintedIds();
+            updateUI();
+            setupSwitchStyles();
+            requestWakeLock();
+            addLog('Bridge Android inicializado', 'info');
+
+            if (config.active) {
+                startPolling();
+            }
+        });
+
+        // ============================================================
+        //  CONFIG PERSISTENCE
+        // ============================================================
+        function loadConfig() {
+            try {
+                const saved = localStorage.getItem('jcrt-bridge-config');
+                if (saved) config = JSON.parse(saved);
+            } catch (e) {}
+
+            try {
+                const ids = localStorage.getItem('jcrt-bridge-printed-ids');
+                if (ids) printedIds = JSON.parse(ids);
+            } catch (e) {}
+
+            connectionType = config.printer?.conexion || 'bluetooth';
+        }
+
+        function saveConfigToStorage() {
+            localStorage.setItem('jcrt-bridge-config', JSON.stringify(config));
+        }
+
+        function loadPrintedIds() {
+            try {
+                const ids = localStorage.getItem('jcrt-bridge-printed-ids');
+                if (ids) printedIds = JSON.parse(ids);
+            } catch (e) { printedIds = []; }
+        }
+
+        function savePrintedIds() {
+            if (printedIds.length > 1000) printedIds = printedIds.slice(-500);
+            localStorage.setItem('jcrt-bridge-printed-ids', JSON.stringify(printedIds));
+        }
+
+        function clearPrintedIds() {
+            printedIds = [];
+            localStorage.removeItem('jcrt-bridge-printed-ids');
+            addLog('Historial de impresión limpiado', 'info');
+            updateStats();
+        }
+
+        // ============================================================
+        //  VINCULACION
+        // ============================================================
+        function saveConfig() {
+            const code = document.getElementById('codeInput').value.trim();
+            if (!code) {
+                addLog('Código de vinculación vacío', 'error');
+                return;
+            }
+
+            try {
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(code))));
+                config.userId = decoded.userId;
+                config.token = decoded.token;
+                config.printer = decoded.printer || config.printer;
+                config.imprimirClon = decoded.imprimirClon || false;
+                config.active = true;
+
+                saveConfigToStorage();
+                showVinculadoInfo();
+                startPolling();
+                updateUI();
+                addLog('Vinculación exitosa', 'success');
+            } catch (e) {
+                addLog('Código de vinculación inválido', 'error');
+            }
+        }
+
+        function showVinculadoInfo() {
+            document.getElementById('vincularForm').classList.add('hidden');
+            document.getElementById('vinculadoInfo').classList.remove('hidden');
+        }
+
+        function showVincularForm() {
+            document.getElementById('vincularForm').classList.remove('hidden');
+            document.getElementById('vinculadoInfo').classList.add('hidden');
+        }
+
+        // ============================================================
+        //  CONNECTION TYPE
+        // ============================================================
+        function setConnectionType(type) {
+            connectionType = type;
+            document.getElementById('btnTypeBluetooth').classList.toggle('active', type === 'bluetooth');
+            document.getElementById('btnTypeUSB').classList.toggle('active', type === 'usb');
+            document.getElementById('btnConnect').classList.toggle('hidden', type !== 'bluetooth');
+            document.getElementById('btnConnectUSB').classList.toggle('hidden', type !== 'usb');
+        }
+
+        // ============================================================
+        //  WEB BLUETOOTH
+        // ============================================================
+        async function connectPrinter() {
+            try {
+                addLog('Buscando impresora Bluetooth...', 'info');
+
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { services: ['000018f0-0000-1000-8000-00805f9b34fb'] },
+                        { services: ['0000fee7-0000-1000-8000-00805f9b34fb'] },
+                        { namePrefix: 'POS' },
+                        { namePrefix: 'TP' },
+                        { namePrefix: 'BT' },
+                        { namePrefix: ' printer' },
+                        { namePrefix: 'MTP' },
+                        { namePrefix: 'Xprinter' },
+                        { namePrefix: 'EPSON' },
+                    ],
+                    optionalServices: [
+                        '000018f0-0000-1000-8000-00805f9b34fb',
+                        '0000fee7-0000-1000-8000-00805f9b34fb',
+                        '00001101-0000-1000-8000-00805f9b34fb',
+                    ]
+                });
+
+                addLog(`Dispositivo: ${bluetoothDevice.name || 'Desconocido'}`, 'success');
+
+                bluetoothDevice.addEventListener('gattserverdisconnected', () => {
+                    addLog('Impresora Bluetooth desconectada', 'error');
+                    bluetoothCharacteristic = null;
+                    updateUI();
+                });
+
+                const server = await bluetoothDevice.gatt.connect();
+                addLog('GATT conectado', 'info');
+
+                let service = null;
+                const serviceUUIDs = [
+                    '000018f0-0000-1000-8000-00805f9b34fb',
+                    '0000fee7-0000-1000-8000-00805f9b34fb',
+                    '00001101-0000-1000-8000-00805f9b34fb',
+                ];
+
+                for (const uuid of serviceUUIDs) {
+                    try {
+                        service = await server.getPrimaryService(uuid);
+                        if (service) break;
+                    } catch (e) {}
+                }
+
+                if (!service) {
+                    throw new Error('Servicio de impresión no encontrado');
+                }
+
+                const chars = await service.getCharacteristics();
+                bluetoothCharacteristic = null;
+
+                for (const char of chars) {
+                    const props = char.properties;
+                    if (props.write || props.writeWithoutResponse) {
+                        bluetoothCharacteristic = char;
+                        break;
+                    }
+                }
+
+                if (!bluetoothCharacteristic) {
+                    throw new Error('Característica de escritura no encontrada');
+                }
+
+                config.printer.conexion = 'bluetooth';
+                config.printer.interface = bluetoothDevice.name || 'BT_PRINTER';
+                saveConfigToStorage();
+
+                addLog(`✅ Impresora Bluetooth lista: ${bluetoothDevice.name || 'Desconocido'}`, 'success');
+                updateUI();
+
+            } catch (error) {
+                if (error.name === 'NotFoundError') {
+                    addLog('Búsqueda de impresora cancelada', 'warn');
+                } else {
+                    addLog(`Error Bluetooth: ${error.message}`, 'error');
+                }
+                bluetoothDevice = null;
+                bluetoothCharacteristic = null;
+                updateUI();
+            }
+        }
+
+        async function disconnectPrinter() {
+            try {
+                if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                    bluetoothDevice.gatt.disconnect();
+                }
+            } catch (e) {}
+
+            bluetoothDevice = null;
+            bluetoothCharacteristic = null;
+            usbDevice = null;
+            addLog('Impresora desconectada', 'info');
+            updateUI();
+        }
+
+        async function sendToBluetoothPrinter(data) {
+            if (!bluetoothCharacteristic) throw new Error('No hay impresora Bluetooth conectada');
+
+            const CHUNK_SIZE = 512;
+            for (let i = 0; i < data.length; i += CHUNK_SIZE) {
+                const chunk = data.slice(i, i + CHUNK_SIZE);
+                try {
+                    await bluetoothCharacteristic.writeValueWithoutResponse(chunk);
+                } catch (e) {
+                    try {
+                        await bluetoothCharacteristic.writeValueWithResponse(chunk);
+                    } catch (e2) {
+                        throw new Error(`Error enviando datos: ${e2.message}`);
+                    }
+                }
+            }
+        }
+
+        // ============================================================
+        //  WEB USB
+        // ============================================================
+        async function connectPrinterUSB() {
+            if (!navigator.usb) {
+                addLog('Web USB no disponible en este navegador', 'error');
+                return;
+            }
+
+            try {
+                addLog('Buscando impresora USB...', 'info');
+
+                usbDevice = await navigator.usb.requestDevice({ filters: [] });
+
+                await usbDevice.open();
+
+                if (usbDevice.configuration === null) {
+                    await usbDevice.selectConfiguration(1);
+                }
+
+                const ifaceNum = usbDevice.configuration.interfaces[0].interfaceNumber;
+                const alternate = usbDevice.configuration.interfaces[0].alternate;
+
+                if (alternate.endpoints.length > 0) {
+                    await usbDevice.claimInterface(ifaceNum);
+                }
+
+                config.printer.conexion = 'usb';
+                config.printer.interface = usbDevice.productName || 'USB_PRINTER';
+                saveConfigToStorage();
+
+                addLog(`✅ Impresora USB lista: ${usbDevice.productName || 'Desconocido'}`, 'success');
+                updateUI();
+
+            } catch (error) {
+                if (error.name === 'NotFoundError') {
+                    addLog('Búsqueda USB cancelada', 'warn');
+                } else {
+                    addLog(`Error USB: ${error.message}`, 'error');
+                }
+                usbDevice = null;
+                updateUI();
+            }
+        }
+
+        async function sendToUSBPrinter(data) {
+            if (!usbDevice) throw new Error('No hay impresora USB conectada');
+
+            const iface = usbDevice.configuration.interfaces[0];
+            const alternate = iface.alternate;
+            const endpoint = alternate.endpoints.find(e => e.direction === 'out');
+
+            if (!endpoint) throw new Error('No se encontró endpoint de salida');
+
+            const CHUNK_SIZE = 64;
+            for (let i = 0; i < data.length; i += CHUNK_SIZE) {
+                const chunk = data.slice(i, i + CHUNK_SIZE);
+                await usbDevice.transferOut(endpoint.endpointNumber, chunk);
+            }
+        }
+
+        // ============================================================
+        //  SEND TO PRINTER (UNIFIED)
+        // ============================================================
+        async function sendToPrinter(data) {
+            if (connectionType === 'bluetooth' && bluetoothCharacteristic) {
+                await sendToBluetoothPrinter(data);
+            } else if (connectionType === 'usb' && usbDevice) {
+                await sendToUSBPrinter(data);
+            } else {
+                throw new Error('No hay impresora conectada');
+            }
+        }
+
+        // ============================================================
+        //  ESC/POS COMMAND GENERATOR
+        // ============================================================
+        function generateComandaBytes(order, isClon = false) {
+            const lines = [];
+            const W = 48; // ancho caracteres (80mm) o 32 para 58mm
+
+            function center(text) {
+                const t = text.trim();
+                const pad = Math.max(0, Math.floor((W - t.length) / 2));
+                return ' '.repeat(pad) + t;
+            }
+            function line(text) { return text; }
+            function sep(c) { return c.repeat(W); }
+            function col2(l, r) {
+                const spaces = Math.max(1, W - l.length - r.length);
+                return l + ' '.repeat(spaces) + r;
+            }
+
+            // Init
+            lines.push('\x1B\x40'); // ESC @
+
+            // Header
+            lines.push('\x1B\x61\x01'); // Center
+            lines.push('\x1B\x45\x01'); // Bold ON
+            lines.push('\x1D\x21\x11'); // Double height+width
+            lines.push(isClon ? '--- CLON (COCINA) ---' : 'JC-RT RESTAURANTE');
+            lines.push('\x1D\x21\x00'); // Normal size
+            lines.push('\x1B\x45\x00'); // Bold OFF
+            lines.push(sep('-'));
+
+            // Title
+            lines.push('\x1B\x45\x01'); // Bold ON
+            lines.push(`COMANDA - MESA: ${order.mesa}`);
+            lines.push('\x1B\x45\x00'); // Bold OFF
+
+            // Date
+            lines.push(`Fecha: ${new Date().toLocaleString()}`);
+            lines.push(sep('-'));
+
+            // Items
+            lines.push('\x1B\x61\x00'); // Left align
+            order.items.forEach(item => {
+                const nombre = item.productoInfo ? item.productoInfo.nombre : (item.nombreProducto || 'Producto');
+                lines.push('\x1B\x45\x01'); // Bold ON
+                lines.push(`${item.cantidad}x ${nombre}`);
+                lines.push('\x1B\x45\x00'); // Bold OFF
+                if (item.notas) lines.push(`  Nota: ${item.notas}`);
+                lines.push('');
+            });
+
+            // Footer
+            lines.push(sep('-'));
+            lines.push('\x1D\x56\x00'); // Cut
+
+            // Convert to bytes
+            const text = lines.join('\n');
+            return new TextEncoder().encode(text);
+        }
+
+        function generateFacturaBytes(order) {
+            const lines = [];
+            const W = 48;
+
+            function center(text) {
+                const t = text.trim();
+                const pad = Math.max(0, Math.floor((W - t.length) / 2));
+                return ' '.repeat(pad) + t;
+            }
+            function sep(c) { return c.repeat(W); }
+            function col2(l, r) {
+                const spaces = Math.max(1, W - l.length - r.length);
+                return l + ' '.repeat(spaces) + r;
+            }
+
+            lines.push('\x1B\x40');
+            lines.push('\x1B\x61\x01'); // Center
+            lines.push('\x1B\x45\x01'); // Bold
+            lines.push('\x1D\x21\x11'); // Double
+            lines.push(order.restauranteNombre || 'FACTURA DE VENTA');
+            lines.push('\x1D\x21\x00');
+            lines.push('\x1B\x45\x00');
+            lines.push(sep('-'));
+            lines.push(`Fecha: ${new Date().toLocaleDateString()}`);
+            lines.push(`Hora: ${new Date().toLocaleTimeString()}`);
+            lines.push(`Mesa: ${order.mesa}`);
+            lines.push(`Pedido: #${order._id.slice(-6).toUpperCase()}`);
+            lines.push(sep('-'));
+
+            // Table header
+            lines.push(col2('Producto', 'Cant   Total'));
+            lines.push(sep('-'));
+
+            // Items
+            order.items.forEach(item => {
+                const nombre = item.productoInfo ? item.productoInfo.nombre : (item.nombreProducto || 'Producto');
+                const cant = String(item.cantidad);
+                const total = `$${(item.precio * item.cantidad).toLocaleString()}`;
+                const shortName = nombre.substring(0, 30);
+                lines.push(col2(shortName, `${cant.padStart(4)} ${total.padStart(8)}`));
+            });
+
+            lines.push(sep('-'));
+            lines.push('\x1B\x45\x01');
+            lines.push('\x1D\x21\x11');
+            lines.push(col2('TOTAL:', `$${order.total.toLocaleString()}`));
+            lines.push('\x1D\x21\x00');
+            lines.push('\x1B\x45\x00');
+            lines.push(sep('-'));
+            lines.push(center('¡Gracias por su compra!'));
+            lines.push(center('Vuelva pronto'));
+            lines.push(sep('='));
+            lines.push('\x1D\x56\x00'); // Cut
+
+            return new TextEncoder().encode(lines.join('\n'));
+        }
+
+        // ============================================================
+        //  TEST PRINT
+        // ============================================================
+        async function testPrint() {
+            try {
+                addLog('Enviando prueba de impresión...', 'info');
+
+                const testData = {
+                    _id: 'test123',
+                    mesa: 'TEST',
+                    total: 0,
+                    restauranteNombre: 'JC-RT',
+                    items: [
+                        { cantidad: 1, precio: 0, nombreProducto: 'Prueba de impresion' }
+                    ]
+                };
+
+                const bytes = generateFacturaBytes(testData);
+                await sendToPrinter(bytes);
+
+                addLog('✅ Prueba de impresión enviada', 'success');
+            } catch (e) {
+                addLog(`Error en prueba: ${e.message}`, 'error');
+            }
+        }
+
+        // ============================================================
+        //  POLLING
+        // ============================================================
+        function startPolling() {
+            if (pollingTimer) clearInterval(pollingTimer);
+            addLog('Polling activado (cada 5 segundos)', 'info');
+            pollingTimer = setInterval(pollOrders, POLL_INTERVAL);
+            pollOrders(); // ejecutar inmediatamente
+        }
+
+        function stopPolling() {
+            if (pollingTimer) {
+                clearInterval(pollingTimer);
+                pollingTimer = null;
+            }
+            addLog('Polling detenido', 'warn');
+        }
+
+        async function pollOrders() {
+            if (!config.active || !config.userId || !config.token) return;
+
+            try {
+                const states = ['pendiente', 'preparando'];
+                let newOrders = 0;
+
+                for (const estado of states) {
+                    const response = await fetch(`${API_BASE}/orders?userId=${config.userId}&estado=${estado}`, {
+                        headers: { 'Authorization': `Bearer ${config.token}` }
+                    });
+
+                    if (!response.ok) continue;
+
+                    const data = await response.json();
+                    if (!data.success || !data.data) continue;
+
+                    const toPrint = data.data.filter(o => !printedIds.includes(o._id));
+                    statsCola = toPrint.length;
+                    updateStats();
+
+                    for (const order of toPrint) {
+                        try {
+                            if (!bluetoothCharacteristic && !usbDevice) {
+                                addLog('Sin impresora conectada, saltando pedido', 'warn');
+                                break;
+                            }
+
+                            addLog(`Imprimiendo: Mesa ${order.mesa} (#${order._id.slice(-6)})`, 'info');
+
+                            const bytes = generateComandaBytes(order, false);
+                            await sendToPrinter(bytes);
+
+                            if (config.imprimirClon) {
+                                addLog('Imprimiendo clon...', 'info');
+                                const clonBytes = generateComandaBytes(order, true);
+                                await sendToPrinter(clonBytes);
+                            }
+
+                            printedIds.push(order._id);
+                            statsImpresas++;
+                            newOrders++;
+                            addLog(`✅ Comanda impressa: Mesa ${order.mesa}`, 'success');
+
+                        } catch (printError) {
+                            addLog(`Error imprimiendo: ${printError.message}`, 'error');
+                        }
+                    }
+                }
+
+                if (newOrders > 0) {
+                    savePrintedIds();
+                    updateStats();
+                }
+
+                statsCola = 0;
+                updateStats();
+
+            } catch (error) {
+                addLog(`Error en polling: ${error.message}`, 'error');
+            }
+        }
+
+        // ============================================================
+        //  WAKE LOCK
+        // ============================================================
+        async function requestWakeLock() {
+            if (!('wakeLock' in navigator)) {
+                addLog('Wake Lock no soportado en este dispositivo', 'warn');
+                return;
+            }
+
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                addLog('Pantalla bloqueada activa', 'success');
+                updateWakeLockUI();
+
+                wakeLock.addEventListener('release', () => {
+                    updateWakeLockUI();
+                });
+            } catch (e) {
+                addLog('No se pudo activar Wake Lock', 'warn');
+            }
+        }
+
+        function updateWakeLockUI() {
+            const dot = document.getElementById('wakeLockDot');
+            const text = document.getElementById('wakeLockText');
+            if (wakeLock) {
+                dot.classList.add('active');
+                text.textContent = 'Pantalla: activa (no se apaga)';
+            } else {
+                dot.classList.remove('active');
+                text.textContent = 'Pantalla: inactiva';
+            }
+        }
+
+        // Re-request wake lock when page becomes visible again
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
+        // ============================================================
+        //  UI UPDATES
+        // ============================================================
+        function updateUI() {
+            const isVinculado = config.active && config.userId && config.token;
+            const isPrinterConnected = (connectionType === 'bluetooth' && bluetoothCharacteristic) ||
+                                       (connectionType === 'usb' && usbDevice);
+
+            // Polling status
+            const statusBadge = document.getElementById('pollingStatus');
+            if (isVinculado && pollingTimer && isPrinterConnected) {
+                statusBadge.className = 'status-badge status-active';
+                statusBadge.innerHTML = '🟢 VIGILANDO PEDIDOS';
+            } else if (isVinculado && !isPrinterConnected) {
+                statusBadge.className = 'status-badge status-warn';
+                statusBadge.innerHTML = '🟡 VINCULADO - SIN IMPRESORA';
+            } else {
+                statusBadge.className = 'status-badge status-inactive';
+                statusBadge.innerHTML = '⏸️ SIN VINCULAR';
+            }
+
+            // Printer status
+            const printerName = document.getElementById('printerName');
+            const printerMethod = document.getElementById('printerMethod');
+            if (isPrinterConnected) {
+                printerName.textContent = config.printer.interface || 'Conectada';
+                printerMethod.textContent = connectionType === 'bluetooth' ? 'Bluetooth' : 'USB (OTG)';
+            } else {
+                printerName.textContent = 'No conectada';
+                printerMethod.textContent = 'Ninguno';
+            }
+
+            // Show/hide buttons
+            document.getElementById('btnConnect').classList.toggle('hidden', connectionType !== 'bluetooth' || isPrinterConnected);
+            document.getElementById('btnConnectUSB').classList.toggle('hidden', connectionType !== 'usb' || isPrinterConnected);
+            document.getElementById('btnDisconnect').classList.toggle('hidden', !isPrinterConnected);
+            document.getElementById('btnTestPrint').classList.toggle('hidden', !isPrinterConnected);
+
+            // Controls section
+            document.getElementById('controlsSection').classList.toggle('hidden', !isVinculado);
+
+            // Vinculado info
+            if (isVinculado) {
+                showVinculadoInfo();
+            }
+
+            // Switch states
+            document.getElementById('pollingToggle').checked = !!pollingTimer;
+            document.getElementById('clonToggle').checked = config.imprimirClon || false;
+            updateSwitchStyles();
+        }
+
+        function updateStats() {
+            document.getElementById('statImpresas').textContent = statsImpresas;
+            document.getElementById('statCola').textContent = statsCola;
+        }
+
+        function togglePolling() {
+            const enabled = document.getElementById('pollingToggle').checked;
+            if (enabled) {
+                startPolling();
+            } else {
+                stopPolling();
+            }
+            updateSwitchStyles();
+        }
+
+        function toggleClon() {
+            config.imprimirClon = document.getElementById('clonToggle').checked;
+            saveConfigToStorage();
+            updateSwitchStyles();
+        }
+
+        function setupSwitchStyles() {
+            // Inject switch CSS if not already present
+            if (!document.getElementById('switchStyles')) {
+                const style = document.createElement('style');
+                style.id = 'switchStyles';
+                style.textContent = `
+                    input:checked + span { background: #3b82f6 !important; }
+                    input:checked + span + span { transform: translateX(24px) !important; }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function updateSwitchStyles() {
+            // Force style recalculation for switches
+            document.querySelectorAll('label span:first-of-type').forEach(s => {
+                const checkbox = s.parentElement.querySelector('input');
+                if (checkbox && checkbox.checked) {
+                    s.style.background = '#3b82f6';
+                    const dot = s.parentElement.querySelector('span:last-of-type');
+                    if (dot) dot.style.transform = 'translateX(24px)';
+                } else {
+                    s.style.background = '#334155';
+                    const dot = s.parentElement.querySelector('span:last-of-type');
+                    if (dot) dot.style.transform = 'translateX(0)';
+                }
+            });
+        }
+
+        // ============================================================
+        //  LOGGING
+        // ============================================================
+        function addLog(message, type = '') {
+            const container = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+
+            const time = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            entry.textContent = `[${time}] ${message}`;
+
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+
+            // Keep max 100 entries
+            while (container.children.length > 100) {
+                container.removeChild(container.firstChild);
+            }
+
+            console.log(`[Bridge] ${message}`);
+        }
+
+        // ============================================================
+        //  RECONNECT TO LAST PRINTER (auto-reconnect attempt)
+        // ============================================================
+        async function tryAutoReconnect() {
+            if (connectionType === 'bluetooth' && navigator.bluetooth) {
+                try {
+                    const devices = await navigator.bluetooth.getDevices();
+                    const lastPrinterName = config.printer?.interface;
+
+                    if (lastPrinterName && devices.length > 0) {
+                        const lastDevice = devices.find(d => d.name === lastPrinterName);
+                        if (lastDevice && lastDevice.gatt) {
+                            addLog(`Reconectando a ${lastDevice.name}...`, 'info');
+                            bluetoothDevice = lastDevice;
+
+                            bluetoothDevice.addEventListener('gattserverdisconnected', () => {
+                                addLog('Impresora Bluetooth desconectada', 'error');
+                                bluetoothCharacteristic = null;
+                                updateUI();
+                            });
+
+                            const server = await lastDevice.gatt.connect();
+
+                            const serviceUUIDs = [
+                                '000018f0-0000-1000-8000-00805f9b34fb',
+                                '0000fee7-0000-1000-8000-00805f9b34fb',
+                                '00001101-0000-1000-8000-00805f9b34fb',
+                            ];
+
+                            let service = null;
+                            for (const uuid of serviceUUIDs) {
+                                try { service = await server.getPrimaryService(uuid); if (service) break; } catch (e) {}
+                            }
+
+                            if (service) {
+                                const chars = await service.getCharacteristics();
+                                for (const char of chars) {
+                                    if (char.properties.write || char.properties.writeWithoutResponse) {
+                                        bluetoothCharacteristic = char;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (bluetoothCharacteristic) {
+                                addLog(`✅ Reconectado a ${lastDevice.name}`, 'success');
+                                updateUI();
+                                return;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    addLog('Auto-reconnect: no se pudo reconectar automáticamente', 'warn');
+                }
+            }
+        }
+
+        // Try auto-reconnect on load
+        if (config.active) {
+            setTimeout(tryAutoReconnect, 1000);
+        }
+    </script>
+</body>
+</html>

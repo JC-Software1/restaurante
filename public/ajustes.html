@@ -498,7 +498,7 @@
                     </div>
 
                     <div style="margin-top: 1.5rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #dbeafe;">
-                        <h5 style="font-size: 13px; color: #1d4ed8; margin-bottom: 10px;">📥 Descargar Conector</h5>
+                        <h5 style="font-size: 13px; color: #1d4ed8; margin-bottom: 10px;">📥 Descargar / Abrir Conector</h5>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <a href="https://drive.google.com/file/d/166bU0TsfCe1cgAF38OeXGZKdbNlV-WHY/view?usp=share_link" target="_blank" class="download-btn-pro">
                                 <span>🪟 Windows</span>
@@ -506,6 +506,24 @@
                             <a href="TU_LINK_DE_DRIVE_AQUI" target="_blank" class="download-btn-pro">
                                 <span>🍎 MacOS</span>
                             </a>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; background: linear-gradient(135deg, #f0fdf4, #ecfdf5); padding: 1rem; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        <h5 style="font-size: 13px; color: #15803d; margin-bottom: 8px;">🤖 Android (Tablet)</h5>
+                        <p style="font-size: 11px; color: #4b5563; margin-bottom: 10px; line-height: 1.5;">
+                            Usa una tablet Android como centinela de impresión. Conecta la impresora por <strong>Bluetooth</strong> o <strong>USB (OTG)</strong> directamente desde el navegador.
+                        </p>
+                        <a href="bridge-android.html" target="_blank" class="download-btn-pro" style="display: block; text-align: center; padding: 10px; background: #15803d; color: white; border: none; border-radius: 6px; font-weight: 600; text-decoration: none;">
+                            ⚡ Abrir Bridge Android
+                        </a>
+                        <div style="margin-top: 10px; font-size: 10px; color: #6b7280; line-height: 1.5; background: #f8fafc; padding: 8px; border-radius: 6px;">
+                            <strong>Pasos rápidos:</strong><br>
+                            1. Abre este enlace en la tablet (Chrome)<br>
+                            2. Genera el código de vinculación arriba<br>
+                            3. Pega el código en el bridge<br>
+                            4. Conecta la impresora Bluetooth/USB<br>
+                            5. ¡Listo! La tablet imprime automáticamente
                         </div>
                     </div>
                 </div>
@@ -545,6 +563,28 @@
             document.getElementById('printerModel').value = localStorage.getItem('printerModel') || 'epson';
 
             setConnType(currentConnType);
+
+            // Detectar Android y mostrar banner informativo
+            const isAndroid = /android/i.test(navigator.userAgent);
+            if (isAndroid) {
+                const printSection = document.getElementById('print-config-section');
+                if (printSection) {
+                    const androidBanner = document.createElement('div');
+                    androidBanner.style.cssText = 'background: linear-gradient(135deg, #f0fdf4, #ecfdf5); border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;';
+                    androidBanner.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 1.2rem;">🤖</span>
+                            <strong style="color: #15803d; font-size: 13px;">Modo Android detectado</strong>
+                        </div>
+                        <p style="font-size: 11px; color: #4b5563; line-height: 1.5; margin: 0;">
+                            Estás en un dispositivo Android. Para usar esta tablet como centinela de impresión,
+                            abre el <a href="bridge-android.html" target="_blank" style="color: #15803d; font-weight: 600;">Bridge Android</a> en Chrome.
+                            Ahí podrás conectar la impresora por Bluetooth o USB (OTG).
+                        </p>
+                    `;
+                    printSection.insertBefore(androidBanner, printSection.firstChild);
+                }
+            }
         });
 
         function setConnType(type) {

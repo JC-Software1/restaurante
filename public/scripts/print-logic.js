@@ -17,8 +17,9 @@
 
             try {
                 const hasBridge = localStorage.getItem('autoPrintComanda') === 'true';
+                const isAndroid = /android/i.test(navigator.userAgent);
 
-                if (hasBridge) {
+                if (hasBridge && !isAndroid) {
                     const result = await Swal.fire({
                         title: 'Imprimir Factura',
                         text: 'Tienes el Print Bridge activado. ¿Cómo deseas imprimir?',
@@ -80,6 +81,31 @@
                             });
                             setTimeout(() => { imprimirVentanaNueva(); }, 500);
                         }
+                    } else if (result.isDenied) {
+                        imprimirVentanaNueva();
+                    }
+                } else if (hasBridge && isAndroid) {
+                    // En Android, el bridge corre en bridge-android.html (PWA separada)
+                    const result = await Swal.fire({
+                        title: 'Imprimir Factura',
+                        text: '¿Cómo deseas imprimir? (En Android, usa el Bridge Android para impresión automática)',
+                        icon: 'question',
+                        showCancelButton: true,
+                        showDenyButton: true,
+                        confirmButtonText: '🤖 Abrir Bridge Android',
+                        denyButtonText: '🖨️ Imprimir ahora',
+                        cancelButtonText: 'Cancelar'
+                    });
+
+                    if (result.isConfirmed) {
+                        window.open('bridge-android.html', '_blank');
+                        Swal.fire({
+                            title: 'Bridge Android abierto',
+                            text: 'Conecta la impresora en el Bridge Android para impresión automática',
+                            icon: 'info',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
                     } else if (result.isDenied) {
                         imprimirVentanaNueva();
                     }

@@ -1,5 +1,5 @@
 ---------------------------------------------------------------
-       MANUAL DE CONFIGURACION - JC-RT PRINT BRIDGE (v2.0)
+       MANUAL DE CONFIGURACION - JC-RT PRINT BRIDGE (v2.1)
 ---------------------------------------------------------------
 
 Este programa permite que tu impresora térmica imprima de
@@ -35,6 +35,52 @@ PASOS PARA LA INSTALACIÓN:
 
 ¡LISTO!
 Cualquier pedido realizado se imprimirá automáticamente.
+
+---------------------------------------------------------------
+ANDROID (TABLET) - CENTINELA DE IMPRESIÓN
+---------------------------------------------------------------
+
+Si tienes una tablet Android, puedes usarla como centinela
+de impresión. La tablet se conecta a la impresora por
+Bluetooth o USB (OTG) y imprime automáticamente.
+
+REQUISITOS:
+- Tablet Android con Google Chrome
+- Impresora térmica con Bluetooth o cable USB OTG
+- Conexión a internet en la tablet
+
+PASOS:
+
+1. ABRIR BRIDGE ANDROID:
+   - Abre Chrome en la tablet.
+   - Ve a la dirección: [URL de tu app]/bridge-android.html
+   - (También puedes acceder desde Ajustes -> "Abrir Bridge Android")
+
+2. VINCULAR:
+   - En la web de tu restaurante (Ajustes), genera el "Código de Vinculación".
+   - Copia el código y pégalo en el Bridge Android.
+   - Haz clic en "Vincular y Activar".
+
+3. CONECTAR IMPRESORA:
+   - EN BLUETOOTH: Haz clic en "Conectar Impresora Bluetooth"
+     y selecciona tu impresora de la lista.
+   - EN USB: Conecta la impresora con cable USB OTG a la tablet,
+     haz clic en "Conectar Impresora USB" y selecciona el dispositivo.
+   - Haz clic en "Imprimir Prueba" para verificar que funciona.
+
+4. ¡LISTO!
+   - La tablet buscará pedidos cada 5 segundos e imprimirá
+     automáticamente las comandas.
+   - Puedes dejar la tablet encendida como centinela.
+
+NOTAS PARA ANDROID:
+- Usa Google Chrome (otro navegador puede no funcionar).
+- La pantalla se mantiene encendida automáticamente (Wake Lock).
+- Al apagar y encender la tablet, solo necesitas:
+  * Abrir Chrome -> Bridge Android
+  * Hacer clic en "Conectar Impresora" (1 clic)
+  * La vinculación y configuración ya están guardadas.
+- Para instalar como app: Chrome -> Menú -> "Añadir a pantalla de inicio".
 
 ---------------------------------------------------------------
 NOTAS IMPORTANTES:
