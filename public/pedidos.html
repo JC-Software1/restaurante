@@ -49,6 +49,9 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.2);
             flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .sidebar-brand {
@@ -81,6 +84,28 @@
             font-size: 11px;
             color: rgba(255, 255, 255, 0.7);
             margin: 2px 0 0 0;
+        }
+
+        .btn-logout-header {
+            width: 32px;
+            height: 32px;
+            background: rgba(229, 62, 62, 0.2);
+            color: #fc8181;
+            border: 1px solid rgba(229, 62, 62, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-logout-header:hover {
+            background: #e53e3e;
+            color: white;
+            border-color: #e53e3e;
         }
 
         .sidebar-nav {
@@ -2262,6 +2287,7 @@
                     <p>Sistema de gestión</p>
                 </div>
             </a>
+            <button class="btn-logout-header" onclick="logout()" title="Cerrar Sesión">🚪</button>
         </div>
 
         <nav class="sidebar-nav">
@@ -2335,10 +2361,6 @@
                     <p>Administrador</p>
                 </div>
             </div>
-            <button class="btn-logout-sidebar" onclick="logout()">
-                <span>🚪</span>
-                <span>Cerrar Sesión</span>
-            </button>
         </div>
     </aside>
 
