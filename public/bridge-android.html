@@ -606,6 +606,9 @@
 
                 usbDevice = await navigator.usb.requestDevice({ filters: [] });
 
+                // Si el dispositivo ya estaba abierto de una sesión anterior, cerrarlo primero
+                try { await usbDevice.close(); } catch(_) {}
+
                 await usbDevice.open();
 
                 // Seleccionar la primera configuración si no hay ninguna activa
@@ -614,6 +617,7 @@
                 }
 
                 // Buscar la interfaz y alternate setting que tenga un endpoint OUT
+                // Probamos TODAS las interfaces para compatibilidad con Android
                 let foundIface = null;
                 let foundAlt = null;
                 let foundEndpoint = null;
@@ -635,15 +639,60 @@
                     throw new Error('No se encontró ningún endpoint de salida en el dispositivo');
                 }
 
-                addLog(`Interfaz: ${foundIface.interfaceNumber}, Endpoint: ${foundEndpoint.endpointNumber}, PacketSize: ${foundEndpoint.packetSize}`, 'info');
+                addLog(`Interfaz: ${foundIface.interfaceNumber}, Alt: ${foundAlt.alternateSetting}, Endpoint: ${foundEndpoint.endpointNumber}, PacketSize: ${foundEndpoint.packetSize}`, 'info');
 
                 // Seleccionar el alternate setting correcto si es necesario
                 if (foundAlt.alternateSetting !== 0) {
-                    await usbDevice.selectAlternateInterface(foundIface.interfaceNumber, foundAlt.alternateSetting);
+                    try {
+                        await usbDevice.selectAlternateInterface(foundIface.interfaceNumber, foundAlt.alternateSetting);
+                    } catch(e) {
+                        addLog(`Advertencia selectAlternate: ${e.message}`, 'warn');
+                    }
                 }
 
-                // Reclamar la interfaz
-                await usbDevice.claimInterface(foundIface.interfaceNumber);
+                // En Android, el OS puede tener la interfaz reclamada.
+                // Intentar releaseInterface primero, luego reclamar.
+                let claimed = false;
+                try {
+                    await usbDevice.releaseInterface(foundIface.interfaceNumber);
+                } catch(_) { /* no importa si falla */ }
+
+                // Primer intento
+                try {
+                    await usbDevice.claimInterface(foundIface.interfaceNumber);
+                    claimed = true;
+                } catch(e1) {
+                    addLog(`Primer intento claimInterface falló: ${e1.message}`, 'warn');
+                    // Segundo intento: cerrar y reabrir el dispositivo
+                    try {
+                        await usbDevice.close();
+                        await new Promise(r => setTimeout(r, 500));
+                        await usbDevice.open();
+                        if (usbDevice.configuration === null) {
+                            await usbDevice.selectConfiguration(1);
+                        }
+                        await usbDevice.claimInterface(foundIface.interfaceNumber);
+                        claimed = true;
+                        addLog('claimInterface exitoso en segundo intento', 'success');
+                    } catch(e2) {
+                        addLog(`Segundo intento claimInterface falló: ${e2.message}`, 'error');
+                    }
+                }
+
+                if (!claimed) {
+                    // En Android esto ocurre porque el OS tiene el driver activo.
+                    // Mostrar instrucciones claras al usuario.
+                    await usbDevice.close();
+                    usbDevice = null;
+                    addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+                    addLog('⚠️ ANDROID: El sistema operativo bloqueó el acceso USB.', 'warn');
+                    addLog('Solución: Desconecta el cable USB, espera 3 segundos y vuelve a conectarlo.', 'warn');
+                    addLog('Cuando Android pregunte "¿Permitir acceso a Chrome?" → toca PERMITIR.', 'warn');
+                    addLog('Si sigue fallando, usa BLUETOOTH en su lugar.', 'warn');
+                    addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'warn');
+                    updateUI();
+                    return;
+                }
 
                 // Guardar referencias para envío posterior
                 usbDevice._printIfaceNum = foundIface.interfaceNumber;
@@ -660,9 +709,12 @@
             } catch (error) {
                 if (error.name === 'NotFoundError') {
                     addLog('Búsqueda USB cancelada', 'warn');
+                } else if (error.message && error.message.toLowerCase().includes('claim')) {
+                    addLog('⚠️ Error de acceso USB en Android. Desconecta y reconecta el cable USB, y permite el acceso a Chrome.', 'error');
                 } else {
                     addLog(`❌ Error USB: ${error.message}`, 'error');
                 }
+                if (usbDevice) { try { await usbDevice.close(); } catch(_) {} }
                 usbDevice = null;
                 updateUI();
             }
@@ -679,20 +731,13 @@
                 throw new Error('Endpoint de impresión no configurado. Reconecta la impresora.');
             }
 
-            // Enviar en chunks del tamaño correcto del endpoint
-            // Añadir padding al último chunk si no es múltiplo de packetSize
-            const CHUNK_SIZE = packetSize * 8; // Enviar varios paquetes a la vez para mayor velocidad
+            // Enviar los datos en chunks basados en el packetSize real del endpoint
+            // NO hacer padding: las impresoras térmicas imprimen los bytes nulos como espacios
+            const CHUNK_SIZE = packetSize * 16; // múltiplo del packetSize para mayor velocidad
             let i = 0;
             while (i < data.length) {
                 const end = Math.min(i + CHUNK_SIZE, data.length);
-                let chunk = data.slice(i, end);
-
-                // Si el chunk no es múltiplo del packetSize, hacer padding con zeros
-                if (chunk.length % packetSize !== 0) {
-                    const padded = new Uint8Array(Math.ceil(chunk.length / packetSize) * packetSize);
-                    padded.set(chunk);
-                    chunk = padded;
-                }
+                const chunk = data.slice(i, end);
 
                 try {
                     const result = await usbDevice.transferOut(endpointNumber, chunk);
