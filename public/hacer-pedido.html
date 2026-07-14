@@ -1211,6 +1211,13 @@
                 padding: 5px;
             }
 
+            .comanda-mesero {
+                font-size: 14pt;
+                text-align: center;
+                margin: 5px 0 15px 0;
+                font-weight: bold;
+            }
+
             .comanda-body {
                 font-size: 14pt;
                 overflow: visible !important;
@@ -1748,7 +1755,8 @@
                     notas: cart.map(item =>
                         item.notas ? `${item.producto.nombre}: ${item.notas}` : ''
                     ).filter(n => n).join(' | ') || '',
-                    userId: currentUser._id
+                    userId: currentUser._id,
+                    meseroNombre: currentUser.nombre
                 };
 
                 const response = await fetch(`${API_URL}/orders/public`, {
@@ -1872,12 +1880,25 @@
         });
 
         // ==================== LÓGICA DE IMPRESIÓN DE COMANDA ====================
-        function imprimirComanda(orderData) {
-            const autoPrint = localStorage.getItem('autoPrintComanda') === 'true';
-            if (!autoPrint) return;
-
+        async function imprimirComanda(orderData) {
             console.log("🖨️ Iniciando impresión de comanda...");
 
+            // Intentar imprimir via Bridge (PC o Android corriendo el bridge)
+            try {
+                const bridgeRes = await fetch('http://127.0.0.1:3001/print-comanda', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                if (bridgeRes.ok) {
+                    console.log("✅ Comanda enviada al Bridge");
+                    return;
+                }
+            } catch (e) {
+                console.log("⚠️ Bridge no disponible, usando impresión local");
+            }
+
+            // Fallback: imprimir con window.print()
             let printContainer = document.getElementById('comandaPrintContainer');
             if (!printContainer) {
                 printContainer = document.createElement('div');
@@ -1910,6 +1931,7 @@
                 <div class="comanda-mesa">
                     MESA: ${orderData.mesa}
                 </div>
+                ${orderData.meseroNombre ? `<div class="comanda-mesero">MESERO: ${orderData.meseroNombre}</div>` : ''}
                 <div class="comanda-body">
                     ${itemsHtml}
                 </div>
@@ -1918,7 +1940,6 @@
                 </div>
             `;
 
-            // Pequeño delay para asegurar que el DOM se actualice antes de imprimir
             setTimeout(() => {
                 window.print();
             }, 500);

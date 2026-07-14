@@ -145,6 +145,7 @@ async function imprimirPedido(order, isClon = false) {
         printer.bold(true);
         printer.println(`COMANDA - MESA: ${order.mesa}`);
         printer.bold(false);
+        if (order.meseroNombre) printer.println(`Mesero: ${order.meseroNombre}`);
         printer.println(`Fecha: ${new Date().toLocaleString()}`);
         printer.println("--------------------------------");
         printer.alignLeft();
@@ -206,6 +207,17 @@ app.post('/print-factura', async (req, res) => {
         await printer.execute();
         res.json({ success: true });
     } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ENDPOINT PARA COMANDA (desde hacer-pedido)
+app.post('/print-comanda', async (req, res) => {
+    const order = req.body;
+    const success = await imprimirPedido(order, false);
+    if (success) {
+        res.json({ success: true });
+    } else {
+        res.status(500).json({ success: false, message: 'Error imprimiendo comanda' });
+    }
 });
 
 app.get('/', (req, res) => {
