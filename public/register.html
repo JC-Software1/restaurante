@@ -616,7 +616,11 @@
                     localStorage.setItem('usuario', JSON.stringify(data.usuario));
 
                     setTimeout(() => {
-                        window.location.href = 'productos.html';
+                        if (data.usuario.rol === 'mesero') {
+                            window.location.href = 'pedidos.html';
+                        } else {
+                            window.location.href = 'productos.html';
+                        }
                     }, 1500);
                 } else {
                     showAlert(data.message || 'Error al crear la cuenta', 'error');

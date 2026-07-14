@@ -1463,7 +1463,7 @@
                 }
 
                 if (currentUser.rol !== 'admin') {
-                    window.location.href = 'productos.html';
+                    window.location.href = currentUser.rol === 'mesero' ? 'pedidos.html' : 'productos.html';
                     return;
                 }
 
