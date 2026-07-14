@@ -799,7 +799,7 @@
         const ESC_BOLD_OFF    = new Uint8Array([0x1B, 0x45, 0x00]);
         const ESC_DOUBLE_ON   = new Uint8Array([0x1D, 0x21, 0x11]);
         const ESC_DOUBLE_OFF  = new Uint8Array([0x1D, 0x21, 0x00]);
-        const ESC_FEED_8      = new Uint8Array([0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A]); // 8 saltos de línea crudos
+        const ESC_FEED_12     = new Uint8Array([0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A]); // 12 saltos de línea crudos
         const ESC_CUT         = new Uint8Array([0x1D, 0x56, 0x00]);
         const NL              = new Uint8Array([0x0A]);        // \n
         const NL2             = new Uint8Array([0x0A, 0x0A]);  // \n\n
@@ -895,9 +895,9 @@
                     nombreWrapped.forEach(l => { add(l); nl(); });
                     addRaw(ESC_BOLD_OFF);
 
-                    // Notas del ítem
-                    if (item.notas && item.notas.trim()) {
-                        const notaLines = wrapText(`  >> ${item.notas.trim()}`, W);
+                    // Notas del ítem (se guarda como 'nota' en singular en la base de datos)
+                    if (item.nota && item.nota.trim()) {
+                        const notaLines = wrapText(`  >> ${item.nota.trim()}`, W);
                         notaLines.forEach(l => { add(l); nl(); });
                     }
 
@@ -936,7 +936,7 @@
             nl2();
 
             // Avance de papel y corte
-            addRaw(ESC_FEED_8);
+            addRaw(ESC_FEED_12);
             addRaw(ESC_CUT);
 
             return buildEscPosBytes(parts);
@@ -1011,9 +1011,9 @@
                 const shortName = nombre.length > maxNombre ? nombre.substring(0, maxNombre) : nombre;
                 add(col2(shortName, `${cant} ${totalItem}`));
                 nl();
-                // Notas del item
-                if (item.notas && item.notas.trim()) {
-                    add(`  >> ${item.notas.trim()}`);
+                // Notas del item (se guarda como 'nota' en singular en la base de datos)
+                if (item.nota && item.nota.trim()) {
+                    add(`  >> ${item.nota.trim()}`);
                     nl();
                 }
             });
@@ -1041,7 +1041,7 @@
             nl2();
 
             // Avance de papel y corte
-            addRaw(ESC_FEED_8);
+            addRaw(ESC_FEED_12);
             addRaw(ESC_CUT);
 
             return buildEscPosBytes(parts);
