@@ -65,7 +65,8 @@ router.get('/public/restaurante', async (req, res) => {
       success: true,
       count: products.length,
       data: products,
-      userId: usuarios[0]._id // Para mantener compatibilidad
+      userId: usuarios[0]._id,
+      userName: usuarios[0].nombre
     });
   } catch (error) {
     console.error('❌ Error:', error);

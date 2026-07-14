@@ -1319,6 +1319,23 @@
             }
         }
 
+        @media print {
+            html, body { margin: 0 !important; padding: 0 !important; width: 100%; overflow: visible !important; height: auto !important; }
+            body > *:not(#comandaPrintContainer) { display: none !important; }
+            #comandaPrintContainer, #comandaPrintContainer * { visibility: visible; }
+            #comandaPrintContainer { display: block !important; position: fixed; left: 0; top: 0; width: 100%; padding: 5mm; color: #000; background: #fff; font-family: 'Courier New', monospace; box-sizing: border-box; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .comanda-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 15px; }
+            .comanda-header h1 { font-size: 20pt; margin: 5px 0; }
+            .comanda-mesa { font-size: 24pt; font-weight: bold; text-align: center; margin: 15px 0; border: 2px solid #000; padding: 5px; }
+            .comanda-mesero { font-size: 14pt; text-align: center; margin: 5px 0 15px 0; font-weight: bold; }
+            .comanda-body { font-size: 14pt; overflow: visible !important; }
+            .comanda-item { margin-bottom: 12px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; page-break-inside: avoid; break-inside: avoid; }
+            .item-main { font-weight: bold; margin-bottom: 2px; }
+            .item-notes { font-size: 11pt; font-style: italic; margin-top: 4px; padding-left: 20px; color: #333; word-wrap: break-word; }
+            .comanda-footer { margin-top: 20px; text-align: center; font-size: 10pt; border-top: 1px dashed #000; padding-top: 10px; page-break-inside: avoid; }
+            @page { margin: 0; size: 80mm auto; }
+        }
+
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -2263,6 +2280,10 @@
         .perf-medium .order-card { box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important; }
         .perf-medium .mesero-badge { box-shadow: 0 2px 4px rgba(102,126,234,0.2) !important; }
         .perf-medium .sidebar { box-shadow: 2px 0 10px rgba(0,0,0,0.08) !important; }
+    </style>
+
+    <style>
+        #comandaPrintContainer { display: none; }
     </style>
 
 
@@ -3359,12 +3380,14 @@
                     producto: item.producto._id,
                     cantidad: item.cantidad,
                     precio: item.producto.precio,
+                    nombreProducto: item.producto.nombre,
                     alimentosExcluidos: item.alimentosExcluidos || [],
                     alimentosAjustados: item.alimentosAjustados || [],
                     nota: item.nota || ''
                 })),
                 notas: notas,
                 userId: currentUser._id,
+                meseroNombre: currentUser.nombre,
                 ignorarStockAlimentos: productosConAlimentosAgotados.length > 0
             };
 
@@ -3383,6 +3406,7 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    imprimirComanda(orderData);
                     Swal.fire({ icon: (('✅ Pedido creado exitosamente').toLowerCase().includes("error") || ('✅ Pedido creado exitosamente').toLowerCase().includes("falla") || ('✅ Pedido creado exitosamente').toLowerCase().includes("incorrect")) ? "error" : "success", text: '✅ Pedido creado exitosamente', timer: 3000, showConfirmButton: false });
                     document.getElementById('orderForm').reset();
                     selectedItems = [];
@@ -6243,7 +6267,8 @@
                     alimentosAjustados: item.alimentosAjustados || [],
                     nota: item.nota || ''
                 })),
-                notas: notas
+                notas: notas,
+                meseroNombre: currentUser.nombre
             };
 
             if (!isEditing) {
@@ -6268,6 +6293,7 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    imprimirComanda(orderData);
                     cerrarModalPedidoMesa();
                     mostrarNotificacionExito(isEditing
                         ? '✅ Pedido actualizado: ' + mesaActualizada
@@ -6555,6 +6581,66 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAndShowShortcutOnboarding();
         });
+
+        // ==================== LÓGICA DE IMPRESIÓN DE COMANDA ====================
+        async function imprimirComanda(orderData) {
+            console.log("🖨️ Iniciando impresión de comanda...");
+
+            try {
+                const bridgeRes = await fetch('http://127.0.0.1:3001/print-comanda', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                if (bridgeRes.ok) {
+                    console.log("✅ Comanda enviada al Bridge");
+                    return;
+                }
+            } catch (e) {
+                console.log("⚠️ Bridge no disponible, usando impresión local");
+            }
+
+            let printContainer = document.getElementById('comandaPrintContainer');
+            if (!printContainer) {
+                printContainer = document.createElement('div');
+                printContainer.id = 'comandaPrintContainer';
+                document.body.appendChild(printContainer);
+            }
+
+            const now = new Date();
+            const fechaStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+            let itemsHtml = (orderData.items || []).map(item => {
+                const itemNota = item.nota || item.notas || '';
+                return `
+                    <div class="comanda-item">
+                        <div class="item-main">
+                            <span>${item.cantidad}x ${item.nombreProducto || item.producto}</span>
+                        </div>
+                        ${itemNota ? `<div class="item-notes">📝 ${itemNota}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            printContainer.innerHTML = `
+                <div class="comanda-header">
+                    <p>JC-RT Restaurante</p>
+                    <h1>${orderData.meseroNombre || 'COMANDA'}</h1>
+                    <p>${fechaStr}</p>
+                </div>
+                <div class="comanda-mesa">
+                    MESA: ${orderData.mesa}
+                </div>
+                <div class="comanda-body">
+                    ${itemsHtml}
+                </div>
+                <div class="comanda-footer">
+                    <p>¡Buen provecho!</p>
+                </div>
+            `;
+
+            setTimeout(() => { window.print(); }, 500);
+        }
     </script>
     <script src="scripts/print-logic.js"></script>
     <script src="scripts/print-monitor.js"></script>
