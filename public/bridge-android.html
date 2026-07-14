@@ -932,7 +932,15 @@
             add(sep('='));
             nl();
             addRaw(ESC_CENTER);
-            add(isClon ? '-- COPIA COCINA --' : '-- COMANDA --');
+            
+            let footerText = '-- COMANDA --';
+            if (isClon) {
+                footerText = '-- COPIA COCINA --';
+            } else if (order.mesero && order.mesero.trim() !== '') {
+                footerText = `-- ${order.mesero.toUpperCase()} --`;
+            }
+            add(footerText);
+            
             nl2();
 
             // Avance de papel y corte
@@ -1379,6 +1387,42 @@
         // Try auto-reconnect on load
         if (config.active) {
             setTimeout(tryAutoReconnect, 1000);
+        }
+
+        // ============================================================
+        //  BACKGROUND AUDIO HACK (Keep Android Tab Alive)
+        // ============================================================
+        const SILENT_AUDIO_B64 = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+        let keepAliveAudio = null;
+
+        function startBackgroundKeepAlive() {
+            if (!keepAliveAudio) {
+                keepAliveAudio = new Audio(SILENT_AUDIO_B64);
+                keepAliveAudio.loop = true;
+                keepAliveAudio.volume = 0.01;
+            }
+            keepAliveAudio.play().catch(e => {});
+        }
+
+        document.body.addEventListener('click', () => {
+            if (config.active && (!keepAliveAudio || keepAliveAudio.paused)) {
+                startBackgroundKeepAlive();
+            }
+        });
+
+        // ============================================================
+        //  BROADCAST CHANNEL FOR INSTANT PRINTING
+        // ============================================================
+        try {
+            const printChannel = new BroadcastChannel('jc-print-channel');
+            printChannel.onmessage = (event) => {
+                if (event.data === 'check-prints') {
+                    addLog('🔔 Señal recibida (Pestaña activa)', 'info');
+                    pollOrders();
+                }
+            };
+        } catch (e) {
+            console.warn('BroadcastChannel no soportado', e);
         }
     </script>
 </body>

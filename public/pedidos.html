@@ -3452,6 +3452,12 @@
                     // Señal para la vista de mesas
                     window.ordersHaveLoaded = true;
                     if (isTableView && mesasData.length > 0) renderMesas(mesasData);
+
+                    // ✅ Notificar al bridge de impresión
+                    try {
+                        const printChannel = new BroadcastChannel('jc-print-channel');
+                        printChannel.postMessage('check-prints');
+                    } catch(e) {}
                 }
             } catch (error) {
                 console.error('Error:', error);

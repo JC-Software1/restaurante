@@ -2298,6 +2298,12 @@
                     applyFilters(needsFullReset, !!hasSearch);
                     currentPage++;
 
+                    // ✅ Notificar al bridge de impresión
+                    try {
+                        const printChannel = new BroadcastChannel('jc-print-channel');
+                        printChannel.postMessage('check-prints');
+                    } catch(e) {}
+
                     // Señal para la vista de mesas
                     window.ordersHaveLoadedHist = true;
                     if (isTableViewHist && mesasDataHist.length > 0) renderMesasHist(mesasDataHist);
