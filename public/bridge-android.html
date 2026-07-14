@@ -608,16 +608,47 @@
 
                 await usbDevice.open();
 
+                // Seleccionar la primera configuración si no hay ninguna activa
                 if (usbDevice.configuration === null) {
                     await usbDevice.selectConfiguration(1);
                 }
 
-                const ifaceNum = usbDevice.configuration.interfaces[0].interfaceNumber;
-                const alternate = usbDevice.configuration.interfaces[0].alternate;
+                // Buscar la interfaz y alternate setting que tenga un endpoint OUT
+                let foundIface = null;
+                let foundAlt = null;
+                let foundEndpoint = null;
 
-                if (alternate.endpoints.length > 0) {
-                    await usbDevice.claimInterface(ifaceNum);
+                for (const iface of usbDevice.configuration.interfaces) {
+                    for (const alt of iface.alternates) {
+                        const ep = alt.endpoints.find(e => e.direction === 'out');
+                        if (ep) {
+                            foundIface = iface;
+                            foundAlt = alt;
+                            foundEndpoint = ep;
+                            break;
+                        }
+                    }
+                    if (foundEndpoint) break;
                 }
+
+                if (!foundEndpoint) {
+                    throw new Error('No se encontró ningún endpoint de salida en el dispositivo');
+                }
+
+                addLog(`Interfaz: ${foundIface.interfaceNumber}, Endpoint: ${foundEndpoint.endpointNumber}, PacketSize: ${foundEndpoint.packetSize}`, 'info');
+
+                // Seleccionar el alternate setting correcto si es necesario
+                if (foundAlt.alternateSetting !== 0) {
+                    await usbDevice.selectAlternateInterface(foundIface.interfaceNumber, foundAlt.alternateSetting);
+                }
+
+                // Reclamar la interfaz
+                await usbDevice.claimInterface(foundIface.interfaceNumber);
+
+                // Guardar referencias para envío posterior
+                usbDevice._printIfaceNum = foundIface.interfaceNumber;
+                usbDevice._printEndpointNum = foundEndpoint.endpointNumber;
+                usbDevice._printPacketSize = foundEndpoint.packetSize || 64;
 
                 config.printer.conexion = 'usb';
                 config.printer.interface = usbDevice.productName || 'USB_PRINTER';
@@ -630,7 +661,7 @@
                 if (error.name === 'NotFoundError') {
                     addLog('Búsqueda USB cancelada', 'warn');
                 } else {
-                    addLog(`Error USB: ${error.message}`, 'error');
+                    addLog(`❌ Error USB: ${error.message}`, 'error');
                 }
                 usbDevice = null;
                 updateUI();
@@ -640,16 +671,49 @@
         async function sendToUSBPrinter(data) {
             if (!usbDevice) throw new Error('No hay impresora USB conectada');
 
-            const iface = usbDevice.configuration.interfaces[0];
-            const alternate = iface.alternate;
-            const endpoint = alternate.endpoints.find(e => e.direction === 'out');
+            // Usar los valores guardados durante la conexión
+            const endpointNumber = usbDevice._printEndpointNum;
+            const packetSize = usbDevice._printPacketSize || 64;
 
-            if (!endpoint) throw new Error('No se encontró endpoint de salida');
+            if (!endpointNumber) {
+                throw new Error('Endpoint de impresión no configurado. Reconecta la impresora.');
+            }
 
-            const CHUNK_SIZE = 64;
-            for (let i = 0; i < data.length; i += CHUNK_SIZE) {
-                const chunk = data.slice(i, i + CHUNK_SIZE);
-                await usbDevice.transferOut(endpoint.endpointNumber, chunk);
+            // Enviar en chunks del tamaño correcto del endpoint
+            // Añadir padding al último chunk si no es múltiplo de packetSize
+            const CHUNK_SIZE = packetSize * 8; // Enviar varios paquetes a la vez para mayor velocidad
+            let i = 0;
+            while (i < data.length) {
+                const end = Math.min(i + CHUNK_SIZE, data.length);
+                let chunk = data.slice(i, end);
+
+                // Si el chunk no es múltiplo del packetSize, hacer padding con zeros
+                if (chunk.length % packetSize !== 0) {
+                    const padded = new Uint8Array(Math.ceil(chunk.length / packetSize) * packetSize);
+                    padded.set(chunk);
+                    chunk = padded;
+                }
+
+                try {
+                    const result = await usbDevice.transferOut(endpointNumber, chunk);
+                    if (result.status !== 'ok') {
+                        throw new Error(`transferOut status: ${result.status}`);
+                    }
+                } catch (e) {
+                    // Si falla, intentar limpiar el halt del endpoint y reintentar una vez
+                    addLog(`Reintentando chunk USB (${e.message})...`, 'warn');
+                    try {
+                        await usbDevice.clearHalt('out', endpointNumber);
+                        const result = await usbDevice.transferOut(endpointNumber, chunk);
+                        if (result.status !== 'ok') throw new Error(`retry status: ${result.status}`);
+                    } catch (e2) {
+                        throw new Error(`Error USB al enviar datos: ${e2.message}`);
+                    }
+                }
+
+                i = end;
+                // Pequeña pausa entre chunks para no saturar el buffer de la impresora
+                if (i < data.length) await new Promise(r => setTimeout(r, 5));
             }
         }
 
