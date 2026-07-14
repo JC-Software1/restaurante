@@ -143,9 +143,9 @@ async function imprimirPedido(order, isClon = false) {
         printer.setTextSize(0, 0);
         printer.println("--------------------------------");
         printer.bold(true);
-        printer.println(`COMANDA - MESA: ${order.mesa}`);
+        printer.println(order.meseroNombre || "COMANDA");
         printer.bold(false);
-        if (order.meseroNombre) printer.println(`Mesero: ${order.meseroNombre}`);
+        printer.println(`MESA: ${order.mesa}`);
         printer.println(`Fecha: ${new Date().toLocaleString()}`);
         printer.println("--------------------------------");
         printer.alignLeft();

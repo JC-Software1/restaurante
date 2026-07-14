@@ -1925,13 +1925,12 @@
             printContainer.innerHTML = `
                 <div class="comanda-header">
                     <p>JC-RT Restaurante</p>
-                    <h1>COMANDA</h1>
+                    <h1>${orderData.meseroNombre || 'COMANDA'}</h1>
                     <p>${fechaStr}</p>
                 </div>
                 <div class="comanda-mesa">
                     MESA: ${orderData.mesa}
                 </div>
-                ${orderData.meseroNombre ? `<div class="comanda-mesero">MESERO: ${orderData.meseroNombre}</div>` : ''}
                 <div class="comanda-body">
                     ${itemsHtml}
                 </div>
