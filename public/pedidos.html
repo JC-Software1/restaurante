@@ -2579,6 +2579,19 @@
                     document.getElementById('adminSection').style.display = 'block';
                 }
 
+                // OCULTAR MENÚ NO NECESARIO PARA MESEROS
+                if (currentUser.rol === 'mesero') {
+                    document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+                        const href = item.getAttribute('href');
+                        if (href && !href.includes('pedidos.html')) {
+                            item.style.display = 'none';
+                        }
+                    });
+                    document.querySelectorAll('.sidebar-nav .nav-section-title').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+
                 await loadProducts();
                 await loadOrders(true);
             } catch (error) {

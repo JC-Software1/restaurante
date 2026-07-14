@@ -1628,6 +1628,23 @@
                 document.getElementById('sidebarUserName').textContent = currentUser.nombre;
                 document.getElementById('sidebarUserAvatar').textContent = currentUser.nombre.charAt(0).toUpperCase();
 
+                if (currentUser.rol === 'admin') {
+                    document.getElementById('adminSection').style.display = 'block';
+                }
+
+                // OCULTAR MENÚ NO NECESARIO PARA MESEROS
+                if (currentUser.rol === 'mesero') {
+                    document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => {
+                        const href = item.getAttribute('href');
+                        if (href && !href.includes('pedidos.html')) {
+                            item.style.display = 'none';
+                        }
+                    });
+                    document.querySelectorAll('.sidebar-nav .nav-section-title').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
+
                 setDefaultDates();
                 await loadProducts();
                 await loadOrders();
