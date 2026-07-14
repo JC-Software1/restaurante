@@ -799,7 +799,7 @@
         const ESC_BOLD_OFF    = new Uint8Array([0x1B, 0x45, 0x00]);
         const ESC_DOUBLE_ON   = new Uint8Array([0x1D, 0x21, 0x11]);
         const ESC_DOUBLE_OFF  = new Uint8Array([0x1D, 0x21, 0x00]);
-        const ESC_FEED_6      = new Uint8Array([0x1B, 0x64, 0x06]); // ESC d 6 (Avance de 6 líneas)
+        const ESC_FEED_8      = new Uint8Array([0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A]); // 8 saltos de línea crudos
         const ESC_CUT         = new Uint8Array([0x1D, 0x56, 0x00]);
         const NL              = new Uint8Array([0x0A]);        // \n
         const NL2             = new Uint8Array([0x0A, 0x0A]);  // \n\n
@@ -914,6 +914,7 @@
                     }
                 });
             }
+            nl(); // Margen de separación después del último plato
 
             // ── Nota general del pedido ──
             if (order.notas && order.notas.trim()) {
@@ -935,7 +936,7 @@
             nl2();
 
             // Avance de papel y corte
-            addRaw(ESC_FEED_6);
+            addRaw(ESC_FEED_8);
             addRaw(ESC_CUT);
 
             return buildEscPosBytes(parts);
@@ -1016,6 +1017,7 @@
                     nl();
                 }
             });
+            nl(); // Margen de separación después del último plato
 
             // ── Total ──
             add(sep('-'));
@@ -1039,7 +1041,7 @@
             nl2();
 
             // Avance de papel y corte
-            addRaw(ESC_FEED_6);
+            addRaw(ESC_FEED_8);
             addRaw(ESC_CUT);
 
             return buildEscPosBytes(parts);
