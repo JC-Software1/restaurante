@@ -938,6 +938,8 @@
                 footerText = '-- COPIA COCINA --';
             } else if (order.mesero && order.mesero.trim() !== '') {
                 footerText = `-- ${order.mesero.toUpperCase()} --`;
+            } else {
+                footerText = '-- COMANDA (SIN MESERO) --';
             }
             add(footerText);
             
@@ -1127,7 +1129,7 @@
                                 break;
                             }
 
-                            addLog(`Imprimiendo: Mesa ${order.mesa} (#${order._id.slice(-6)})`, 'info');
+                            addLog(`Imprimiendo: Mesa ${order.mesa} (#${order._id.slice(-6)}) - Mesero: ${order.mesero || 'UNDEFINED'}`, 'info');
 
                             const bytes = generateComandaBytes(order, false);
                             await sendToPrinter(bytes);
