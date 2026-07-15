@@ -1832,6 +1832,15 @@
                             </select>
                         </div>
 
+                        <!-- Filtro de Orden -->
+                        <div class="filter-group">
+                            <label class="filter-label">🔄 Orden</label>
+                            <select id="filterOrden" class="filter-select" onchange="applyFilters()">
+                                <option value="">Orden de llegada</option>
+                                <option value="invertir">Invertir lista</option>
+                            </select>
+                        </div>
+
                         <!-- Botón Estado Global -->
                         <div class="filter-group" style="justify-content: flex-end;">
                             <button id="btnCambiarEstadoGlobal" class="btn-cambiar-estado-global"
@@ -2459,7 +2468,7 @@
             cancelados.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
             entregados.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
-            const orderedOrders = [...pendientesPreparando, ...listos, ...cancelados, ...entregados];
+            let orderedOrders = [...pendientesPreparando, ...listos, ...cancelados, ...entregados];
 
             // Consistencia para pedidos sin estados claros (retrocompatibilidad)
             const otrosActivos = filteredOrders.filter(o =>
@@ -2467,6 +2476,11 @@
             );
             if (otrosActivos.length > 0) {
                 orderedOrders.unshift(...otrosActivos);
+            }
+
+            // Filtro de orden: invertir lista si está seleccionado
+            if (document.getElementById('filterOrden').value === 'invertir') {
+                orderedOrders.reverse();
             }
 
             if (reset) {
@@ -3190,6 +3204,7 @@
             document.getElementById('filterFechaDesde').value = '';
             document.getElementById('filterFechaHasta').value = '';
             document.getElementById('filterPlato').value = ''; // ✅ NUEVO
+            document.getElementById('filterOrden').value = ''; // Orden de llegada
 
             platoSeleccionado = null; // ✅ NUEVO
 
