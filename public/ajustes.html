@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
+            --primary: #183A37;
+            --primary-dark: #2B2118;
             --secondary: #64748b;
             --bg: #f8fafc;
-            --card-bg: #ffffff;
+            --card-bg: #FFFFFF;
             --text: #1e293b;
             --text-light: #64748b;
             --success: #10b981;
@@ -52,8 +52,12 @@
         }
 
         .sidebar-header {
-            padding: 2rem 1.5rem;
+            padding: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .sidebar-brand {
@@ -65,17 +69,89 @@
         }
 
         .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 24px;
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.3);
         }
 
         .brand-text h2 {
             font-size: 18px;
             font-weight: 700;
+            margin: 0;
         }
 
         .brand-text p {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.5);
+            margin: 2px 0 0 0;
+        }
+
+        .btn-logout-header {
+            width: 32px;
+            height: 32px;
+            background: rgba(229, 62, 62, 0.2);
+            color: #fc8181;
+            border: 1px solid rgba(229, 62, 62, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-logout-header:hover {
+            background: #e53e3e;
+            color: white;
+            border-color: #e53e3e;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .user-avatar-sidebar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            color: white;
+        }
+
+        .user-details p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 2px 0 0 0;
         }
 
         .sidebar-nav {
@@ -110,9 +186,9 @@
         }
 
         .nav-item.active {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-            border-right: 3px solid #667eea;
+            background: rgba(24, 58, 55, 0.1);
+            color: #183A37;
+            border-right: 3px solid #183A37;
         }
 
         .nav-icon {
@@ -167,7 +243,7 @@
         .card-icon {
             width: 40px;
             height: 40px;
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(24, 58, 55, 0.1);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -271,7 +347,7 @@
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(24, 58, 55, 0.1);
         }
 
         .btn-save {
@@ -293,7 +369,7 @@
 
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.3);
         }
 
         .conn-type-btn {
@@ -320,17 +396,17 @@
             justify-content: center;
             padding: 12px;
             background: #f8fafc;
-            border: 1.5px solid #3b82f6;
+            border: 1.5px solid #183A37;
             border-radius: 10px;
             text-decoration: none;
-            color: #1e40af;
+            color: #183A37;
             font-size: 13px;
             font-weight: 700;
             transition: all 0.3s;
         }
 
         .download-btn-pro:hover {
-            background: #3b82f6;
+            background: #183A37;
             color: white;
         }
 
@@ -357,6 +433,9 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <script src="/icons.js" defer></script>
     <script src="/performance-mode.js" defer></script>
 </head>
 
@@ -365,54 +444,87 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="administrador.html" class="sidebar-brand">
-                <div class="brand-icon">⚙️</div>
+            <a href="productos.html" class="sidebar-brand">
+                <div class="brand-icon">🍽️</div>
                 <div class="brand-text">
-                    <h2>Configuración</h2>
-                    <p>JC-RT Restaurante</p>
+                    <h2>JC-RT</h2>
+                    <p>Sistema de gestión</p>
                 </div>
             </a>
+            <button class="btn-logout-header" onclick="logout()" title="Cerrar Sesión">🚪</button>
         </div>
 
-        <nav class="sidebar-nav">
+                <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Principal</div>
-                <a href="productos.html" class="nav-item">
-                    <span class="nav-icon">📦</span>
+                <a href="productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Platos</span>
                 </a>
-                <a href="pedidos.html" class="nav-item">
-                    <span class="nav-icon">🍽️</span>
+                <a href="pedidos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Pedidos</span>
                 </a>
-                <a href="gastos.html" class="nav-item">
-                    <span class="nav-icon">🧾</span>
+                <a href="gastos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Gastos</span>
                 </a>
-                <a href="reportes.html" class="nav-item">
-                    <span class="nav-icon">📊</span>
+                <a href="qr-generator.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>QR Generador</span>
+                </a>
+                <a href="reportes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Reportes</span>
                 </a>
-                <a href="alimentos.html" class="nav-item">
-                    <span class="nav-icon">🥘</span>
+                <a href="cocina.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Cocina</span>
+                </a>
+                <a href="catalogo-productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Todos los platos</span>
+                </a>
+                <a href="alimentos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Alimentos</span>
                 </a>
             </div>
 
-            <div class="nav-section-title">Administración</div>
-            <a href="administrador.html" class="nav-item">
-                <span class="nav-icon">👥</span>
-                <span>Meseros</span>
-            </a>
-            <a href="liquidacion.html" class="nav-item">
-                <span class="nav-icon">💵</span>
-                <span>Liquidación</span>
-            </a>
-            <a href="ajustes.html" class="nav-item active">
-                <span class="nav-icon">⚙️</span>
-                <span>Ajustes</span>
-            </a>
+            <div class="nav-section" id="adminSection" style="display: none;">
+                <div class="nav-section-title">Administración</div>
+                <a href="administrador.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Gestión de Meseros</span>
+                </a>
+                <a href="liquidacion.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Liquidación</span>
+                </a>
+                <a href="historial-liquidaciones.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Hist. Liquidaciones</span>
+                </a>
+                <a href="solicitudes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Aceptación de Empleados</span>
+                </a>
+                <a href="ajustes.html" class="nav-item active">
+                    <span class="nav-icon"></span>
+                    <span>Ajustes</span>
+                </a>
+            </div>
         </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar-sidebar" id="sidebarUserAvatar">U</div>
+                <div class="user-details">
+                    <h4 id="sidebarUserName">Cargando...</h4>
+                    <p>Administrador</p>
+                </div>
+            </div>
+        </div>
     </aside>
 
     <main class="content">
@@ -490,15 +602,15 @@
 
                     <div id="link-code-box" style="margin-top: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed #cbd5e1; display: none;">
                         <h5 style="font-size: 13px; color: #1e293b; margin-bottom: 8px;">🔑 Código de Vinculación</h5>
-                        <textarea id="linkCodeText" readonly style="width: 100%; height: 60px; font-size: 10px; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0; background: #fff;"></textarea>
+                        <textarea id="linkCodeText" readonly style="width: 100%; height: 60px; font-size: 10px; padding: 8px; border-radius: 4px; border: 1px solid #e2e8f0; background: #F5EFE1;"></textarea>
                         <div style="display: flex; gap: 10px; margin-top: 10px;">
                             <button class="btn-save" onclick="copyLinkCode()" style="flex: 1; margin-top: 0; padding: 8px; font-size: 12px;">📋 Copiar</button>
                             <a href="http://127.0.0.1:3001" target="_blank" class="download-btn-pro" style="flex: 2; padding: 8px; font-size: 12px; border-color: #10b981; color: #059669;">⚡ Abrir Bridge</a>
                         </div>
                     </div>
 
-                    <div style="margin-top: 1.5rem; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #dbeafe;">
-                        <h5 style="font-size: 13px; color: #1d4ed8; margin-bottom: 10px;">📥 Descargar / Abrir Conector</h5>
+                    <div style="margin-top: 1.5rem; background: #F5EFE1; padding: 1rem; border-radius: 8px; border: 1px solid #F5EFE1;">
+                        <h5 style="font-size: 13px; color: #183A37; margin-bottom: 10px;">📥 Descargar / Abrir Conector</h5>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <a href="https://drive.google.com/file/d/166bU0TsfCe1cgAF38OeXGZKdbNlV-WHY/view?usp=share_link" target="_blank" class="download-btn-pro">
                                 <span>🪟 Windows</span>
@@ -651,6 +763,28 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
         }
+
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                window.location.href = 'index.html';
+            }
+        }
+
+        (function populateSidebar() {
+            const user = JSON.parse(localStorage.getItem('usuario') || 'null');
+            if (user) {
+                const nameEl = document.getElementById('sidebarUserName');
+                const avatarEl = document.getElementById('sidebarUserAvatar');
+                if (nameEl) nameEl.textContent = user.nombre;
+                if (avatarEl) avatarEl.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+            if (user && user.rol === 'admin') {
+                const adminSection = document.getElementById('adminSection');
+                if (adminSection) adminSection.style.display = 'block';
+            }
+        })();
     </script>
     <script src="scripts/tech-support-alert.js"></script>
 </body>

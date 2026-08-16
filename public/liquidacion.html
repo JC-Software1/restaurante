@@ -58,13 +58,13 @@
         .brand-icon {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.3);
         }
 
         .brand-text h2 {
@@ -152,7 +152,7 @@
         }
 
         .nav-item.active {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.2) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(24, 58, 55, 0.2) 0%, transparent 100%);
             color: white;
         }
 
@@ -163,7 +163,7 @@
             top: 0;
             bottom: 0;
             width: 3px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #183A37 0%, #2B2118 100%);
         }
 
         .nav-icon {
@@ -193,7 +193,7 @@
         .user-avatar-sidebar {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -243,7 +243,7 @@
             top: 20px;
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border: none;
             border-radius: 12px;
             color: white;
@@ -253,7 +253,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.4);
         }
 
         .sidebar-overlay {
@@ -304,7 +304,7 @@
 
         .btn-control-caja {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -319,7 +319,7 @@
 
         .btn-control-caja:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.4);
         }
 
         .btn-base {
@@ -407,7 +407,7 @@
         }
 
         .stat-icon.blue {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            background: linear-gradient(135deg, #C9A227 0%, #2B2118 100%);
         }
 
         .stat-icon.green {
@@ -419,7 +419,7 @@
         }
 
         .stat-icon.purple {
-            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+            background: linear-gradient(135deg, #C9A227 0%, #A9881D 100%);
         }
 
         .stat-label {
@@ -504,7 +504,7 @@
         }
 
         .resumen-final {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             padding: 2rem;
             border-radius: 12px;
@@ -549,7 +549,7 @@
             width: 100%;
             padding: 16px;
             background: white;
-            color: #667eea;
+            color: #183A37;
             border: none;
             border-radius: 8px;
             font-size: 16px;
@@ -629,8 +629,8 @@
         .form-select:focus,
         .form-textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #183A37;
+            box-shadow: 0 0 0 3px rgba(24, 58, 55, 0.1);
         }
 
         .form-textarea {
@@ -656,13 +656,13 @@
         }
 
         .btn-modal-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
         }
 
         .btn-modal-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.4);
         }
 
         .btn-modal-secondary {
@@ -977,6 +977,9 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <script src="/icons.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/performance-mode.js" defer></script>
 </head>
@@ -998,60 +1001,63 @@
             <button class="btn-logout-header" onclick="logout()" title="Cerrar Sesión">🚪</button>
         </div>
 
-        <nav class="sidebar-nav">
+                <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Principal</div>
-                <a href="productos.html" class="nav-item">
-                    <span class="nav-icon">📦</span>
+                <a href="productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Platos</span>
                 </a>
-                <a href="pedidos.html" class="nav-item">
-                    <span class="nav-icon">🍽️</span>
+                <a href="pedidos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Pedidos</span>
                 </a>
-                <a href="gastos.html" class="nav-item">
-                    <span class="nav-icon">🧾</span>
+                <a href="gastos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Gastos</span>
                 </a>
-                <a href="qr-generator.html" class="nav-item">
-                    <span class="nav-icon">📱</span>
+                <a href="qr-generator.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>QR Generador</span>
                 </a>
-                <a href="reportes.html" class="nav-item">
-                    <span class="nav-icon">📊</span>
+                <a href="reportes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Reportes</span>
                 </a>
-                <a href="cocina.html" class="nav-item">
-                    <span class="nav-icon">👨‍🍳</span>
+                <a href="cocina.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Cocina</span>
                 </a>
-                <a href="catalogo-productos.html" class="nav-item">
-                    <span class="nav-icon">📜📦</span>
+                <a href="catalogo-productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Todos los platos</span>
+                </a>
+                <a href="alimentos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Alimentos</span>
                 </a>
             </div>
 
-            <!-- SOLO PARA ADMINISTRADORES -->
             <div class="nav-section" id="adminSection" style="display: none;">
                 <div class="nav-section-title">Administración</div>
-                <a href="administrador.html" class="nav-item">
-                    <span class="nav-icon">👥</span>
+                <a href="administrador.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Gestión de Meseros</span>
                 </a>
                 <a href="liquidacion.html" class="nav-item active">
-                    <span class="nav-icon">💵</span>
+                    <span class="nav-icon"></span>
                     <span>Liquidación</span>
                 </a>
-                <a href="historial-liquidaciones.html" class="nav-item">
-                    <span class="nav-icon">📋</span>
+                <a href="historial-liquidaciones.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Hist. Liquidaciones</span>
                 </a>
-                <a href="solicitudes.html" class="nav-item">
-                    <span class="nav-icon">👤✅</span>
+                <a href="solicitudes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Aceptación de Empleados</span>
                 </a>
-                <a href="ajustes.html" class="nav-item">
-                    <span class="nav-icon">⚙️</span>
+                <a href="ajustes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Ajustes</span>
                 </a>
             </div>
@@ -1533,15 +1539,15 @@
                     metodoDetalle = partes.join(' | ');
 
                     if (pagosEf > 0 && pagosTr > 0) {
-                        metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">MIXTO</span>';
+                        metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #A9881D 0%, #2B2118 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">MIXTO</span>';
                     } else if (pagosTr > 0) {
-                        metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">TRANSFERENCIA</span>';
+                        metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">TRANSFERENCIA</span>';
                     }
                 } else if (pedido.metodoPago === 'transferencia') {
-                    metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">TRANSFERENCIA</span>';
+                    metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">TRANSFERENCIA</span>';
                     metodoDetalle = 'Transferencia';
                 } else if (pedido.metodoPago === 'mixto') {
-                    metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">MIXTO</span>';
+                    metodoBadge = '<span style="display: inline-block; margin-left: 8px; padding: 4px 8px; background: linear-gradient(135deg, #A9881D 0%, #2B2118 100%); color: white; border-radius: 6px; font-size: 11px; font-weight: 700;">MIXTO</span>';
                     metodoDetalle = 'Mixto';
                 } else if (pedido.metodoPago) {
                     metodoDetalle = 'Efectivo';
@@ -1593,7 +1599,7 @@
                             <span>
                                 • ${gasto.descripcion}
                                 ${gasto.metodoPago === 'transferencia' ?
-                        '<span style="display: inline-block; margin-left: 6px; padding: 2px 6px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 4px; font-size: 10px; font-weight: 700;">💳 TRANSF</span>'
+                        '<span style="display: inline-block; margin-left: 6px; padding: 2px 6px; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border-radius: 4px; font-size: 10px; font-weight: 700;">💳 TRANSF</span>'
                         : ''}
                             </span>
                             <span style="font-weight: 600; color: #2d3748;">$${gasto.monto.toLocaleString('es-CO')}</span>

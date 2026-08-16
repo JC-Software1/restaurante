@@ -1,0 +1,463 @@
+/* ============================================================
+   JC-RT Design System - Tema claro y oscuro
+   Paleta Claro : Verde oscuro #183A37 · Dorado #C9A227 · Crema #F5EFE1 · Café oscuro #2B2118
+   Paleta Oscuro: Negro carbón #111111 · Verde bosque #183A37 · Dorado envejecido #C9A227
+                  Marfil #F5EFE1 · Gris cálido #A8A39A · Café espresso #2B2118
+   ============================================================ */
+
+:root {
+    --jc-green: #183A37;
+    --jc-green-2: #24524C;
+    --jc-gold: #C9A227;
+    --jc-gold-2: #A9881D;
+    --jc-cream: #F5EFE1;
+    --jc-cream-2: #EDE3CD;
+    --jc-coffee: #2B2118;
+    --jc-coffee-2: #4A3F31;
+
+    --bg: #F5EFE1;
+    --bg-soft: #EDE3CD;
+    --bg-strong: #E4D8BC;
+    --card: #FFFFFF;
+    --card-2: #FBF7EE;
+    --text: #2B2118;
+    --text-muted: #6B614F;
+    --text-soft: #8A7F6B;
+    --border: #D8CDB3;
+    --border-soft: #E6DDC8;
+
+    --primary: #183A37;
+    --primary-2: #24524C;
+    --primary-soft: rgba(24, 58, 55, 0.12);
+    --accent: #C9A227;
+    --accent-2: #A9881D;
+    --accent-soft: rgba(201, 162, 39, 0.16);
+
+    --danger: #C0392B;
+    --danger-2: #9E2F23;
+    --danger-soft: rgba(192, 57, 43, 0.12);
+    --success: #2E7D5B;
+    --success-2: #23644A;
+    --success-soft: rgba(46, 125, 91, 0.14);
+    --warning: #B7791F;
+    --warning-soft: rgba(183, 121, 31, 0.16);
+
+    --sidebar-bg: linear-gradient(180deg, #183A37 0%, #2B2118 100%);
+    --sidebar-item-hover: rgba(245, 239, 225, 0.09);
+    --sidebar-item-active: rgba(201, 162, 39, 0.18);
+    --sidebar-text: rgba(245, 239, 225, 0.85);
+    --sidebar-text-muted: rgba(245, 239, 225, 0.45);
+
+    --shadow-sm: 0 1px 3px rgba(43, 33, 24, 0.08);
+    --shadow-md: 0 4px 16px rgba(43, 33, 24, 0.10);
+    --shadow-lg: 0 12px 40px rgba(43, 33, 24, 0.16);
+
+    --radius-xs: 8px;
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 20px;
+    --radius-full: 999px;
+
+    color-scheme: light;
+}
+
+html[data-theme="dark"] {
+    --bg: #111111;
+    --bg-soft: #181818;
+    --bg-strong: #202020;
+    --card: #1B1B1B;
+    --card-2: #222222;
+    --text: #F5EFE1;
+    --text-muted: #A8A39A;
+    --text-soft: #7E7A72;
+    --border: #2B2118;
+    --border-soft: #33291E;
+
+    --primary: #183A37;
+    --primary-2: #24524C;
+    --primary-soft: rgba(24, 58, 55, 0.35);
+    --accent: #C9A227;
+    --accent-2: #D9B53B;
+    --accent-soft: rgba(201, 162, 39, 0.22);
+
+    --danger: #E0614F;
+    --danger-2: #C94B3B;
+    --danger-soft: rgba(224, 97, 79, 0.18);
+    --success: #4FA37E;
+    --success-2: #3E8A67;
+    --success-soft: rgba(79, 163, 126, 0.18);
+    --warning: #D9A23B;
+    --warning-soft: rgba(217, 162, 59, 0.20);
+
+    --sidebar-bg: linear-gradient(180deg, #111111 0%, #183A37 100%);
+    --sidebar-item-hover: rgba(245, 239, 225, 0.08);
+    --sidebar-item-active: rgba(201, 162, 39, 0.20);
+    --sidebar-text: rgba(245, 239, 225, 0.88);
+    --sidebar-text-muted: rgba(245, 239, 225, 0.40);
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+    color-scheme: dark;
+}
+
+/* ============================================================
+   Overrides compartidos (aplican a todas las páginas)
+   ============================================================ */
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    background: var(--sidebar-bg);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+}
+
+.sidebar-header {
+    background: rgba(0, 0, 0, 0.22);
+    border-bottom-color: rgba(245, 239, 225, 0.10);
+}
+
+.brand-icon,
+.user-avatar-sidebar {
+    background: linear-gradient(135deg, var(--jc-gold) 0%, var(--jc-gold-2) 100%);
+    color: var(--jc-coffee);
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.35);
+}
+
+.nav-item {
+    color: var(--sidebar-text);
+}
+
+.nav-item:hover {
+    background: var(--sidebar-item-hover);
+    color: #fff;
+}
+
+.nav-item.active {
+    background: var(--sidebar-item-active);
+    color: #fff;
+}
+
+.nav-item.active::before {
+    background: linear-gradient(180deg, var(--jc-gold) 0%, var(--jc-gold-2) 100%);
+}
+
+.nav-section-title {
+    color: var(--sidebar-text-muted);
+}
+
+.btn-logout-header,
+.btn-logout-sidebar {
+    background: var(--danger-soft);
+    color: #E58F82;
+    border-color: rgba(224, 97, 79, 0.35);
+}
+
+.btn-logout-header:hover,
+.btn-logout-sidebar:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+}
+
+/* --- Botón hamburguesa / menu-toggle --- */
+.menu-toggle {
+    background: linear-gradient(135deg, var(--jc-green) 0%, var(--jc-coffee) 100%);
+    box-shadow: 0 4px 14px rgba(24, 58, 55, 0.45);
+    border-radius: 14px;
+}
+
+.menu-toggle:hover {
+    box-shadow: 0 8px 24px rgba(24, 58, 55, 0.55);
+}
+
+/* --- Texto de página --- */
+.page-title {
+    color: var(--text);
+}
+
+.page-subtitle {
+    color: var(--text-muted);
+}
+
+/* --- Tarjetas --- */
+.card,
+.glass-card,
+.product-card,
+.pedido-card,
+.order-card {
+    background: var(--card);
+    border-color: var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+    background: var(--card-2);
+    border-bottom-color: var(--border-soft);
+}
+
+.card-header h2 {
+    color: var(--text);
+}
+
+/* --- Formularios --- */
+.form-input,
+.form-select,
+.form-textarea {
+    background: var(--card);
+    border-color: var(--border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--text-soft);
+}
+
+.form-label {
+    color: var(--text);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    background: var(--card);
+}
+
+/* --- Botones --- */
+.btn-primary,
+.btn-submit,
+.btn-add-main,
+.btn-change-view,
+.btn-send-order {
+    background: linear-gradient(135deg, var(--jc-green) 0%, var(--jc-coffee) 100%);
+    color: #F5EFE1;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 14px rgba(24, 58, 55, 0.35);
+}
+
+.btn-primary:hover,
+.btn-submit:hover,
+.btn-add-main:hover,
+.btn-change-view:hover,
+.btn-send-order:hover {
+    box-shadow: 0 8px 24px rgba(24, 58, 55, 0.5);
+}
+
+.btn-action,
+.btn-edit,
+.btn-filter,
+.btn-toggle,
+.btn-clear-filters,
+.btn-secondary,
+.btn-modal-secondary {
+    background: var(--primary-soft);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+html[data-theme="dark"] .btn-action,
+html[data-theme="dark"] .btn-edit,
+html[data-theme="dark"] .btn-filter,
+html[data-theme="dark"] .btn-toggle,
+html[data-theme="dark"] .btn-clear-filters,
+html[data-theme="dark"] .btn-secondary,
+html[data-theme="dark"] .btn-modal-secondary {
+    background: var(--card-2);
+    color: var(--text);
+}
+
+.btn-delete,
+.btn-cancelar {
+    background: var(--danger-soft);
+    color: var(--danger);
+    border: 1px solid rgba(192, 57, 43, 0.3);
+    border-radius: var(--radius-sm);
+}
+
+.btn-modal-primary {
+    background: linear-gradient(135deg, var(--jc-gold) 0%, var(--jc-gold-2) 100%);
+    color: #2B2118;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 14px rgba(201, 162, 39, 0.35);
+}
+
+/* --- Estado / badges --- */
+.status-badge {
+    border-radius: var(--radius-full);
+}
+
+.status-pendiente {
+    background: var(--warning-soft);
+    color: var(--warning);
+}
+
+.status-preparando {
+    background: var(--accent-soft);
+    color: var(--accent-2);
+}
+
+.status-listo {
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.status-entregado {
+    background: var(--primary-soft);
+    color: var(--primary-2);
+}
+
+.status-cancelado {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+/* --- Modales --- */
+.modal-content {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    background: var(--card-2);
+    border-bottom-color: var(--border-soft);
+}
+
+.modal-header h2 {
+    color: var(--text);
+}
+
+.modal-overlay {
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+/* --- Tablas --- */
+table th {
+    background: var(--bg-strong);
+    color: var(--text);
+    border-bottom-color: var(--border);
+}
+
+table td {
+    color: var(--text);
+    border-bottom-color: var(--border-soft);
+}
+
+table tr:hover td {
+    background: var(--card-2);
+}
+
+/* --- Búsqueda / filtros --- */
+.search-input,
+.filter-input,
+.filter-select,
+.search-box {
+    background: var(--card);
+    border-color: var(--border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+}
+
+.search-input:focus,
+.filter-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* --- Estados vacíos --- */
+.empty-state {
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    color: var(--accent);
+}
+
+/* --- Alertas --- */
+.alert-success {
+    background: var(--success-soft);
+    color: var(--success);
+    border-color: rgba(46, 125, 91, 0.3);
+}
+
+.alert-error {
+    background: var(--danger-soft);
+    color: var(--danger);
+    border-color: rgba(192, 57, 43, 0.3);
+}
+
+/* --- Barras de desplazamiento --- */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-soft);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-soft);
+}
+
+/* --- Iconos SVG inyectados (sistema de iconos) --- */
+.jc-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.nav-item .jc-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.nav-item.active .jc-icon {
+    color: var(--jc-gold);
+}
+
+/* --- Transición global suave para tema --- */
+body,
+.card,
+.glass-card,
+.product-card,
+.pedido-card,
+.order-card,
+.card-header,
+.form-input,
+.form-select,
+.form-textarea,
+.btn-primary,
+.btn-submit,
+.btn-add-main,
+.modal-content {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ============================================================
+   Responsive refinements (Apple-style en todas las pantallas)
+   ============================================================ */

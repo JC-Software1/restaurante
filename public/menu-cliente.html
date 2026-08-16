@@ -7,11 +7,14 @@
     <title>Menú del Cliente</title>
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#183A37">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <script src="/icons.js" defer></script>
     <style>
         * {
             margin: 0;
@@ -20,8 +23,8 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(160deg, #183A37 0%, #2B2118 100%);
             min-height: 100vh;
             padding: 1rem;
             display: flex;
@@ -29,14 +32,25 @@
             justify-content: center;
         }
 
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle at 15% 20%, rgba(201, 162, 39, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(201, 162, 39, 0.10) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
         .container {
             max-width: 600px;
             width: 100%;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
             text-align: center;
-            color: white;
+            color: #F5EFE1;
             margin-bottom: 2rem;
             animation: fadeIn 0.6s ease;
         }
@@ -45,34 +59,36 @@
             font-size: 32px;
             font-weight: 800;
             margin-bottom: 8px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.5px;
         }
 
         .header p {
             font-size: 16px;
-            opacity: 0.9;
+            opacity: 0.85;
+            color: #F5EFE1;
         }
 
         .mesa-info {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(245, 239, 225, 0.97);
             padding: 1rem 1.5rem;
-            border-radius: 12px;
+            border-radius: 16px;
             margin-bottom: 2rem;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
             animation: slideUp 0.6s ease;
+            border: 1px solid rgba(201, 162, 39, 0.4);
         }
 
         .mesa-info h2 {
             font-size: 24px;
             font-weight: 700;
-            color: #1a202c;
+            color: #183A37;
             margin-bottom: 4px;
         }
 
         .mesa-info p {
             font-size: 14px;
-            color: #718096;
+            color: #6B614F;
         }
 
         .options-grid {
@@ -82,20 +98,20 @@
         }
 
         .option-card {
-            background: white;
-            border-radius: 16px;
+            background: rgba(245, 239, 225, 0.98);
+            border-radius: 20px;
             padding: 2rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            border: 3px solid transparent;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+            border: 2px solid transparent;
         }
 
         .option-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
-            border-color: #667eea;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            border-color: #C9A227;
         }
 
         .option-card:active {
@@ -103,9 +119,22 @@
         }
 
         .option-icon {
-            font-size: 64px;
-            margin-bottom: 1rem;
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 1rem;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #C9A227;
+            box-shadow: 0 8px 24px rgba(24, 58, 55, 0.3);
             animation: bounce 2s infinite;
+        }
+
+        .option-icon svg {
+            width: 40px;
+            height: 40px;
         }
 
         .option-card:nth-child(2) .option-icon {
@@ -115,27 +144,27 @@
         .option-title {
             font-size: 22px;
             font-weight: 700;
-            color: #1a202c;
+            color: #2B2118;
             margin-bottom: 0.5rem;
         }
 
         .option-description {
             font-size: 14px;
-            color: #718096;
+            color: #6B614F;
             line-height: 1.5;
         }
 
         .loading {
             text-align: center;
-            color: white;
+            color: #F5EFE1;
             padding: 3rem;
         }
 
         .loading-spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
+            border: 4px solid rgba(245, 239, 225, 0.25);
+            border-top-color: #C9A227;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 1rem;
@@ -187,7 +216,9 @@
             }
 
             .option-icon {
-                font-size: 48px;
+                width: 68px;
+                height: 68px;
+                border-radius: 18px;
             }
 
             .option-title {
@@ -281,7 +312,7 @@
 
             content.innerHTML = `
                 <div class="header">
-                    <h1>🍽️ Bienvenido</h1>
+                    <h1>Bienvenido</h1>
                     <p>${restaurante}</p>
                 </div>
 
@@ -299,7 +330,9 @@
 
                 <div class="options-grid">
                     <div class="option-card" onclick="irASeguimiento()">
-                        <div class="option-icon">🔍</div>
+                        <div class="option-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/><path d="M8 11h6M11 8v6"/></svg>
+                        </div>
                         <h3 class="option-title">Ver Mi Pedido</h3>
                         <p class="option-description">
                             Consulta el estado actual de tu pedido en tiempo real
@@ -307,7 +340,9 @@
                     </div>
 
                     <div class="option-card" onclick="irAMenu()">
-                        <div class="option-icon">📋</div>
+                        <div class="option-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 9h8M8 13h5M8 17h8"/><path d="M3 8V7a2 2 0 0 1 2-2h1"/></svg>
+                        </div>
                         <h3 class="option-title">Hacer un Pedido</h3>
                         <p class="option-description">
                             Explora nuestro menú y ordena directamente desde tu mesa
@@ -390,7 +425,10 @@
             const content = document.getElementById('content');
             content.innerHTML = `
                 <div class="header">
-                    <h1>😕 Información Incompleta</h1>
+                    <h1>
+                        <svg class="jc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        Información Incompleta
+                    </h1>
                     <p>El código QR no contiene la información necesaria</p>
                 </div>
             `;

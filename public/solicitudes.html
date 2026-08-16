@@ -43,7 +43,7 @@
             top: 20px;
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border: none;
             border-radius: 12px;
             color: white;
@@ -53,7 +53,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.4);
         }
 
         .sidebar-overlay {
@@ -74,6 +74,9 @@
         .sidebar-header {
             padding: 1.5rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .sidebar-brand {
@@ -82,6 +85,89 @@
             gap: 12px;
             color: white;
             text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.3);
+        }
+
+        .brand-text h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 2px 0 0 0;
+        }
+
+        .btn-logout-header {
+            width: 32px;
+            height: 32px;
+            background: rgba(229, 62, 62, 0.2);
+            color: #fc8181;
+            border: 1px solid rgba(229, 62, 62, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-logout-header:hover {
+            background: #e53e3e;
+            color: white;
+            border-color: #e53e3e;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-avatar-sidebar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .user-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            color: white;
+        }
+
+        .user-details p {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 2px 0 0 0;
         }
 
         .nav-section-title {
@@ -110,9 +196,9 @@
         }
 
         .nav-item.active {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.2) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(24, 58, 55, 0.2) 0%, transparent 100%);
             color: white;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid #183A37;
         }
 
         .content-wrapper {
@@ -164,7 +250,7 @@
         .avatar {
             width: 48px;
             height: 48px;
-            background: #667eea;
+            background: #183A37;
             color: white;
             border-radius: 50%;
             display: flex;
@@ -234,6 +320,9 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <script src="/icons.js" defer></script>
     <script src="/performance-mode.js" defer></script>
 </head>
 
@@ -242,37 +331,86 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="administrador.html" class="sidebar-brand">
-                <div style="font-size: 24px;">🛡️</div>
-                <div style="margin-left: 10px;">
-                    <h2 style="color: white; font-size: 18px;">Admin Panel</h2>
+            <a href="productos.html" class="sidebar-brand">
+                <div class="brand-icon">🍽️</div>
+                <div class="brand-text">
+                    <h2>JC-RT</h2>
+                    <p>Sistema de gestión</p>
                 </div>
             </a>
+            <button class="btn-logout-header" onclick="logout()" title="Cerrar Sesión">🚪</button>
         </div>
-        <nav>
-            <div class="nav-section-title">Principal</div>
-            <a href="productos.html" class="nav-item"><span>📦</span> Plato</a>
-            <a href="pedidos.html" class="nav-item"><span>🍽️</span> Pedidos</a>
-            <a href="gastos.html" class="nav-item"><span>🧾</span> Gastos</a>
-            <a href="reportes.html" class="nav-item"><span>📊</span> Reportes</a>
+                <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <a href="productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Platos</span>
+                </a>
+                <a href="pedidos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Pedidos</span>
+                </a>
+                <a href="gastos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Gastos</span>
+                </a>
+                <a href="qr-generator.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>QR Generador</span>
+                </a>
+                <a href="reportes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Reportes</span>
+                </a>
+                <a href="cocina.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Cocina</span>
+                </a>
+                <a href="catalogo-productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Todos los platos</span>
+                </a>
+                <a href="alimentos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Alimentos</span>
+                </a>
+            </div>
 
-            <div class="nav-section-title">Administración</div>
-            <a href="administrador.html" class="nav-item">
-                <span>👥</span> Gestión de Meseros
-            </a>
-            <a href="liquidacion.html" class="nav-item">
-                <span>💵</span> Liquidación
-            </a>
-            <a href="historial-liquidaciones.html" class="nav-item">
-                <span>📋</span> Hist. Liquidaciones
-            </a>
-            <a href="solicitudes.html" class="nav-item active">
-                <span>👤✅</span> Aceptación de Empleados
-            </a>
-            <a href="ajustes.html" class="nav-item">
-                <span>⚙️</span> Ajustes
-            </a>
+            <div class="nav-section" id="adminSection" style="display: none;">
+                <div class="nav-section-title">Administración</div>
+                <a href="administrador.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Gestión de Meseros</span>
+                </a>
+                <a href="liquidacion.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Liquidación</span>
+                </a>
+                <a href="historial-liquidaciones.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Hist. Liquidaciones</span>
+                </a>
+                <a href="solicitudes.html" class="nav-item active">
+                    <span class="nav-icon"></span>
+                    <span>Aceptación de Empleados</span>
+                </a>
+                <a href="ajustes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
+                    <span>Ajustes</span>
+                </a>
+            </div>
         </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar-sidebar" id="sidebarUserAvatar">U</div>
+                <div class="user-details">
+                    <h4 id="sidebarUserName">Cargando...</h4>
+                    <p>Administrador</p>
+                </div>
+            </div>
+        </div>
     </aside>
 
     <div class="content-wrapper">
@@ -318,11 +456,28 @@
                 }
 
                 localStorage.setItem('usuario', JSON.stringify(data.usuario));
+
+                const user = data.usuario;
+                const nameEl = document.getElementById('sidebarUserName');
+                const avatarEl = document.getElementById('sidebarUserAvatar');
+                if (nameEl) nameEl.textContent = user.nombre;
+                if (avatarEl) avatarEl.textContent = user.nombre.charAt(0).toUpperCase();
+                const adminSection = document.getElementById('adminSection');
+                if (adminSection) adminSection.style.display = 'block';
+
                 await cargarSolicitudes();
             } catch (error) {
                 window.location.href = 'index.html';
             }
         });
+
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                window.location.href = 'index.html';
+            }
+        }
 
         async function cargarSolicitudes() {
             try {

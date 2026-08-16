@@ -7,7 +7,7 @@
     <title>Mandao - Seguimiento de Pedido</title>
 
     <!-- Mandao PWA -->
-    <meta name="theme-color" content="#FF6600">
+    <meta name="theme-color" content="#183A37">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="/manifest.json">
@@ -25,7 +25,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             min-height: 100vh;
             padding: 1rem;
         }
@@ -121,7 +121,7 @@
         }
 
         .btn-enable-notifications {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             border: none;
             padding: 10px 20px;
@@ -585,7 +585,7 @@
 
         .item-qty {
             font-size: 14px;
-            color: #667eea;
+            color: #C9A227;
             font-weight: 700;
             margin: 0 12px;
         }
@@ -614,7 +614,7 @@
             display: flex;
             justify-content: space-between;
             padding: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 12px;
             color: white;
         }
@@ -679,7 +679,7 @@
 
         .btn-refresh {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -736,7 +736,7 @@
         .push-notification-app-icon {
             width: 18px;
             height: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 5px;
             display: flex;
             align-items: center;
@@ -807,7 +807,7 @@
         }
 
         .push-notification-btn.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
         }
 
@@ -825,7 +825,7 @@
             bottom: 0;
             left: 0;
             height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #C9A227, #A9881D);
             border-radius: 0 0 20px 20px;
             animation: progressShrink 5s linear forwards;
         }
@@ -924,7 +924,7 @@
         .ios-pwa-step-number {
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -1003,7 +1003,7 @@
         .ios-pwa-btn {
             width: 100%;
             padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border: none;
             border-radius: 14px;
             color: white;
@@ -1073,6 +1073,9 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <script src="/icons.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/performance-mode.js" defer></script>
 </head>
@@ -1696,7 +1699,7 @@
                     </p>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         <input type="text" id="mesaInput" class="btn-refresh" 
-                               style="background: white; border: 2px solid #667eea; color: #1a202c; text-align: left; cursor: text;"
+                               style="background: white; border: 2px solid #C9A227; color: #1a202c; text-align: left; cursor: text;"
                                placeholder="Ej: Mesa 5, Juan...">
                         <button onclick="buscarPedidoPorInput()" class="btn-refresh">
                             Ver Mi Pedido

@@ -4,8 +4,8 @@
     "description": "Gestión de pedidos en tiempo real",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#FF6600",
+    "background_color": "#F5EFE1",
+    "theme_color": "#183A37",
     "orientation": "portrait-primary",
     "icons": [
         {
