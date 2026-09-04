@@ -3922,9 +3922,11 @@
             const btn = document.getElementById('btnCambiarEstadoGlobal');
             const texto = document.getElementById('textoBotonGlobal');
 
+            if (!btn) return;
+
             if (!platoSeleccionado || productosFiltrados.length === 0) {
                 btn.disabled = true;
-                texto.textContent = 'Cambiar Estado Global';
+                if (texto) texto.textContent = 'Cambiar Estado Global';
                 return;
             }
 
@@ -3948,7 +3950,7 @@
             // Si todos están entregados, deshabilitar
             if (estadoPredominante === 'entregado' || maxCount === 0) {
                 btn.disabled = true;
-                texto.textContent = 'Cambiar Estado Global';
+                if (texto) texto.textContent = 'Cambiar Estado Global';
                 return;
             }
 
@@ -3961,7 +3963,7 @@
             }[siguienteEstado] || '▶️';
 
             btn.disabled = false;
-            texto.textContent = `${emojiEstado} Cambiar a ${siguienteEstado} (${productosFiltrados.length})`;
+            if (texto) texto.textContent = `${emojiEstado} Cambiar a ${siguienteEstado} (${productosFiltrados.length})`;
         }
 
         // ✅ FUNCIÓN PARA CAMBIAR ESTADO GLOBAL
@@ -3998,8 +4000,10 @@
 
             // Deshabilitar botón
             const btn = document.getElementById('btnCambiarEstadoGlobal');
-            btn.disabled = true;
-            btn.innerHTML = '<span>⏳</span><span>Actualizando...</span>';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span><span>Actualizando...</span>';
+            }
 
             try {
                 // Agrupar por pedido para hacer menos peticiones

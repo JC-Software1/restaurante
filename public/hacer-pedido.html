@@ -1264,6 +1264,68 @@
         #comandaPrintContainer {
             display: none;
         }
+
+        /* ==================== BOTÓN FLOTANTE BLUETOOTH ==================== */
+        #btPrinterFab {
+            position: fixed;
+            bottom: 90px;
+            left: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            background: #334155;
+            color: #94a3b8;
+        }
+        #btPrinterFab:active { transform: scale(0.9); }
+        #btPrinterFab.connected {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        #btPrinterFab.connected::after {
+            content: '';
+            position: absolute;
+            top: -3px; right: -3px;
+            width: 14px; height: 14px;
+            background: #34d399;
+            border-radius: 50%;
+            border: 2px solid #0f172a;
+            animation: btPulse 2s infinite;
+        }
+        @keyframes btPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(52,211,153,0.6); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(52,211,153,0); }
+        }
+        #btPrinterFab .bt-tooltip {
+            position: absolute;
+            left: 60px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 1px solid #334155;
+        }
+        #btPrinterFab:hover .bt-tooltip,
+        #btPrinterFab:active .bt-tooltip { opacity: 1; }
+
+        @media print {
+            #btPrinterFab { display: none !important; }
+        }
     </style>
     <link rel="stylesheet" href="/theme.css">
     <script src="/theme.js" defer></script>
@@ -1273,6 +1335,12 @@
 </head>
 
 <body>
+    <!-- BOTÓN FLOTANTE BLUETOOTH -->
+    <button id="btPrinterFab" onclick="toggleBluetoothPrinter()" style="display:none;">
+        🖨️
+        <span class="bt-tooltip" id="btTooltip">Conectar impresora Bluetooth</span>
+    </button>
+
     <!-- HEADER -->
     <header class="header">
         <div class="header-content">
@@ -1891,7 +1959,18 @@
         async function imprimirComanda(orderData) {
             console.log("🖨️ Iniciando impresión de comanda...");
 
-            // Intentar imprimir via Bridge (PC o Android corriendo el bridge)
+            // === PRIORIDAD 1: Bluetooth directo (tablet) ===
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                try {
+                    await BluetoothPrinter.printComanda(orderData);
+                    console.log("✅ Comanda impresa vía Bluetooth directo");
+                    return; // Éxito, no necesita fallback
+                } catch (btErr) {
+                    console.warn("⚠️ Error Bluetooth, intentando Bridge...", btErr.message);
+                }
+            }
+
+            // === PRIORIDAD 2: Bridge PC (localhost:3001) ===
             try {
                 const bridgeRes = await fetch('http://127.0.0.1:3001/print-comanda', {
                     method: 'POST',
@@ -1899,14 +1978,21 @@
                     body: JSON.stringify(orderData)
                 });
                 if (bridgeRes.ok) {
-                    console.log("✅ Comanda enviada al Bridge");
+                    console.log("✅ Comanda enviada al Bridge PC");
                     return;
                 }
             } catch (e) {
-                console.log("⚠️ Bridge no disponible, usando impresión local");
+                console.log("⚠️ Bridge PC no disponible");
             }
 
-            // Fallback: imprimir con window.print()
+            // === PRIORIDAD 3: BroadcastChannel al Bridge Android (otra pestaña) ===
+            try {
+                const printChannel = new BroadcastChannel('jc-print-channel');
+                printChannel.postMessage('check-prints');
+                console.log("📡 Señal enviada al Bridge Android");
+            } catch(e) {}
+
+            // === PRIORIDAD 4: window.print() (último recurso) ===
             let printContainer = document.getElementById('comandaPrintContainer');
             if (!printContainer) {
                 printContainer = document.createElement('div');
@@ -1952,9 +2038,78 @@
             }, 500);
         }
     </script>
+    <script src="scripts/bluetooth-printer.js"></script>
     <script src="scripts/restaurant-switcher.js"></script>
 <script src="scripts/print-monitor.js"></script>
     <script src="scripts/tech-support-alert.js"></script>
+    <script>
+        // ==================== BLUETOOTH PRINTER UI ====================
+        function updateBtFabUI() {
+            const fab = document.getElementById('btPrinterFab');
+            const tooltip = document.getElementById('btTooltip');
+            if (!fab) return;
+
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                fab.classList.add('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltip">✅ ' + (BluetoothPrinter.getPrinterName() || 'Conectada') + '</span>';
+            } else {
+                fab.classList.remove('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltip">Conectar impresora Bluetooth</span>';
+            }
+        }
+
+        async function toggleBluetoothPrinter() {
+            if (typeof BluetoothPrinter === 'undefined') {
+                Swal.fire('Error', 'Módulo Bluetooth no cargado', 'error');
+                return;
+            }
+
+            if (BluetoothPrinter.isConnected()) {
+                const result = await Swal.fire({
+                    title: '🖨️ Impresora Bluetooth',
+                    html: `<p style="margin-bottom:8px">Conectada a: <strong>${BluetoothPrinter.getPrinterName()}</strong></p><p style="font-size:13px;color:#94a3b8">Las comandas se imprimen automáticamente al hacer un pedido.</p>`,
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: '❌ Desconectar',
+                    cancelButtonText: 'Cerrar',
+                    confirmButtonColor: '#dc2626'
+                });
+
+                if (result.isConfirmed) {
+                    BluetoothPrinter.disconnect();
+                    updateBtFabUI();
+                    Swal.fire({ title: 'Desconectada', icon: 'info', timer: 1500, showConfirmButton: false });
+                }
+            } else {
+                const res = await BluetoothPrinter.connect();
+                if (res.success) {
+                    updateBtFabUI();
+                    Swal.fire({
+                        title: '✅ Conectada',
+                        text: `Impresora: ${res.name}. Las comandas se imprimirán automáticamente.`,
+                        icon: 'success',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                } else if (res.error) {
+                    Swal.fire('Error', res.error, 'error');
+                }
+            }
+        }
+
+        // Init: show FAB if Bluetooth is supported and try auto-reconnect
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isSupported()) {
+                document.getElementById('btPrinterFab').style.display = 'flex';
+                await BluetoothPrinter.tryAutoReconnect();
+                updateBtFabUI();
+            }
+        });
+
+        // Listen for connect/disconnect events from the module
+        window.addEventListener('bt-printer-connected', () => updateBtFabUI());
+        window.addEventListener('bt-printer-disconnected', () => updateBtFabUI());
+    </script>
 </body>
 
 </html>
