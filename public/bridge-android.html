@@ -1426,6 +1426,40 @@
         } catch (e) {
             console.warn('BroadcastChannel no soportado', e);
         }
+
+        // ============================================================
+        //  WINDOW.MESSAGE LISTENER FOR DIRECT PRINT DATA
+        // ============================================================
+        window.addEventListener('message', (event) => {
+            if (!event.data || event.data.type !== 'print-comanda') return;
+
+            const order = event.data.order;
+            if (!order) return;
+
+            addLog(`📥 Orden recibida via postMessage: Mesa ${order.mesa}`, 'info');
+
+            if (!bluetoothCharacteristic && !usbDevice) {
+                addLog('Sin impresora conectada', 'warn');
+                return;
+            }
+
+            (async () => {
+                try {
+                    const bytes = generateComandaBytes(order, false);
+                    await sendToPrinter(bytes);
+
+                    if (config.imprimirClon) {
+                        addLog('Imprimiendo clon...', 'info');
+                        const clonBytes = generateComandaBytes(order, true);
+                        await sendToPrinter(clonBytes);
+                    }
+
+                    addLog(`✅ Comanda impresa: Mesa ${order.mesa}`, 'success');
+                } catch (e) {
+                    addLog(`Error imprimiendo: ${e.message}`, 'error');
+                }
+            })();
+        });
     </script>
 </body>
 </html>

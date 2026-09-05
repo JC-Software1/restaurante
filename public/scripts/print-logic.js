@@ -98,10 +98,20 @@
                     });
 
                     if (result.isConfirmed) {
-                        window.open('bridge-android.html', '_blank');
+                        const bridgeWindow = window.open('bridge-android.html', '_blank');
+                        if (bridgeWindow) {
+                            bridgeWindow.addEventListener('load', () => {
+                                setTimeout(() => {
+                                    bridgeWindow.postMessage({
+                                        type: 'print-comanda',
+                                        order: pedidoParaImprimir
+                                    }, '*');
+                                }, 500);
+                            });
+                        }
                         Swal.fire({
                             title: 'Bridge Android abierto',
-                            text: 'Conecta la impresora en el Bridge Android para impresión automática',
+                            text: 'Enviando comanda a la impresora...',
                             icon: 'info',
                             timer: 4000,
                             showConfirmButton: false

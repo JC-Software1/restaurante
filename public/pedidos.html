@@ -12,6 +12,7 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f7fa;
@@ -1320,20 +1321,109 @@
         }
 
         @media print {
-            html, body { margin: 0 !important; padding: 0 !important; width: 100%; overflow: visible !important; height: auto !important; }
-            body > *:not(#comandaPrintContainer) { display: none !important; }
-            #comandaPrintContainer, #comandaPrintContainer * { visibility: visible; }
-            #comandaPrintContainer { display: block !important; position: fixed; left: 0; top: 0; width: 100%; padding: 5mm; color: #000; background: #F5EFE1; font-family: 'Courier New', monospace; box-sizing: border-box; overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .comanda-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 15px; }
-            .comanda-header h1 { font-size: 20pt; margin: 5px 0; }
-            .comanda-mesa { font-size: 24pt; font-weight: bold; text-align: center; margin: 15px 0; border: 2px solid #000; padding: 5px; }
-            .comanda-mesero { font-size: 14pt; text-align: center; margin: 5px 0 15px 0; font-weight: bold; }
-            .comanda-body { font-size: 14pt; overflow: visible !important; }
-            .comanda-item { margin-bottom: 12px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; page-break-inside: avoid; break-inside: avoid; }
-            .item-main { font-weight: bold; margin-bottom: 2px; }
-            .item-notes { font-size: 11pt; font-style: italic; margin-top: 4px; padding-left: 20px; color: #333; word-wrap: break-word; }
-            .comanda-footer { margin-top: 20px; text-align: center; font-size: 10pt; border-top: 1px dashed #000; padding-top: 10px; page-break-inside: avoid; }
-            @page { margin: 0; size: 80mm auto; }
+
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            body>*:not(#comandaPrintContainer) {
+                display: none !important;
+            }
+
+            #comandaPrintContainer,
+            #comandaPrintContainer * {
+                visibility: visible;
+            }
+
+            #comandaPrintContainer {
+                display: block !important;
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 5mm;
+                color: #000;
+                background: #F5EFE1;
+                font-family: 'Courier New', monospace;
+                box-sizing: border-box;
+                overflow: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .comanda-header {
+                text-align: center;
+                border-bottom: 2px dashed #000;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+
+            .comanda-header h1 {
+                font-size: 20pt;
+                margin: 5px 0;
+            }
+
+            .comanda-mesa {
+                font-size: 24pt;
+                font-weight: bold;
+                text-align: center;
+                margin: 15px 0;
+                border: 2px solid #000;
+                padding: 5px;
+            }
+
+            .comanda-mesero {
+                font-size: 14pt;
+                text-align: center;
+                margin: 5px 0 15px 0;
+                font-weight: bold;
+            }
+
+            .comanda-body {
+                font-size: 14pt;
+                overflow: visible !important;
+            }
+
+            .comanda-item {
+                margin-bottom: 12px;
+                border-bottom: 1px dotted #ccc;
+                padding-bottom: 8px;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .item-main {
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+
+            .item-notes {
+                font-size: 11pt;
+                font-style: italic;
+                margin-top: 4px;
+                padding-left: 20px;
+                color: #333;
+                word-wrap: break-word;
+            }
+
+            .comanda-footer {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 10pt;
+                border-top: 1px dashed #000;
+                padding-top: 10px;
+                page-break-inside: avoid;
+            }
+
+            @page {
+                margin: 0;
+                size: 80mm auto;
+            }
         }
 
         @keyframes spin {
@@ -1603,7 +1693,7 @@
             font-size: 20px;
             font-weight: 800;
             color: white;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
             z-index: 2;
             pointer-events: none;
         }
@@ -1636,8 +1726,15 @@
         }
 
         @keyframes tablePulse {
-            0%, 100% { filter: drop-shadow(0 0 4px rgba(229, 62, 62, 0.3)); }
-            50% { filter: drop-shadow(0 0 12px rgba(229, 62, 62, 0.6)); }
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 4px rgba(229, 62, 62, 0.3));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 12px rgba(229, 62, 62, 0.6));
+            }
         }
 
         .mesa-name {
@@ -1675,13 +1772,11 @@
 
         /* ===== MODO ORGANIZAR ===== */
         .organizing-mode {
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 20px,
-                rgba(24, 58, 55, 0.03) 20px,
-                rgba(24, 58, 55, 0.03) 40px
-            );
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(24, 58, 55, 0.03) 20px,
+                    rgba(24, 58, 55, 0.03) 40px);
             border: 2px dashed rgba(24, 58, 55, 0.3);
             border-radius: 16px;
             padding: 1.5rem !important;
@@ -1708,7 +1803,7 @@
         .organizing-mode .mesa-circle.dragging {
             cursor: grabbing !important;
             z-index: 100 !important;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.25));
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
             transform: scale(1.08) !important;
         }
 
@@ -2246,44 +2341,232 @@
         }
 
         /* ✅ OPTIMIZACIONES RENDIMIENTO - Dispositivos de baja capacidad */
-        .perf-low .sidebar { background: #1a202c !important; transition: none !important; }
-        .perf-low .brand-icon { box-shadow: none !important; background: #183A37 !important; }
-        .perf-low .menu-toggle { box-shadow: none !important; }
-        .perf-low .btn-change-view { box-shadow: none !important; }
-        .perf-low .order-card { box-shadow: none !important; border-radius: 8px !important; padding: 1rem !important; }
-        .perf-low .order-card:hover { box-shadow: none !important; }
-        .perf-low .mesero-badge { box-shadow: none !important; background: #183A37 !important; }
-        .perf-low .order-actions { grid-template-columns: repeat(2, 1fr) !important; }
-        .perf-low .btn-action { padding: 8px !important; font-size: 11px !important; }
-        .perf-low .order-card * { transition: none !important; animation: none !important; }
-        .perf-low .gesture-active-jiggle { animation: none !important; }
-        .perf-low .ready-to-undo { animation: none !important; box-shadow: none !important; }
-        .perf-low .ready-to-change-payment { animation: none !important; box-shadow: none !important; }
-        .perf-low .undo-indicator { transition: opacity 0.1s ease !important; box-shadow: none !important; }
-        .perf-low .payment-method-indicator { transition: opacity 0.1s ease !important; box-shadow: none !important; }
+        .perf-low .sidebar {
+            background: #1a202c !important;
+            transition: none !important;
+        }
+
+        .perf-low .brand-icon {
+            box-shadow: none !important;
+            background: #183A37 !important;
+        }
+
+        .perf-low .menu-toggle {
+            box-shadow: none !important;
+        }
+
+        .perf-low .btn-change-view {
+            box-shadow: none !important;
+        }
+
+        .perf-low .order-card {
+            box-shadow: none !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+        }
+
+        .perf-low .order-card:hover {
+            box-shadow: none !important;
+        }
+
+        .perf-low .mesero-badge {
+            box-shadow: none !important;
+            background: #183A37 !important;
+        }
+
+        .perf-low .order-actions {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
+        .perf-low .btn-action {
+            padding: 8px !important;
+            font-size: 11px !important;
+        }
+
+        .perf-low .order-card * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .perf-low .gesture-active-jiggle {
+            animation: none !important;
+        }
+
+        .perf-low .ready-to-undo {
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .ready-to-change-payment {
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .undo-indicator {
+            transition: opacity 0.1s ease !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .payment-method-indicator {
+            transition: opacity 0.1s ease !important;
+            box-shadow: none !important;
+        }
+
         .perf-low .modal-gestion-content,
         .perf-low .modal-pedido-mesa-content,
-        .perf-low [class*="modal"] { box-shadow: none !important; }
-        .perf-low .onboarding-shortcut-popup { box-shadow: none !important; animation: none !important; }
-        .perf-low .notificacion-mandao-alert { animation: none !important; box-shadow: none !important; }
-        .perf-low body::before { display: none !important; }
-        .perf-low .content-wrapper { transition: none !important; }
-        .perf-low .sidebar-nav::-webkit-scrollbar { display: none; }
-        .perf-low .sidebar-nav { scrollbar-width: none; }
-        .perf-low table { font-size: 12px; }
+        .perf-low [class*="modal"] {
+            box-shadow: none !important;
+        }
+
+        .perf-low .onboarding-shortcut-popup {
+            box-shadow: none !important;
+            animation: none !important;
+        }
+
+        .perf-low .notificacion-mandao-alert {
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low body::before {
+            display: none !important;
+        }
+
+        .perf-low .content-wrapper {
+            transition: none !important;
+        }
+
+        .perf-low .sidebar-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .perf-low .sidebar-nav {
+            scrollbar-width: none;
+        }
+
+        .perf-low table {
+            font-size: 12px;
+        }
+
         .perf-low .alimentos-popup,
-        .perf-low .modal-content { box-shadow: none !important; }
-        .perf-low * { will-change: auto !important; }
-        .perf-low .orders-list { contain: layout style; }
+        .perf-low .modal-content {
+            box-shadow: none !important;
+        }
+
+        .perf-low * {
+            will-change: auto !important;
+        }
+
+        .perf-low .orders-list {
+            contain: layout style;
+        }
 
         /* Medium: reducir sombras */
-        .perf-medium .order-card { box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important; }
-        .perf-medium .mesero-badge { box-shadow: 0 2px 4px rgba(24,58,55,0.2) !important; }
-        .perf-medium .sidebar { box-shadow: 2px 0 10px rgba(0,0,0,0.08) !important; }
+        .perf-medium .order-card {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        .perf-medium .mesero-badge {
+            box-shadow: 0 2px 4px rgba(24, 58, 55, 0.2) !important;
+        }
+
+        .perf-medium .sidebar {
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08) !important;
+        }
+
+
+        /* ==================== BOTÓN FLOTANTE BLUETOOTH ==================== */
+        #btPrinterFab {
+            position: fixed;
+            bottom: 90px;
+            left: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            background: #334155;
+            color: #94a3b8;
+        }
+
+        #btPrinterFab:active {
+            transform: scale(0.9);
+        }
+
+        #btPrinterFab.connected {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        #btPrinterFab.connected::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 14px;
+            height: 14px;
+            background: #34d399;
+            border-radius: 50%;
+            border: 2px solid #0f172a;
+            animation: btPulse 2s infinite;
+        }
+
+        @keyframes btPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+            }
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 0 6px rgba(52, 211, 153, 0);
+            }
+        }
+
+        #btPrinterFab .bt-tooltip {
+            position: absolute;
+            left: 60px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 1px solid #334155;
+        }
+
+        #btPrinterFab:hover .bt-tooltip,
+        #btPrinterFab:active .bt-tooltip {
+            opacity: 1;
+        }
+
+        @media print {
+            #btPrinterFab {
+                display: none !important;
+            }
+        }
     </style>
 
+
+
     <style>
-        #comandaPrintContainer { display: none; }
+        #comandaPrintContainer {
+            display: none;
+        }
     </style>
     <link rel="stylesheet" href="/theme.css">
     <script src="/theme.js" defer></script>
@@ -2314,7 +2597,7 @@
             <button class="btn-logout-header" onclick="logout()" title="Cerrar Sesión">🚪</button>
         </div>
 
-                <nav class="sidebar-nav">
+        <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Principal</div>
                 <a href="productos.html" class="nav-item ">
@@ -2400,7 +2683,8 @@
                         <span id="viewModeIconHeader">📋</span>
                         <span id="viewModeTextHeader">Vista Normal</span>
                     </button>
-                    <button class="btn-organizar-mesas" id="btnOrganizarMesas" onclick="toggleOrganizeMesas()" style="display: none; background: #ed8936; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(237, 137, 54, 0.2); transition: all 0.25s ease; font-size: 13px;">
+                    <button class="btn-organizar-mesas" id="btnOrganizarMesas" onclick="toggleOrganizeMesas()"
+                        style="display: none; background: #ed8936; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(237, 137, 54, 0.2); transition: all 0.25s ease; font-size: 13px;">
                         <span id="organizeIcon">🔄</span>
                         <span id="organizeText">Organizar</span>
                     </button>
@@ -2525,6 +2809,13 @@
             </div>
         </div>
     </div>
+
+    <!-- BOTÓN FLOTANTE BLUETOOTH -->
+    <button id="btPrinterFab" onclick="toggleBluetoothPrinter()" style="display:none;">
+        🖨️
+        <span class="bt-tooltip" id="btTooltip">Conectar impresora Bluetooth</span>
+    </button>
+
 
     <!-- Indicador del modo vista -->
     <div class="view-mode-indicator" id="viewModeIndicator" onclick="toggleTableView()">
@@ -3483,7 +3774,7 @@
                     try {
                         const printChannel = new BroadcastChannel('jc-print-channel');
                         printChannel.postMessage('check-prints');
-                    } catch(e) {}
+                    } catch (e) { }
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -3508,7 +3799,7 @@
             }
 
             // ✅ Hash ligero para detectar si realmente cambió algo
-            const ordersHash = orders.map(o => `${o._id}:${o.estado}:${o.items.length}:${o.total}:${(o.pagos||[]).length}`).join('|');
+            const ordersHash = orders.map(o => `${o._id}:${o.estado}:${o.items.length}:${o.total}:${(o.pagos || []).length}`).join('|');
             if (!reset && ordersHash === _lastOrdersHash) return; // No hay cambios, skip render
             _lastOrdersHash = ordersHash;
 
@@ -4253,7 +4544,7 @@
 
                 if (data.success) {
                     console.log('✅ Pedido actualizado correctamente');
-                    
+
                     // ✅ Actualizar estado localmente sin recargar todo
                     const orderIndex = allLoadedOrders.findIndex(o => o._id === orderId);
                     if (orderIndex !== -1) {
@@ -4267,7 +4558,7 @@
                     }
                     _lastOrdersHash = ''; // Forzar re-render
                     displayOrders(allLoadedOrders, true);
-                    
+
                     mostrarNotificacionExito(`✅ Pedido actualizado a "${newStatus}"`);
                 } else {
                     console.error('❌ Error del servidor:', data.message);
@@ -4419,7 +4710,7 @@
 
         // ✅ Polling adaptativo: 3s normal, 8s en bajo rendimiento
         const pollingDelay = (window.__deviceCaps && window.__deviceCaps.tier === 'low') ? 8000 :
-                             (window.__deviceCaps && window.__deviceCaps.tier === 'medium') ? 5000 : 3000;
+            (window.__deviceCaps && window.__deviceCaps.tier === 'medium') ? 5000 : 3000;
 
         const waitForUserPedidos = setInterval(() => {
             if (currentUser && currentUser._id) {
@@ -5431,7 +5722,7 @@
                 <label
                     style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px;">Mesas
                     registradas</label>
-                <button onclick="eliminarTodasLasMesas()" 
+                <button onclick="eliminarTodasLasMesas()"
                     style="padding: 6px 12px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                     🗑️ Eliminar todas
                 </button>
@@ -5539,7 +5830,7 @@
         // RESTAURAR MODO GUARDADO
         document.addEventListener('DOMContentLoaded', () => {
             const savedMode = localStorage.getItem('tableViewMode');
-            
+
             if (savedMode === 'normal') {
                 // Esperar a que los pedidos REALMENTE carguen para cambiar a normal
                 const waitForOrders = setInterval(() => {
@@ -5554,7 +5845,7 @@
                 loadMesas();
                 const btnOrg = document.getElementById('btnOrganizarMesas');
                 if (btnOrg) btnOrg.style.display = 'flex';
-                
+
                 // Además, cuando los pedidos terminen de cargar, re-renderizar
                 // para que las mesas muestren su estado (ocupada/libre)
                 const waitForOrdersThenRefresh = setInterval(() => {
@@ -5661,7 +5952,7 @@
             `;
                 return;
             }
-            
+
             // Set min-height to grid to avoid collapse if mesas are absolutely positioned
             if (mesasFiltradas.some(m => m.positionX != null && m.positionY != null)) {
                 grid.style.position = 'relative';
@@ -5684,8 +5975,8 @@
                 // Label dentro de la mesa
                 const iconContent = mesa.nombre.match(/\d+/) ? mesa.nombre.match(/\d+/)[0] : mesa.nombre.charAt(0).toUpperCase();
                 const badge = pedidosActivos.length > 1 ? `<div class="mesa-badge">${pedidosActivos.length}</div>` : '';
-                
-                const stylePosition = (mesa.positionX != null && mesa.positionY != null) 
+
+                const stylePosition = (mesa.positionX != null && mesa.positionY != null)
                     ? `position: absolute; left: ${mesa.positionX}px; top: ${mesa.positionY}px;`
                     : '';
 
@@ -5741,12 +6032,12 @@
                 </div>
             `;
             }).join('');
-            
+
             if (isOrganizingMesas) {
                 grid.classList.add('organizing-mode');
             }
         }
-        
+
         function toggleOrganizeMesas() {
             isOrganizingMesas = !isOrganizingMesas;
             const btn = document.getElementById('btnOrganizarMesas');
@@ -5759,11 +6050,11 @@
                 icon.textContent = '✅';
                 text.textContent = 'Guardar';
                 document.body.classList.add('is-organizing');
-                
+
                 const circles = grid.querySelectorAll('.mesa-circle');
                 const gridRect = grid.getBoundingClientRect();
                 const scrollTop = grid.scrollTop || 0;
-                
+
                 // 1) Capture each circle's current visual position BEFORE changing layout
                 const positions = [];
                 circles.forEach(circle => {
@@ -5774,43 +6065,43 @@
                         y: rect.top - gridRect.top + scrollTop
                     });
                 });
-                
+
                 // 2) Set grid to relative and fix height
                 grid.style.position = 'relative';
                 grid.style.minHeight = Math.max(gridRect.height, 500) + 'px';
-                
+
                 // 3) Now place each circle at the EXACT same visual position with absolute
-                positions.forEach(({el, x, y}) => {
+                positions.forEach(({ el, x, y }) => {
                     const mesaId = el.dataset.id;
                     const mesa = mesasData.find(m => m._id === mesaId);
-                    
+
                     if (mesa.positionX == null || mesa.positionY == null) {
                         mesa.positionX = x;
                         mesa.positionY = y;
                     }
-                    
+
                     el.style.position = 'absolute';
                     el.style.left = mesa.positionX + 'px';
                     el.style.top = mesa.positionY + 'px';
                     el.style.willChange = 'transform, left, top';
                 });
-                
+
                 // 4) Add organizing-mode AFTER positioning (so the border/bg appears after)
                 grid.classList.add('organizing-mode');
-                
+
             } else {
                 btn.style.background = '#ed8936';
                 icon.textContent = '🔄';
                 text.textContent = 'Organizar';
                 grid.classList.remove('organizing-mode');
                 document.body.classList.remove('is-organizing');
-                
+
                 const circles = grid.querySelectorAll('.mesa-circle');
                 circles.forEach(circle => {
                     circle.classList.remove('dragging');
                     circle.style.willChange = '';
                 });
-                
+
                 guardarPosicionesMesas();
             }
         }
@@ -5822,9 +6113,9 @@
                 positionX: m.positionX,
                 positionY: m.positionY
             }));
-            
+
             if (posiciones.length === 0) return;
-            
+
             try {
                 const response = await fetch(`${API_URL}/mesas/positions`, {
                     method: 'PUT',
@@ -5834,7 +6125,7 @@
                     },
                     body: JSON.stringify({ posiciones })
                 });
-                
+
                 const data = await response.json();
                 if (data.success) {
                     const notif = document.createElement('div');
@@ -6472,7 +6763,7 @@
                         },
                         body: JSON.stringify({ nombre: nuevoNombre.trim() })
                     });
-                    
+
                     const data = await response.json();
                     if (data.success) {
                         mostrarNotificacionExito('✅ Nombre actualizado');
@@ -6505,7 +6796,7 @@
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    
+
                     const data = await response.json();
                     if (data.success) {
                         mostrarNotificacionExito('✅ Todas las mesas eliminadas');
@@ -6584,10 +6875,22 @@
             checkAndShowShortcutOnboarding();
         });
 
-        // ==================== LÓGICA DE IMPRESIÓN DE COMANDA ====================
+// ==================== LÓGICA DE IMPRESIÓN DE COMANDA ====================
         async function imprimirComanda(orderData) {
             console.log("🖨️ Iniciando impresión de comanda...");
 
+            // === PRIORIDAD 1: Bluetooth directo (tablet) ===
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                try {
+                    await BluetoothPrinter.printComanda(orderData);
+                    console.log("✅ Comanda impresa vía Bluetooth directo");
+                    return;
+                } catch (btErr) {
+                    console.warn("⚠️ Error Bluetooth, intentando Bridge...", btErr.message);
+                }
+            }
+
+            // === PRIORIDAD 2: Bridge PC (localhost:3001) ===
             try {
                 const bridgeRes = await fetch('http://127.0.0.1:3001/print-comanda', {
                     method: 'POST',
@@ -6595,13 +6898,43 @@
                     body: JSON.stringify(orderData)
                 });
                 if (bridgeRes.ok) {
-                    console.log("✅ Comanda enviada al Bridge");
+                    console.log("✅ Comanda enviada al Bridge PC");
                     return;
                 }
             } catch (e) {
-                console.log("⚠️ Bridge no disponible, usando impresión local");
+                console.log("⚠️ Bridge PC no disponible");
             }
 
+            // === PRIORIDAD 3: Android Bridge - enviar datos directamente via postMessage ===
+            const isAndroid = /android/i.test(navigator.userAgent);
+            if (isAndroid) {
+                try {
+                    const bridgeWindow = window.open('bridge-android.html', '_blank');
+                    if (bridgeWindow) {
+                        bridgeWindow.addEventListener('load', () => {
+                            setTimeout(() => {
+                                bridgeWindow.postMessage({
+                                    type: 'print-comanda',
+                                    order: orderData
+                                }, '*');
+                            }, 500);
+                        });
+                        console.log("📱 Comanda enviada al Bridge Android via postMessage");
+                        return;
+                    }
+                } catch (e) {
+                    console.log("⚠️ No se pudo abrir Bridge Android");
+                }
+            }
+
+            // === PRIORIDAD 4: BroadcastChannel al Bridge Android (otra pestaña) ===
+            try {
+                const printChannel = new BroadcastChannel('jc-print-channel');
+                printChannel.postMessage('check-prints');
+                console.log("📡 Señal enviada al Bridge Android");
+            } catch (e) { }
+
+            // === PRIORIDAD 5: window.print() (último recurso) ===
             let printContainer = document.getElementById('comandaPrintContainer');
             if (!printContainer) {
                 printContainer = document.createElement('div');
@@ -6643,10 +6976,77 @@
 
             setTimeout(() => { window.print(); }, 500);
         }
+
+        // ==================== BLUETOOTH PRINTER UI ====================
+        function updateBtFabUI() {
+            const fab = document.getElementById('btPrinterFab');
+            const tooltip = document.getElementById('btTooltip');
+            if (!fab) return;
+
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                fab.classList.add('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltip">✅ ' + (BluetoothPrinter.getPrinterName() || 'Conectada') + '</span>';
+            } else {
+                fab.classList.remove('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltip">Conectar impresora Bluetooth</span>';
+            }
+        }
+
+        async function toggleBluetoothPrinter() {
+            if (typeof BluetoothPrinter === 'undefined') {
+                Swal.fire('Error', 'Módulo Bluetooth no cargado', 'error');
+                return;
+            }
+
+            if (BluetoothPrinter.isConnected()) {
+                const result = await Swal.fire({
+                    title: '🖨️ Impresora Bluetooth',
+                    html: `<p style="margin-bottom:8px">Conectada a: <strong>${BluetoothPrinter.getPrinterName()}</strong></p><p style="font-size:13px;color:#94a3b8">Las comandas se imprimen automáticamente al hacer un pedido.</p>`,
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: '❌ Desconectar',
+                    cancelButtonText: 'Cerrar',
+                    confirmButtonColor: '#dc2626'
+                });
+
+                if (result.isConfirmed) {
+                    BluetoothPrinter.disconnect();
+                    updateBtFabUI();
+                    Swal.fire({ title: 'Desconectada', icon: 'info', timer: 1500, showConfirmButton: false });
+                }
+            } else {
+                const res = await BluetoothPrinter.connect();
+                if (res.success) {
+                    updateBtFabUI();
+                    Swal.fire({
+                        title: '✅ Conectada',
+                        text: `Impresora: ${res.name}. Las comandas se imprimirán automáticamente.`,
+                        icon: 'success',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                } else if (res.error) {
+                    Swal.fire('Error', res.error, 'error');
+                }
+            }
+        }
+
+        // Init: show FAB if Bluetooth is supported and try auto-reconnect
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isSupported()) {
+                document.getElementById('btPrinterFab').style.display = 'flex';
+                await BluetoothPrinter.tryAutoReconnect();
+                updateBtFabUI();
+            }
+        });
+
+        // Listen for connect/disconnect events from the module
+        window.addEventListener('bt-printer-connected', () => updateBtFabUI());
+        window.addEventListener('bt-printer-disconnected', () => updateBtFabUI());
     </script>
+    <script src="scripts/bluetooth-printer.js"></script>
     <script src="scripts/print-logic.js"></script>
     <script src="scripts/print-monitor.js"></script>
     <script src="scripts/tech-support-alert.js"></script>
 </body>
-
 </html>
