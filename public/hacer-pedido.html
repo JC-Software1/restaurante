@@ -530,23 +530,16 @@
             font-family: 'Outfit', sans-serif;
             font-size: 1.1rem;
             font-weight: 600;
-            color: var(--white);
+            color: inherit;
             margin-bottom: 4px;
             line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .product-description {
             font-size: 0.85rem;
-            color: var(--silver);
+            color: inherit;
+            opacity: 0.7;
             line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         .product-footer {
@@ -1760,6 +1753,8 @@
                         precio: item.producto.precio,
                         nombreProducto: item.producto.nombre,
                         categoriaProducto: item.producto.categoria,
+                        alimentosExcluidos: [],
+                        alimentosAjustados: [],
                         notas: item.notas || ''
                     })),
                     notas: cart.map(item =>
@@ -1778,7 +1773,6 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    imprimirComanda(orderData);
                     cart = [];
                     updateCart();
                     closeCart();

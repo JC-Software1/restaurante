@@ -564,6 +564,17 @@
                     </label>
                 </div>
 
+                <div class="setting-item" style="border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 0.5rem;">
+                    <div class="setting-info">
+                        <div class="setting-name">🔔 Alertas de impresora</div>
+                        <div class="setting-description">Mostrar aviso cuando no hay impresora conectada al hacer pedidos.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="noPrinterAlertEnabled" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 <div id="print-config-section" style="margin-top: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
                     <div class="form-group">
                         <label class="form-label">Tipo de Conexión</label>
@@ -667,9 +678,11 @@
             const autoPrint = localStorage.getItem('autoPrintComanda') === 'true';
             const imprimirClon = localStorage.getItem('imprimirClon') === 'true';
             currentConnType = localStorage.getItem('printerConnType') || 'sistema';
+            const noPrinterAlertEnabled = localStorage.getItem('noPrinterAlertEnabled') !== 'false'; // default true
             
             document.getElementById('autoPrintSwitch').checked = autoPrint;
             document.getElementById('imprimirClon').checked = imprimirClon;
+            document.getElementById('noPrinterAlertEnabled').checked = noPrinterAlertEnabled;
             document.getElementById('printerInterfaceSistema').value = localStorage.getItem('printerInterfaceSistema') || '';
             document.getElementById('printerInterfaceRed').value = localStorage.getItem('printerInterfaceRed') || '';
             document.getElementById('printerModel').value = localStorage.getItem('printerModel') || 'epson';
@@ -710,6 +723,7 @@
         function saveSettings() {
             localStorage.setItem('autoPrintComanda', document.getElementById('autoPrintSwitch').checked);
             localStorage.setItem('imprimirClon', document.getElementById('imprimirClon').checked);
+            localStorage.setItem('noPrinterAlertEnabled', document.getElementById('noPrinterAlertEnabled').checked);
             localStorage.setItem('printerConnType', currentConnType);
             localStorage.setItem('printerInterfaceSistema', document.getElementById('printerInterfaceSistema').value);
             localStorage.setItem('printerInterfaceRed', document.getElementById('printerInterfaceRed').value);

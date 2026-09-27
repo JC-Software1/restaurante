@@ -1732,6 +1732,10 @@
                 const response = await fetch(url);
 
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        showError('Sin pedidos', 'No hay pedidos activos para esta mesa en este momento.');
+                        return;
+                    }
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(errorData.message || 'No se pudo obtener el pedido');
                 }

@@ -16,6 +16,40 @@
             if(btn) btn.disabled = true;
 
             try {
+                const currUser = typeof currentUser !== 'undefined' ? currentUser : {};
+                const datosFactura = {
+                    _id: pedidoParaImprimir._id,
+                    mesa: pedidoParaImprimir.mesa,
+                    items: pedidoParaImprimir.items,
+                    total: pedidoParaImprimir.total,
+                    restauranteNombre: currUser.nombreRestaurante || "RESTAURANTE",
+                    clienteNombre: pedidoParaImprimir.clienteNombre || '',
+                    clienteCcNit: pedidoParaImprimir.clienteCcNit || ''
+                };
+
+                // === PRIORIDAD 1: Bluetooth directo (tablet) ===
+                if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                    try {
+                        if (typeof mostrarEstadoImpresion === 'function') mostrarEstadoImpresion('imprimiendo');
+                        await BluetoothPrinter.printFactura(datosFactura);
+                        if (typeof mostrarEstadoImpresion === 'function') mostrarEstadoImpresion('exito');
+                        
+                        const btn = document.querySelector('.btn-primary[onclick*="imprimirFacturaPOS"]');
+                        if(btn) btn.disabled = false;
+                        return; // ⬅️ IMPORTANTE: Termina aquí si imprimió por BT
+                    } catch (e) {
+                        console.error('❌ Error imprimiendo factura por Bluetooth directo:', e);
+                        Swal.fire({
+                            title: 'Error Bluetooth',
+                            text: 'No se pudo imprimir por Bluetooth directo. Intentando alternativas...',
+                            icon: 'warning',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        // Si falla, continua a las demás alternativas
+                    }
+                }
+
                 const hasBridge = localStorage.getItem('autoPrintComanda') === 'true';
                 const isAndroid = /android/i.test(navigator.userAgent);
 
@@ -35,15 +69,6 @@
                         if (typeof mostrarEstadoImpresion === 'function') {
                             mostrarEstadoImpresion('imprimiendo');
                         }
-
-                        const currUser = typeof currentUser !== 'undefined' ? currentUser : {};
-                        const datosFactura = {
-                            _id: pedidoParaImprimir._id,
-                            mesa: pedidoParaImprimir.mesa,
-                            items: pedidoParaImprimir.items,
-                            total: pedidoParaImprimir.total,
-                            restauranteNombre: currUser.nombreRestaurante || "RESTAURANTE"
-                        };
 
                         try {
                             const response = await fetch('http://127.0.0.1:3001/print-factura', {
@@ -120,7 +145,14 @@
                         imprimirVentanaNueva();
                     }
                 } else {
-                    imprimirVentanaNueva();
+                    // Sin Bridge, sin Android, sin Bluetooth -> mostrar alerta y NO abrir window.print()
+                    Swal.fire({
+                        title: 'Sin impresora',
+                        text: 'No hay impresora Bluetooth conectada. Conecta una para imprimir facturas.',
+                        icon: 'warning',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
                 }
             } catch (error) {
                 console.error('Error:', error);

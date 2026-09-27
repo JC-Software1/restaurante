@@ -2844,6 +2844,10 @@
         let hasMoreOrders = true;
         let allLoadedOrders = [];
 
+        // Tracking de pedidos impresos localmente para evitar duplicados
+        let printedOrderIds = new Set();
+        const MAX_PRINTED_IDS = 500;
+
         // CARGA INICIAL
         window.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('token');
@@ -3699,7 +3703,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    imprimirComanda(orderData);
+                    imprimirComanda(data.data); // Usar respuesta del servidor (tiene _id)
                     Swal.fire({ icon: (('✅ Pedido creado exitosamente').toLowerCase().includes("error") || ('✅ Pedido creado exitosamente').toLowerCase().includes("falla") || ('✅ Pedido creado exitosamente').toLowerCase().includes("incorrect")) ? "error" : "success", text: '✅ Pedido creado exitosamente', timer: 3000, showConfirmButton: false });
                     document.getElementById('orderForm').reset();
                     selectedItems = [];
@@ -4221,8 +4225,26 @@
             // Obtener los datos completos del pedido antes de preguntar por impresión
             await obtenerDatosPedidoParaImprimir(currentOrderIdForPayment);
 
-            // Mostrar modal de confirmación de impresión
-            document.getElementById('modalConfirmarImpresion').style.display = 'flex';
+            // Verificar si hay impresora Bluetooth (local o compartida)
+            const hasPrinter = typeof BluetoothPrinter !== 'undefined' && 
+                (BluetoothPrinter.isConnected() || BluetoothPrinter.isAnyRestaurantPrinterConnected());
+
+            if (hasPrinter && pedidoParaImprimir) {
+                // Hay impresora → imprimir factura AUTOMÁTICAMENTE sin modal
+                try {
+                    await imprimirFacturaPOS();
+                } catch (error) {
+                    console.error('Error al imprimir factura:', error);
+                }
+            } else {
+                // NO hay impresora → mostrar alerta y continuar sin imprimir
+                if (typeof BluetoothPrinter !== 'undefined' && !BluetoothPrinter.isConnected() && !BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                    // La alerta ya la muestra imprimirFacturaPOS internamente
+                }
+            }
+
+            // Registrar el pago final (continúa sin esperar impresión)
+            confirmarImpresion(false);
         }
 
         async function obtenerDatosPedidoParaImprimir(orderId) {
@@ -4686,13 +4708,27 @@
                         displayOrders(newOrders);
                         document.getElementById('orderCount').textContent = data.count;
 
-                        if (!isFirstLoadPedidos && newOrders.length > lastOrderCountPedidos) {
-                            playNotificationSoundPedidos();
-                            if (newOrders[0]?.source === 'mandao') {
-                                mostrarNotificacionExito('🚲 ¡TIENES UN MANDAO!');
-                                if (typeof alertarNuevoPedidoMandao === 'function') alertarNuevoPedidoMandao();
-                            } else {
-                                mostrarNotificacionExito('🔔 Nuevo pedido recibido');
+                        if (!isFirstLoadPedidos) {
+                            const prevIds = new Set((window.previousOrders || []).map(o => o._id));
+                            const actuallyNewOrders = newOrders.filter(o => !prevIds.has(o._id));
+                            
+                            if (actuallyNewOrders.length > 0) {
+                                playNotificationSoundPedidos();
+                                
+                                actuallyNewOrders.forEach(newOrder => {
+                                    if (newOrder.source === 'mandao') {
+                                        mostrarNotificacionExito('🚲 ¡TIENES UN MANDAO!');
+                                        if (typeof alertarNuevoPedidoMandao === 'function') alertarNuevoPedidoMandao();
+                                    } else {
+                                        mostrarNotificacionExito('🔔 Nuevo pedido recibido');
+                                    }
+                                    
+                                    // AUTO IMPRIMIR (Impresora Bluetooth conectada a la tablet)
+                                    if (typeof imprimirComanda === 'function') {
+                                        console.log('🖨️ Auto-imprimiendo nuevo pedido remoto:', newOrder._id);
+                                        imprimirComanda(newOrder);
+                                    }
+                                });
                             }
                         }
                     }
@@ -6586,7 +6622,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    imprimirComanda(orderData);
+                    imprimirComanda(data.data); // Usar respuesta del servidor (tiene _id)
                     cerrarModalPedidoMesa();
                     mostrarNotificacionExito(isEditing
                         ? '✅ Pedido actualizado: ' + mesaActualizada
@@ -6881,22 +6917,47 @@
 
 // ==================== LÓGICA DE IMPRESIÓN DE COMANDA ====================
         async function imprimirComanda(orderData) {
+            const orderId = orderData._id || orderData.id || orderData.pedidoId;
+            
+            // Evitar duplicados: si ya imprimimos este pedido localmente, no imprimir de nuevo
+            if (orderId && printedOrderIds.has(orderId)) {
+                console.log(`🖨️ Pedido ${orderId} ya impreso localmente, saltando duplicado`);
+                return;
+            }
+
             console.log("🖨️ Iniciando impresión de comanda...");
             console.log("[pedidos] orderData received:", JSON.stringify(orderData));
             console.log("[pedidos] orderData.items:", orderData.items ? orderData.items.length : 0);
+
+            const isAndroid = /android/i.test(navigator.userAgent);
 
             // === PRIORIDAD 1: Bluetooth directo (tablet) ===
             if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
                 try {
                     await BluetoothPrinter.printComanda(orderData);
                     console.log("✅ Comanda impresa vía Bluetooth directo");
+                    // Marcar como impreso
+                    if (orderId) {
+                        printedOrderIds.add(orderId);
+                        if (printedOrderIds.size > MAX_PRINTED_IDS) {
+                            const first = printedOrderIds.values().next().value;
+                            printedOrderIds.delete(first);
+                        }
+                    }
                     return;
                 } catch (btErr) {
-                    console.warn("⚠️ Error Bluetooth, intentando Bridge...", btErr.message);
+                    console.warn("⚠️ Error Bluetooth:", btErr.message);
                 }
             }
 
-            // === PRIORIDAD 2: Bridge PC (localhost:3001) ===
+            // === SIN IMPRESORA BLUETOOTH CONECTADA ===
+            // En Android: mostrar alerta grande, NO intentar Bridge ni window.print()
+            if (isAndroid) {
+                showNoPrinterAlertPedidos();
+                return;
+            }
+
+            // En NO Android (Desktop): intentar Bridge PC como fallback
             try {
                 const bridgeRes = await fetch('http://127.0.0.1:3001/print-comanda', {
                     method: 'POST',
@@ -6905,82 +6966,144 @@
                 });
                 if (bridgeRes.ok) {
                     console.log("✅ Comanda enviada al Bridge PC");
+                    // Marcar como impreso
+                    if (orderId) {
+                        printedOrderIds.add(orderId);
+                        if (printedOrderIds.size > MAX_PRINTED_IDS) {
+                            const first = printedOrderIds.values().next().value;
+                            printedOrderIds.delete(first);
+                        }
+                    }
                     return;
                 }
             } catch (e) {
                 console.log("⚠️ Bridge PC no disponible");
             }
 
-            // === PRIORIDAD 3: Android Bridge - enviar datos directamente via postMessage ===
-            const isAndroid = /android/i.test(navigator.userAgent);
-            if (isAndroid) {
-                try {
-                    const bridgeWindow = window.open('bridge-android.html', '_blank');
-                    if (bridgeWindow) {
-                        bridgeWindow.addEventListener('load', () => {
-                            setTimeout(() => {
-                                bridgeWindow.postMessage({
-                                    type: 'print-comanda',
-                                    order: orderData
-                                }, '*');
-                            }, 500);
-                        });
-                        console.log("📱 Comanda enviada al Bridge Android via postMessage");
-                        return;
-                    }
-                } catch (e) {
-                    console.log("⚠️ No se pudo abrir Bridge Android");
+            // Último recurso: NO window.print(), mostrar alerta
+            showNoPrinterAlertPedidos();
+        }
+
+        // Alerta grande en pedidos.html cuando no hay impresora (solo Android)
+        function showNoPrinterAlertPedidos() {
+            // VERIFICAR ESTADO COMPARTIDO: Si otro dispositivo del restaurante tiene impresora, NO mostrar alerta
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                const info = BluetoothPrinter.getSharedPrinterInfo();
+                if (info.connected && info.printerName) {
+                    console.log(`[pedidos] Otro dispositivo tiene impresora: ${info.printerName}, no muestro alerta`);
+                    showSharedPrinterToast(info.printerName);
+                    return;
                 }
             }
 
-            // === PRIORIDAD 4: BroadcastChannel al Bridge Android (otra pestaña) ===
-            try {
-                const printChannel = new BroadcastChannel('jc-print-channel');
-                printChannel.postMessage('check-prints');
-                console.log("📡 Señal enviada al Bridge Android");
-            } catch (e) { }
-
-            // === PRIORIDAD 5: window.print() (último recurso) ===
-            let printContainer = document.getElementById('comandaPrintContainer');
-            if (!printContainer) {
-                printContainer = document.createElement('div');
-                printContainer.id = 'comandaPrintContainer';
-                document.body.appendChild(printContainer);
+            // VERIFICAR PREFERENCIA: Si usuario desactivó alertas en Ajustes, no mostrar
+            if (localStorage.getItem('noPrinterAlertEnabled') === 'false') {
+                return;
             }
 
-            const now = new Date();
-            const fechaStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            // VERIFICAR PREFERENCIA: Si usuario dijo "No usar impresora" (legacy), no mostrar
+            if (localStorage.getItem('jcrt-hide-no-printer-alert') === 'true') {
+                return;
+            }
 
-            let itemsHtml = (orderData.items || []).map(item => {
-                const itemNota = item.nota || item.notas || '';
-                return `
-                    <div class="comanda-item">
-                        <div class="item-main">
-                            <span>${item.cantidad}x ${item.nombreProducto || item.producto}</span>
-                        </div>
-                        ${itemNota ? `<div class="item-notes">📝 ${itemNota}</div>` : ''}
-                    </div>
-                `;
-            }).join('');
+            // Eliminar alerta anterior si existe
+            const existing = document.getElementById('noPrinterAlertPedidos');
+            if (existing) existing.remove();
 
-            printContainer.innerHTML = `
-                <div class="comanda-header">
-                    <p>JC-RT Restaurante</p>
-                    <h1>${orderData.meseroNombre || 'COMANDA'}</h1>
-                    <p>${fechaStr}</p>
-                </div>
-                <div class="comanda-mesa">
-                    MESA: ${orderData.mesa}
-                </div>
-                <div class="comanda-body">
-                    ${itemsHtml}
-                </div>
-                <div class="comanda-footer">
-                    <p>¡Buen provecho!</p>
-                </div>
+            const alert = document.createElement('div');
+            alert.id = 'noPrinterAlertPedidos';
+            alert.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.85); z-index: 100000;
+                display: flex; align-items: center; justify-content: center;
+                padding: 20px; animation: fadeIn 0.3s ease;
             `;
+            alert.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1e293b, #0f172a);
+                    border: 2px solid #ef4444; border-radius: 20px;
+                    padding: 32px; max-width: 400px; width: 100%;
+                    text-align: center; box-shadow: 0 20px 60px rgba(239,68,68,0.3);
+                    animation: slideUp 0.4s ease;
+                ">
+                    <div style="font-size: 64px; margin-bottom: 16px;">🖨️</div>
+                    <h2 style="color: #fef2f2; margin: 0 0 12px; font-size: 22px; font-weight: 800;">
+                        Sin impresora conectada
+                    </h2>
+                    <p style="color: #fca5a5; margin: 0 0 24px; font-size: 15px; line-height: 1.5;">
+                        Para imprimir la comanda, conecta una impresora Bluetooth
+                        tocando el botón <strong style="color: #f87171;">🖨️</strong> en la esquina inferior derecha.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button onclick="disableNoPrinterAlert()"
+                            style="
+                                width: 100%; padding: 16px; font-size: 16px; font-weight: 700;
+                                background: linear-gradient(135deg, #64748b, #475569);
+                                color: white; border: none; border-radius: 12px;
+                                cursor: pointer; transition: transform 0.1s;
+                            "
+                            ontouchstart="this.style.transform='scale(0.98)'"
+                            ontouchend="this.style.transform='scale(1)'"
+                        >
+                            🚫 No usar impresora
+                        </button>
+                        <button onclick="this.closest('#noPrinterAlertPedidos').remove()"
+                            style="
+                                width: 100%; padding: 16px; font-size: 16px; font-weight: 700;
+                                background: linear-gradient(135deg, #ef4444, #dc2626);
+                                color: white; border: none; border-radius: 12px;
+                                cursor: pointer; transition: transform 0.1s;
+                            "
+                            ontouchstart="this.style.transform='scale(0.98)'"
+                            ontouchend="this.style.transform='scale(1)'"
+                        >
+                            🔔 Recordármelo
+                        </button>
+                    </div>
+                </div>
+                <style>
+                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                </style>
+            `;
+            document.body.appendChild(alert);
+        }
 
-            setTimeout(() => { window.print(); }, 500);
+        function disableNoPrinterAlert() {
+            localStorage.setItem('jcrt-hide-no-printer-alert', 'true');
+            localStorage.setItem('noPrinterAlertEnabled', 'false'); // Sync with Ajustes
+            const alert = document.getElementById('noPrinterAlertPedidos');
+            if (alert) alert.remove();
+        }
+
+        // Toast suave cuando otro dispositivo imprime
+        function showSharedPrinterToast(printerName) {
+            const existing = document.getElementById('sharedPrinterToast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'sharedPrinterToast';
+            toast.style.cssText = `
+                position: fixed; bottom: 100px; left: 16px; right: 16px; z-index: 100000;
+                animation: slideUp 0.3s ease;
+            `;
+            toast.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #064e3b, #047857);
+                    border: 2px solid #34d399; border-radius: 12px;
+                    padding: 16px 20px; display: flex; align-items: center; gap: 12px;
+                    color: #ecfdf5; box-shadow: 0 8px 30px rgba(52,211,153,0.3);
+                ">
+                    <div style="font-size: 24px;">🖨️</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 14px;">Imprimiendo desde otro dispositivo</div>
+                        <div style="color: #a7f3d0; font-size: 12px;">${printerName}</div>
+                    </div>
+                </div>
+                <style>@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }</style>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
         }
 
         // ==================== BLUETOOTH PRINTER UI ====================
@@ -7043,6 +7166,20 @@
                 document.getElementById('btPrinterFab').style.display = 'flex';
                 await BluetoothPrinter.tryAutoReconnect();
                 updateBtFabUI();
+                
+                // Verificar impresora al cargar la página (solo Android)
+                const isAndroid = /android/i.test(navigator.userAgent);
+                if (isAndroid) {
+                    // Pequeño delay para que el sync compartido se inicialice
+                    setTimeout(() => {
+                        if (!BluetoothPrinter.isConnected() && !BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                            showNoPrinterAlertPedidos();
+                        } else if (!BluetoothPrinter.isConnected() && BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                            const info = BluetoothPrinter.getSharedPrinterInfo();
+                            if (info.printerName) showSharedPrinterToast(info.printerName);
+                        }
+                    }, 1000);
+                }
             }
         });
 
@@ -7053,138 +7190,5 @@
     <script src="scripts/print-logic.js"></script>
     <script src="scripts/print-monitor.js"></script>
     <script src="scripts/tech-support-alert.js"></script>
-
-    <!-- DEBUG CONSOLE FLOTANTE PARA TABLET -->
-    <div id="debugConsole" style="
-        position: fixed; bottom: 80px; right: 16px; z-index: 9999;
-        width: 360px; max-height: 300px; background: #1a1a2e;
-        border: 2px solid #0f3460; border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: none;
-        flex-direction: column; font-family: monospace; font-size: 11px;
-        overflow: hidden;
-    ">
-        <div style="
-            background: #0f3460; color: #e94560; padding: 10px 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #16213e; cursor: move; user-select: none;
-        ">
-            <strong>🐛 Debug Console</strong>
-            <div style="display: flex; gap: 6px;">
-                <button id="debugClear" style="
-                    background: #e94560; border: none; color: white; padding: 4px 8px;
-                    border-radius: 4px; font-size: 10px; cursor: pointer;
-                ">Limpiar</button>
-                <button id="debugClose" style="
-                    background: transparent; border: none; color: #e94560; padding: 4px 8px;
-                    font-size: 14px; cursor: pointer; line-height: 1;
-                ">×</button>
-            </div>
-        </div>
-        <div id="debugLogs" style="
-            flex: 1; overflow-y: auto; padding: 8px; color: #a0d2eb;
-            background: #16213e; max-height: 250px;
-        "></div>
-        <div style="
-            display: flex; gap: 4px; padding: 8px; border-top: 1px solid #0f3460;
-            background: #1a1a2e;
-        ">
-            <button id="debugFilterAll" class="df-btn active" data-filter="all" style="flex:1">Todos</button>
-            <button id="debugFilterLog" class="df-btn" data-filter="log" style="flex:1">Log</button>
-            <button id="debugFilterWarn" class="df-btn" data-filter="warn" style="flex:1">Warn</button>
-            <button id="debugFilterError" class="df-btn" data-filter="error" style="flex:1">Error</button>
-        </div>
-    </div>
-    <button id="debugToggle" style="
-        position: fixed; bottom: 16px; right: 16px; z-index: 10000;
-        width: 56px; height: 56px; border-radius: 50%;
-        background: linear-gradient(135deg, #e94560, #0f3460);
-        border: none; color: white; font-size: 20px; cursor: pointer;
-        box-shadow: 0 4px 20px rgba(233,69,96,0.4);
-        display: flex; align-items: center; justify-content: center;
-    ">🐛</button>
-
-    <script>
-    (function() {
-        'use strict';
-        const logs = [];
-        let filter = 'all';
-        const maxLogs = 500;
-
-        const consoleEl = document.getElementById('debugConsole');
-        const toggleBtn = document.getElementById('debugToggle');
-        const logsEl = document.getElementById('debugLogs');
-        const closeBtn = document.getElementById('debugClose');
-        const clearBtn = document.getElementById('debugClear');
-
-        function addLog(type, args) {
-            const msg = args.map(a => 
-                typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)
-            ).join(' ');
-            const entry = { type, msg, time: new Date().toLocaleTimeString() };
-            logs.push(entry);
-            if (logs.length > maxLogs) logs.shift();
-            render();
-        }
-
-        function render() {
-            const filtered = filter === 'all' ? logs : logs.filter(l => l.type === filter);
-            logsEl.innerHTML = filtered.map(l => 
-                `<div style="margin: 2px 0; padding: 2px 6px; border-radius: 3px; background: ${l.type==='error'?'#2a0a0a':l.type==='warn'?'#2a1a0a':l.type==='log'?'#0a1a2a':'#1a1a2e'}; border-left: 3px solid ${l.type==='error'?'#e94560':l.type==='warn'?'#f39c12':'#00d9ff'};">
-                    <span style="color:#666;font-size:9px;">[${l.time}]</span>
-                    <span style="color:${l.type==='error'?'#ff6b6b':l.type==='warn'?'#f39c12':'#00d9ff'};">${l.type.toUpperCase()}</span>
-                    <span style="color:#a0d2eb;word-break:break-word;"> ${l.msg}</span>
-                </div>`
-            ).join('');
-            logsEl.scrollTop = logsEl.scrollHeight;
-        }
-
-        // Intercept console
-        ['log','warn','error'].forEach(fn => {
-            const orig = console[fn].bind(console);
-            console[fn] = function(...args) {
-                orig(...args);
-                addLog(fn, args);
-            };
-        });
-
-        // UI handlers
-        toggleBtn.onclick = () => consoleEl.style.display = consoleEl.style.display === 'none' ? 'flex' : 'none';
-        closeBtn.onclick = () => consoleEl.style.display = 'none';
-        clearBtn.onclick = () => { logs.length = 0; render(); };
-        document.querySelectorAll('.df-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.df-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                filter = btn.dataset.filter;
-                render();
-            };
-        });
-
-        // Drag to move
-        let dragging = false, offsetX, offsetY;
-        const header = consoleEl.querySelector('div');
-        header.onmousedown = header.ontouchstart = (e) => {
-            dragging = true;
-            const clientX = e.clientX || (e.touches?.[0]?.clientX);
-            const clientY = e.clientY || (e.touches?.[0]?.clientY);
-            offsetX = clientX - consoleEl.offsetLeft;
-            offsetY = clientY - consoleEl.offsetTop;
-            e.preventDefault();
-        };
-        document.onmousemove = document.ontouchmove = (e) => {
-            if (!dragging) return;
-            const clientX = e.clientX || (e.touches?.[0]?.clientX);
-            const clientY = e.clientY || (e.touches?.[0]?.clientY);
-            consoleEl.style.left = (clientX - offsetX) + 'px';
-            consoleEl.style.top = (clientY - offsetY) + 'px';
-            consoleEl.style.bottom = 'auto';
-            consoleEl.style.right = 'auto';
-        };
-        document.onmouseup = document.ontouchend = () => { dragging = false; };
-
-        // Log initial
-        addLog('log', ['Debug console listo. Toca 🐛 para mostrar/ocultar. Arrastra el header para mover.']);
-    })();
-    </script>
 </body>
 </html>

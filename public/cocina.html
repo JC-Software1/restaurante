@@ -5182,13 +5182,333 @@
             localStorage.setItem('sawMinimalistShortcut', 'true');
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
             checkAndShowShortcutOnboarding();
         });
     </script>
+    <script src="scripts/bluetooth-printer.js"></script>
     <script src="scripts/print-monitor.js"></script>
     <script src="scripts/print-logic.js"></script>
     <script src="scripts/tech-support-alert.js"></script>
-</body>
 
+    <!-- BLUETOOTH PRINTER FAB + DEBUG CONSOLE -->
+    <style>
+        #btPrinterFabCocina {
+            position: fixed; bottom: 80px; right: 16px; z-index: 99999;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none; color: white; font-size: 22px; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+            display: none; align-items: center; justify-content: center;
+            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #btPrinterFabCocina:active { transform: scale(0.92); background: linear-gradient(135deg, #1d4ed8, #1e40af); }
+        #btPrinterFabCocina:focus { outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.5); }
+        #btPrinterFabCocina.connected { background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 4px 20px rgba(5,150,105,0.4); }
+        #btPrinterFabCocina .bt-tooltip {
+            position: absolute; right: 64px; top: 50%; transform: translateY(-50%);
+            background: #1e293b; color: #e2e8f0; padding: 8px 12px; border-radius: 8px;
+            font-size: 12px; white-space: nowrap; opacity: 0; visibility: hidden;
+            pointer-events: none; transition: opacity 0.2s, visibility 0.2s;
+            border: 1px solid #334155;
+        }
+        #btPrinterFabCocina:hover .bt-tooltip, #btPrinterFabCocina:focus .bt-tooltip { opacity: 1; visibility: visible; }
+        #btPrinterFabCocina .bt-tooltip::after { content: ''; position: absolute; left: 100%; top: 50%; transform: translateY(-50%); border: 6px solid transparent; border-left-color: #1e293b; }
+    </style>
+
+    <button id="btPrinterFabCocina" onclick="toggleBluetoothPrinterCocina()" aria-label="Impresora Bluetooth">
+        🖨️<span class="bt-tooltip" id="btTooltipCocina">Conectar impresora Bluetooth</span>
+    </button>
+
+    <script>
+    (function() {
+        'use strict';
+        // Bluetooth Printer UI
+        function updateBtFabUICocina() {
+            const fab = document.getElementById('btPrinterFabCocina');
+            if (!fab) return;
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                fab.classList.add('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltipCocina">✅ ' + (BluetoothPrinter.getPrinterName() || 'Conectada') + '</span>';
+            } else {
+                fab.classList.remove('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltipCocina">Conectar impresora Bluetooth</span>';
+            }
+        }
+
+        async function toggleBluetoothPrinterCocina() {
+            console.log('[Cocina] toggleBluetoothPrinterCocina llamado');
+            if (typeof BluetoothPrinter === 'undefined') {
+                console.error('[Cocina] BluetoothPrinter no definido');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error', 'Módulo Bluetooth no cargado', 'error');
+                } else {
+                    alert('Módulo Bluetooth no cargado');
+                }
+                return;
+            }
+            if (BluetoothPrinter.isConnected()) {
+                if (typeof Swal !== 'undefined') {
+                    const result = await Swal.fire({
+                        title: '🖨️ Impresora Bluetooth',
+                        html: `<p style="margin-bottom:8px">Conectada a: <strong>${BluetoothPrinter.getPrinterName()}</strong></p><p style="font-size:13px;color:#94a3b8">Las comandas se imprimen automáticamente.</p>`,
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: '❌ Desconectar',
+                        cancelButtonText: 'Cerrar',
+                        confirmButtonColor: '#dc2626'
+                    });
+                    if (result.isConfirmed) {
+                        BluetoothPrinter.disconnect();
+                        updateBtFabUICocina();
+                        Swal.fire({ title: 'Desconectada', icon: 'info', timer: 1500, showConfirmButton: false });
+                    }
+                } else {
+                    if (confirm('Desconectar impresora Bluetooth?')) {
+                        BluetoothPrinter.disconnect();
+                        updateBtFabUICocina();
+                        alert('Desconectada');
+                    }
+                }
+            } else {
+                console.log('[Cocina] Iniciando conexión Bluetooth...');
+                try {
+                    const res = await BluetoothPrinter.connect();
+                    console.log('[Cocina] Resultado conexión:', res);
+                    if (res.success) {
+                        updateBtFabUICocina();
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ title: '✅ Conectada', text: `Impresora: ${res.name}`, icon: 'success', timer: 2500, showConfirmButton: false });
+                        } else {
+                            alert('✅ Conectada: ' + res.name);
+                        }
+                    } else if (res.error) {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire('Error', res.error, 'error');
+                        } else {
+                            alert('Error: ' + res.error);
+                        }
+                    }
+                } catch (e) {
+                    console.error('[Cocina] Error en connect:', e);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error', e.message, 'error');
+                    } else {
+                        alert('Error: ' + e.message);
+                    }
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isSupported()) {
+                document.getElementById('btPrinterFabCocina').style.display = 'flex';
+                await BluetoothPrinter.tryAutoReconnect();
+                updateBtFabUICocina();
+
+                // Verificar impresora al cargar la página (solo Android)
+                const isAndroid = /android/i.test(navigator.userAgent);
+                if (isAndroid) {
+                    setTimeout(() => {
+                        if (!BluetoothPrinter.isConnected() && !BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                            showNoPrinterAlertCocina();
+                        } else if (!BluetoothPrinter.isConnected() && BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                            const info = BluetoothPrinter.getSharedPrinterInfo();
+                            if (info.printerName) showSharedPrinterToastCocina(info.printerName);
+                        }
+                    }, 1000);
+                }
+            }
+        });
+
+        // Event listener programático para el FAB (backup al onclick)
+        const fabCocina = document.getElementById('btPrinterFabCocina');
+        if (fabCocina) {
+            fabCocina.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('[Cocina] FAB click detectado');
+                if (window.toggleBluetoothPrinterCocina) {
+                    window.toggleBluetoothPrinterCocina();
+                }
+            });
+        }
+
+        window.addEventListener('bt-printer-connected', () => updateBtFabUICocina());
+        window.addEventListener('bt-printer-disconnected', () => updateBtFabUICocina());
+
+        // Debug Console
+        const logs = [];
+        let filter = 'all';
+        const maxLogs = 500;
+
+        const consoleEl = document.getElementById('debugConsoleCocina');
+        const toggleBtn = document.getElementById('debugToggleCocina');
+        const logsEl = document.getElementById('debugLogsCocina');
+        const closeBtn = document.getElementById('debugCloseCocina');
+        const clearBtn = document.getElementById('debugClearCocina');
+
+        function addLog(type, args) {
+            const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+            const entry = { type, msg, time: new Date().toLocaleTimeString() };
+            logs.push(entry);
+            if (logs.length > maxLogs) logs.shift();
+            render();
+        }
+
+        function render() {
+            const filtered = filter === 'all' ? logs : logs.filter(l => l.type === filter);
+            logsEl.innerHTML = filtered.map(l => 
+                '<div style="margin: 2px 0; padding: 2px 6px; border-radius: 3px; background: ' + (l.type==='error'?'#2a0a0a':l.type==='warn'?'#2a1a0a':l.type==='log'?'#0a1a2a':'#1a1a2e') + '; border-left: 3px solid ' + (l.type==='error'?'#e94560':l.type==='warn'?'#f39c12':'#00d9ff') + ';">' +
+                '<span style="color:#666;font-size:9px;">[' + l.time + ']</span>' +
+                '<span style="color:' + (l.type==='error'?'#ff6b6b':l.type==='warn'?'#f39c12':'#00d9ff') + ';">' + l.type.toUpperCase() + '</span>' +
+                '<span style="color:#a0d2eb;word-break:break-word;"> ' + l.msg + '</span></div>'
+            ).join('');
+            logsEl.scrollTop = logsEl.scrollHeight;
+        }
+
+        ['log','warn','error'].forEach(fn => {
+            const orig = console[fn].bind(console);
+            console[fn] = function(...args) { orig(...args); addLog(fn, args); };
+        });
+
+        toggleBtn.onclick = () => consoleEl.style.display = consoleEl.style.display === 'none' ? 'flex' : 'none';
+        closeBtn.onclick = () => consoleEl.style.display = 'none';
+        clearBtn.onclick = () => { logs.length = 0; render(); };
+        document.querySelectorAll('.df-btn-cocina').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.df-btn-cocina').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filter = btn.dataset.filter;
+                render();
+            };
+        });
+
+        let dragging = false, offsetX, offsetY;
+        const header = consoleEl.querySelector('div');
+        header.onmousedown = header.ontouchstart = (e) => {
+            dragging = true;
+            const clientX = e.clientX || (e.touches?.[0]?.clientX);
+            const clientY = e.clientY || (e.touches?.[0]?.clientY);
+            offsetX = clientX - consoleEl.offsetLeft;
+            offsetY = clientY - consoleEl.offsetTop;
+            e.preventDefault();
+        };
+        document.onmousemove = document.ontouchmove = (e) => {
+            if (!dragging) return;
+            const clientX = e.clientX || (e.touches?.[0]?.clientX);
+            const clientY = e.clientY || (e.touches?.[0]?.clientY);
+            consoleEl.style.left = (clientX - offsetX) + 'px';
+            consoleEl.style.top = (clientY - offsetY) + 'px';
+            consoleEl.style.bottom = 'auto';
+            consoleEl.style.right = 'auto';
+        };
+        document.onmouseup = document.ontouchend = () => { dragging = false; };
+
+        addLog('log', ['Debug Cocina listo. 🐛 para mostrar, arrastra header para mover.']);
+
+        // Alerta dismissible en cocina cuando no hay impresora
+        window.showNoPrinterAlertCocina = function() {
+            // VERIFICAR ESTADO COMPARTIDO: Si otro dispositivo del restaurante tiene impresora, NO mostrar alerta
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                const info = BluetoothPrinter.getSharedPrinterInfo();
+                if (info.connected && info.printerName) {
+                    console.log(`[cocina] Otro dispositivo tiene impresora: ${info.printerName}, no muestro alerta`);
+                    showSharedPrinterToastCocina(info.printerName);
+                    return;
+                }
+            }
+
+            const existing = document.getElementById('noPrinterAlertCocina');
+            if (existing) existing.remove();
+
+            const alert = document.createElement('div');
+            alert.id = 'noPrinterAlertCocina';
+            alert.style.cssText = `
+                position: fixed; top: 80px; left: 16px; right: 16px; z-index: 100000;
+                animation: slideDown 0.3s ease;
+            `;
+            alert.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1e293b, #0f172a);
+                    border: 2px solid #ef4444; border-radius: 16px;
+                    padding: 20px 24px; display: flex; align-items: center; gap: 16px;
+                    box-shadow: 0 10px 40px rgba(239,68,68,0.3);
+                    color: #fef2f2;
+                ">
+                    <div style="font-size: 28px; flex-shrink: 0;">🖨️</div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">
+                            Sin impresora conectada
+                        </div>
+                        <div style="color: #fca5a5; font-size: 13px; line-height: 1.4;">
+                            Conecta una impresora Bluetooth tocando el botón 
+                            <strong style="color: #f87171;">🖨️</strong> abajo a la derecha
+                        </div>
+                    </div>
+                    <button onclick="this.closest('#noPrinterAlertCocina').remove()"
+                        style="
+                            background: rgba(239,68,68,0.2); border: 1px solid #ef4444;
+                            color: #fca5a5; padding: 8px 16px; border-radius: 8px;
+                            font-size: 13px; font-weight: 600; cursor: pointer;
+                            flex-shrink: 0; transition: all 0.2s;
+                        "
+                        onmouseover="this.style.background='#ef4444';this.style.color='white'"
+                        onmouseout="this.style.background='rgba(239,68,68,0.2)';this.style.color='#fca5a5'"
+                    >
+                        Cerrar
+                    </button>
+                </div>
+                <style>
+                    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+                </style>
+            `;
+            document.body.appendChild(alert);
+            
+            // Auto-cerrar después de 10 segundos
+            setTimeout(() => {
+                const el = document.getElementById('noPrinterAlertCocina');
+                if (el) el.remove();
+            }, 10000);
+        };
+
+        // Toast suave cuando otro dispositivo imprime (cocina)
+        function showSharedPrinterToastCocina(printerName) {
+            const existing = document.getElementById('sharedPrinterToastCocina');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'sharedPrinterToastCocina';
+            toast.style.cssText = `
+                position: fixed; top: 80px; left: 16px; right: 16px; z-index: 100000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #064e3b, #047857);
+                    border: 2px solid #34d399; border-radius: 12px;
+                    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+                    color: #ecfdf5; box-shadow: 0 8px 30px rgba(52,211,153,0.3);
+                ">
+                    <div style="font-size: 22px;">🖨️</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 13px;">Imprimiendo desde otro dispositivo</div>
+                        <div style="color: #a7f3d0; font-size: 11px;">${printerName}</div>
+                    </div>
+                </div>
+                <style>@keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }</style>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Exponer funciones globalmente para onclick
+        window.toggleBluetoothPrinterCocina = toggleBluetoothPrinterCocina;
+        window.showNoPrinterAlertCocina = showNoPrinterAlertCocina;
+        window.showSharedPrinterToastCocina = showSharedPrinterToastCocina;
+    })();
+    </script>
+</body>
 </html>

@@ -30,7 +30,7 @@
     const ESC_BOLD_OFF   = new Uint8Array([0x1B, 0x45, 0x00]);
     const ESC_DOUBLE_ON  = new Uint8Array([0x1D, 0x21, 0x11]);
     const ESC_DOUBLE_OFF = new Uint8Array([0x1D, 0x21, 0x00]);
-    const ESC_FEED_12    = new Uint8Array([0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A, 0x0A]);
+    const ESC_FEED_4     = new Uint8Array([0x0A, 0x0A, 0x0A, 0x0A]);
     const ESC_CUT        = new Uint8Array([0x1D, 0x56, 0x00]);
     const NL             = new Uint8Array([0x0A]);
     const NL2            = new Uint8Array([0x0A, 0x0A]);
@@ -118,6 +118,7 @@
 
             console.log(`[BT-Printer] ✅ Conectada: ${name}`);
             _dispatchEvent('connected', { name: name });
+            _setSharedStatus(true, name); // ← Estado compartido
 
             return { success: true, name: name };
 
@@ -177,6 +178,7 @@
             if (bluetoothCharacteristic) {
                 console.log(`[BT-Printer] ✅ Reconectada: ${lastDevice.name}`);
                 _dispatchEvent('connected', { name: lastDevice.name });
+                _setSharedStatus(true, lastDevice.name); // ← Estado compartido
                 return true;
             }
         } catch (e) {
@@ -200,6 +202,7 @@
         bluetoothCharacteristic = null;
         localStorage.removeItem(STORAGE_KEY);
         _dispatchEvent('disconnected');
+        _setSharedStatus(false); // ← Estado compartido
     }
 
     // ============================================================
@@ -274,8 +277,6 @@
         const nl = () => addRaw(NL);
         const nl2 = () => addRaw(NL2);
 
-        // DEBUG: Log items received
-        console.log('[BT-Printer] Items received:', JSON.stringify(order.items));
         console.log('[BT-Printer] Items count:', order.items ? order.items.length : 0);
 
         // Init
@@ -319,38 +320,25 @@
             for (let idx = 0; idx < order.items.length; idx++) {
                 const item = order.items[idx];
                 try {
-                    console.log(`[BT-Printer] Raw item ${idx}:`, JSON.stringify(item));
-                    
                     const nombre = item.productoInfo
                         ? item.productoInfo.nombre
                         : (item.nombreProducto || item.nombre || 'Producto');
                     const cantidad = item.cantidad || 1;
 
-                    console.log(`[BT-Printer] Processing item ${idx}:`, nombre, 'cantidad:', cantidad);
-
                     addRaw(ESC_BOLD_ON);
                     const linNombre = `${cantidad}x ${nombre}`;
-                    const nombreWrapped = wrapText(linNombre, W);
-                    console.log(`[BT-Printer] Wrapped lines for item ${idx}:`, nombreWrapped);
-                    nombreWrapped.forEach(l => { add(l); nl(); });
+                    wrapText(linNombre, W).forEach(l => { add(l); nl(); });
                     addRaw(ESC_BOLD_OFF);
 
                     // Notas del ítem
                     const nota = item.notas || item.nota || '';
                     if (nota && nota.trim()) {
-                        const notaLines = wrapText(`  >> ${nota.trim()}`, W);
-                        notaLines.forEach(l => { add(l); nl(); });
-                    }
-
-                    if (idx < order.items.length - 1) {
-                        add(sep('.'));
-                        nl();
+                        wrapText(`  >> ${nota.trim()}`, W).forEach(l => { add(l); nl(); });
                     }
                 } catch (itemError) {
-                    console.error(`[BT-Printer] Error processing item ${idx}:`, itemError);
+                    console.error(`[BT-Printer] Error item ${idx}:`, itemError);
                 }
             }
-            console.log('[BT-Printer] Loop completed, total items processed:', order.items.length);
         }
         nl();
 
@@ -376,10 +364,10 @@
             footerText = `-- ${order.meseroNombre.toUpperCase()} --`;
         }
         add(footerText);
-        nl2();
+        nl();
 
-        // Avance y corte
-        addRaw(ESC_FEED_12);
+        // Avance mínimo y corte
+        addRaw(ESC_FEED_4);
         addRaw(ESC_CUT);
 
         const finalBytes = buildEscPosBytes(parts);
@@ -402,6 +390,143 @@
             return true;
         } catch (e) {
             console.error('[BT-Printer] Error in printComanda:', e);
+            throw e;
+        }
+    }
+
+    // ============================================================
+    //  GENERATE FACTURA BYTES
+    // ============================================================
+    function _generateFacturaBytes(order) {
+        const W = 32;
+
+        function center(text) {
+            const t = String(text).trim();
+            const pad = Math.max(0, Math.floor((W - t.length) / 2));
+            return ' '.repeat(pad) + t;
+        }
+        function sep(c) { return c.repeat(W); }
+        function col2(l, r) {
+            const tL = String(l);
+            const tR = String(r);
+            const spaces = Math.max(1, W - tL.length - tR.length);
+            return tL + ' '.repeat(spaces) + tR;
+        }
+
+        const enc = new TextEncoder();
+        const parts = [];
+        const add = (str) => { parts.push(enc.encode(str)); };
+        const addRaw = (bytes) => { parts.push(bytes); };
+        const nl = () => addRaw(NL);
+        const nl2 = () => addRaw(NL2);
+
+        // ── Init ──
+        addRaw(ESC_INIT);
+        addRaw(ESC_CENTER);
+        addRaw(ESC_BOLD_ON);
+        addRaw(ESC_DOUBLE_ON);
+        add(order.restauranteNombre || 'FACTURA DE VENTA');
+        nl();
+        addRaw(ESC_DOUBLE_OFF);
+        addRaw(ESC_BOLD_OFF);
+        add(sep('-'));
+        nl();
+
+        // ── Datos ──
+        addRaw(ESC_LEFT);
+        add(`Fecha: ${new Date().toLocaleDateString('es-CO')}`);
+        nl();
+        add(`Hora:  ${new Date().toLocaleTimeString('es-CO')}`);
+        nl();
+        add(`Mesa:  ${order.mesa}`);
+        nl();
+        add(`Pedido: #${String(order._id).slice(-6).toUpperCase()}`);
+        nl();
+        // ── Cliente ──
+        if (order.clienteNombre) {
+            add(`Cliente: ${order.clienteNombre}`);
+            nl();
+            if (order.clienteCcNit) {
+                add(`CC/NIT: ${order.clienteCcNit}`);
+                nl();
+            }
+        }
+        add(sep('-'));
+        nl();
+
+        // ── Cabecera tabla ──
+        addRaw(ESC_BOLD_ON);
+        add(col2('Producto', 'Cant  Total'));
+        nl();
+        addRaw(ESC_BOLD_OFF);
+        add(sep('-'));
+        nl();
+
+        // ── Ítems ──
+        if (order.items && order.items.length > 0) {
+            order.items.forEach(item => {
+                const nombre = item.productoInfo
+                    ? item.productoInfo.nombre
+                    : (item.nombreProducto || item.nombre || 'Producto');
+                const cant = String(item.cantidad || 1);
+                const precio = item.precio || 0;
+                const totalItem = `$${((item.cantidad || 1) * precio).toLocaleString('es-CO')}`;
+                
+                const maxNombre = W - cant.length - totalItem.length - 2;
+                const shortName = nombre.length > maxNombre ? nombre.substring(0, maxNombre) : nombre;
+                add(col2(shortName, `${cant} ${totalItem}`));
+                nl();
+                if (item.nota && item.nota.trim()) {
+                    add(`  >> ${item.nota.trim()}`);
+                    nl();
+                }
+            });
+        }
+        nl();
+
+        // ── Total ──
+        add(sep('-'));
+        nl();
+        addRaw(ESC_BOLD_ON);
+        addRaw(ESC_DOUBLE_ON);
+        add(col2('TOTAL:', `$${(order.total || 0).toLocaleString('es-CO')}`));
+        nl();
+        addRaw(ESC_DOUBLE_OFF);
+        addRaw(ESC_BOLD_OFF);
+        add(sep('-'));
+        nl();
+
+        // ── Footer ──
+        addRaw(ESC_CENTER);
+        add(center('¡Gracias por su compra!'));
+        nl();
+        add(center('Vuelva pronto'));
+        nl2();
+        add(sep('='));
+        nl2();
+
+        // Avance de papel y corte
+        addRaw(ESC_FEED_4);
+        addRaw(ESC_CUT);
+
+        return buildEscPosBytes(parts);
+    }
+
+    // ============================================================
+    //  PRINT FACTURA
+    // ============================================================
+    async function printFactura(orderData) {
+        if (!bluetoothCharacteristic) {
+            throw new Error('Impresora Bluetooth no conectada');
+        }
+
+        try {
+            const bytes = _generateFacturaBytes(orderData);
+            await _sendData(bytes);
+            console.log(`[BT-Printer] ✅ Factura impresa: Mesa ${orderData.mesa}`);
+            return true;
+        } catch (e) {
+            console.error('[BT-Printer] Error in printFactura:', e);
             throw e;
         }
     }
@@ -438,6 +563,148 @@
     }
 
     // ============================================================
+    //  SHARED PRINTER STATUS (Multi-device restaurant sync)
+    // ============================================================
+    const SHARED_STORAGE_KEY = 'jcrt-shared-printer-status';
+    const SYNC_INTERVAL_MS = 5000;
+    const STATUS_TTL_MS = 30000; // 30s - si no se actualiza, se considera desconectado
+    let sharedSyncTimer = null;
+    let sharedChannel = null;
+
+    function _getRestaurantId() {
+        try {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            return user.id || user._id || user.restaurantId || 'default';
+        } catch (e) { return 'default'; }
+    }
+
+    function _saveSharedStatus(connected, printerName) {
+        const restaurantId = _getRestaurantId();
+        const deviceId = _getDeviceId();
+        const status = {
+            restaurantId,
+            deviceId,
+            connected,
+            printerName: printerName || null,
+            timestamp: Date.now(),
+            userAgent: navigator.userAgent.slice(0, 50)
+        };
+        try {
+            let all = JSON.parse(localStorage.getItem(SHARED_STORAGE_KEY) || '{}');
+            all[restaurantId] = all[restaurantId] || {};
+            all[restaurantId][deviceId] = status;
+            // Limpiar dispositivos viejos (> TTL)
+            Object.keys(all[restaurantId]).forEach(d => {
+                if (Date.now() - all[restaurantId][d].timestamp > STATUS_TTL_MS) {
+                    delete all[restaurantId][d];
+                }
+            });
+            localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(all));
+            _broadcastSharedStatus(status);
+        } catch (e) { console.error('[BT-Printer] Error guardando shared status:', e); }
+    }
+
+    function _getDeviceId() {
+        let id = localStorage.getItem('jcrt-device-id');
+        if (!id) { id = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('jcrt-device-id', id); }
+        return id;
+    }
+
+    function _broadcastSharedStatus(status) {
+        if (sharedChannel) {
+            sharedChannel.postMessage({ type: 'printer-status', status });
+        }
+    }
+
+    function _initSharedSync() {
+        if (sharedChannel) return;
+        try {
+            sharedChannel = new BroadcastChannel('jc-printer-shared');
+            sharedChannel.onmessage = (e) => {
+                if (e.data?.type === 'printer-status') {
+                    _updateSharedStatusFromMessage(e.data.status);
+                }
+            };
+        } catch (e) { console.warn('[BT-Printer] BroadcastChannel no disponible'); }
+
+        // Poll localStorage cada 5s para detectar cambios de otros dispositivos
+        sharedSyncTimer = setInterval(() => {
+            _checkSharedStatus();
+        }, SYNC_INTERVAL_MS);
+
+        // Escuchar evento storage (otras tabs mismo dispositivo)
+        window.addEventListener('storage', (e) => {
+            if (e.key === SHARED_STORAGE_KEY) _checkSharedStatus();
+        });
+
+        _checkSharedStatus(); // Check inicial
+    }
+
+    function _updateSharedStatusFromMessage(status) {
+        if (!status || status.restaurantId !== _getRestaurantId()) return;
+        try {
+            let all = JSON.parse(localStorage.getItem(SHARED_STORAGE_KEY) || '{}');
+            all[status.restaurantId] = all[status.restaurantId] || {};
+            all[status.restaurantId][status.deviceId] = status;
+            localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(all));
+        } catch (e) {}
+    }
+
+    function _checkSharedStatus() {
+        const restaurantId = _getRestaurantId();
+        const myDeviceId = _getDeviceId();
+        try {
+            const all = JSON.parse(localStorage.getItem(SHARED_STORAGE_KEY) || '{}');
+            const restaurantDevices = all[restaurantId] || {};
+            const now = Date.now();
+            let anyConnected = false;
+            let connectedPrinterName = null;
+            Object.entries(restaurantDevices).forEach(([deviceId, status]) => {
+                if (now - status.timestamp <= STATUS_TTL_MS && status.connected) {
+                    anyConnected = true;
+                    if (deviceId !== myDeviceId) connectedPrinterName = status.printerName;
+                }
+            });
+            // Disparar evento para UI
+            window.dispatchEvent(new CustomEvent('bt-printer-shared-status', {
+                detail: { anyConnected, connectedPrinterName, myDeviceConnected: restaurantDevices[myDeviceId]?.connected }
+            }));
+        } catch (e) {}
+    }
+
+    // Devuelve true si ALGÚN dispositivo del restaurante tiene impresora conectada
+    function isAnyRestaurantPrinterConnected() {
+        const restaurantId = _getRestaurantId();
+        try {
+            const all = JSON.parse(localStorage.getItem(SHARED_STORAGE_KEY) || '{}');
+            const restaurantDevices = all[restaurantId] || {};
+            const now = Date.now();
+            return Object.values(restaurantDevices).some(s => now - s.timestamp <= STATUS_TTL_MS && s.connected);
+        } catch (e) { return false; }
+    }
+
+    function getSharedPrinterInfo() {
+        const restaurantId = _getRestaurantId();
+        try {
+            const all = JSON.parse(localStorage.getItem(SHARED_STORAGE_KEY) || '{}');
+            const restaurantDevices = all[restaurantId] || {};
+            const now = Date.now();
+            for (const status of Object.values(restaurantDevices)) {
+                if (now - status.timestamp <= STATUS_TTL_MS && status.connected) {
+                    return { connected: true, printerName: status.printerName, deviceId: status.deviceId };
+                }
+            }
+        } catch (e) {}
+        return { connected: false };
+    }
+
+    // Llamar en connect() y disconnect()
+    function _setSharedStatus(connected, printerName) {
+        _saveSharedStatus(connected, printerName);
+        _checkSharedStatus();
+    }
+
+    // ============================================================
     //  PUBLIC API
     // ============================================================
     window.BluetoothPrinter = {
@@ -445,9 +712,16 @@
         disconnect: disconnect,
         tryAutoReconnect: tryAutoReconnect,
         printComanda: printComanda,
+        printFactura: printFactura,
         isConnected: isConnected,
         isSupported: isSupported,
-        getPrinterName: getPrinterName
+        getPrinterName: getPrinterName,
+        // Shared status (multi-device)
+        isAnyRestaurantPrinterConnected: isAnyRestaurantPrinterConnected,
+        getSharedPrinterInfo: getSharedPrinterInfo,
+        initSharedSync: _initSharedSync
     };
 
+// Inicializar sync compartido al cargar
+    _initSharedSync();
 })();
