@@ -1734,6 +1734,10 @@
                     <span class="nav-icon"></span>
                     <span>Reportes</span>
                 </a>
+                <a href="facturas.html" class="nav-item ">
+                    <span class="nav-icon">🧾</span>
+                    <span>Historial Facturas</span>
+                </a>
                 <a href="cocina.html" class="nav-item active">
                     <span class="nav-icon"></span>
                     <span>Cocina</span>
@@ -1956,6 +1960,7 @@
         let metodoPagoSeleccionado = null;
         let clienteNombreSeleccionado = '';
         let clienteCcNitSeleccionado = '';
+        let clienteEmailSeleccionado = '';
         let todosLosPlatos = new Set();
         let platoSeleccionado = null;
         let productosFiltrados = [];
@@ -2886,6 +2891,8 @@
                 window._montoParaPago = monto;
                 document.getElementById('clienteNombre').value = '';
                 document.getElementById('clienteCcNit').value = '';
+                const emailInputModal = document.getElementById('clienteEmail');
+                if (emailInputModal) emailInputModal.value = '';
                 document.getElementById('modalDatosCliente').style.display = 'flex';
                 await cargarSugerenciasClientes();
             } else {
@@ -2933,6 +2940,8 @@
         async function confirmarDatosCliente() {
             clienteNombreSeleccionado = document.getElementById('clienteNombre').value.trim();
             clienteCcNitSeleccionado = document.getElementById('clienteCcNit').value.trim();
+            const emailInput = document.getElementById('clienteEmail');
+            clienteEmailSeleccionado = emailInput ? emailInput.value.trim() : '';
 
             document.getElementById('modalDatosCliente').style.display = 'none';
 
@@ -3001,7 +3010,9 @@
             try {
                 mostrarEstadoImpresion('imprimiendo'); // Muestra el modal
                 document.getElementById('impresionTitulo').textContent = 'Emitiendo Factura Electrónica...';
-                document.getElementById('impresionMensaje').textContent = 'Por favor, espere';
+                document.getElementById('impresionMensaje').textContent = 'Validando con DIAN y MATIAS API...';
+                const acciones = document.getElementById('impresionAcciones');
+                if (acciones) acciones.style.display = 'none';
                 
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('No hay sesión activa');
@@ -3014,18 +3025,45 @@
                     },
                     body: JSON.stringify({
                         orderId: orderId,
-                        tipo: 'electronica'
+                        tipo: 'electronica',
+                        clienteNombre: clienteNombreSeleccionado,
+                        clienteCcNit: clienteCcNitSeleccionado,
+                        clienteEmail: clienteEmailSeleccionado
                     })
                 });
 
                 const data = await response.json();
                 if (data.success) {
-                    document.getElementById('impresionTitulo').textContent = '¡Factura Electrónica Emitida!';
-                    document.getElementById('impresionMensaje').textContent = `Factura ${data.numero || ''} enviada correctamente a MATIAS`;
                     document.getElementById('impresionSpinner').textContent = '✅';
-                    setTimeout(() => {
-                        document.getElementById('modalEstadoImpresion').style.display = 'none';
-                    }, 2000);
+                    document.getElementById('impresionTitulo').textContent = data.alreadyEmitted ? 'Factura Ya Emitida' : '¡Factura Electrónica Emitida!';
+                    
+                    let msg = data.alreadyEmitted
+                        ? `Esta orden ya contaba con la factura <strong>${data.numero || ''}</strong> validada.`
+                        : `Factura <strong>${data.numero || ''}</strong> emitida y validada con éxito.`;
+
+                    if (data.clienteEmail) {
+                        msg += `<br><span style="color: #2b6cb0; font-weight: 600; font-size: 13px; display: inline-block; margin-top: 6px;">✉️ Enviada al correo: ${data.clienteEmail}</span>`;
+                    }
+                    document.getElementById('impresionMensaje').innerHTML = msg;
+
+                    if (data.dianUrl && acciones) {
+                        const btnDian = document.getElementById('btnVerDian');
+                        if (btnDian) {
+                            btnDian.href = data.dianUrl;
+                            btnDian.style.display = 'inline-block';
+                        }
+                        acciones.style.display = 'flex';
+                        // Cerrar automáticamente tras 8 segundos
+                        setTimeout(() => {
+                            if (document.getElementById('modalEstadoImpresion').style.display === 'flex') {
+                                document.getElementById('modalEstadoImpresion').style.display = 'none';
+                            }
+                        }, 8000);
+                    } else {
+                        setTimeout(() => {
+                            document.getElementById('modalEstadoImpresion').style.display = 'none';
+                        }, 3000);
+                    }
                 } else {
                     throw new Error(data.message || 'Error al emitir');
                 }
@@ -3034,9 +3072,11 @@
                 document.getElementById('impresionTitulo').textContent = 'Error';
                 document.getElementById('impresionMensaje').textContent = error.message;
                 document.getElementById('impresionSpinner').textContent = '❌';
+                const acciones = document.getElementById('impresionAcciones');
+                if (acciones) acciones.style.display = 'none';
                 setTimeout(() => {
                     document.getElementById('modalEstadoImpresion').style.display = 'none';
-                }, 3000);
+                }, 4000);
             }
         }
 
@@ -3044,12 +3084,14 @@
             const orderIdTemp = currentOrderIdForPayment;
             const clienteNombreTemp = clienteNombreSeleccionado;
             const clienteCcNitTemp = clienteCcNitSeleccionado;
+            const clienteEmailTemp = clienteEmailSeleccionado;
             const montoFinal = window._montoParaPago || (pedidoParaImprimir ? pedidoParaImprimir.total : 0);
 
             currentOrderIdForPayment = null;
             pedidoParaImprimir = null;
             clienteNombreSeleccionado = '';
             clienteCcNitSeleccionado = '';
+            clienteEmailSeleccionado = '';
             window._montoParaPago = null;
 
             try {
@@ -3064,7 +3106,8 @@
                         metodo: metodoPagoSeleccionado,
                         monto: montoFinal,
                         clienteNombre: clienteNombreTemp,
-                        clienteCcNit: clienteCcNitTemp
+                        clienteCcNit: clienteCcNitTemp,
+                        clienteEmail: clienteEmailTemp
                     })
                 });
 
@@ -3078,7 +3121,7 @@
                 }
             } catch (error) {
                 console.error('Error al registrar pago final:', error);
-                await actualizarEstadoPedido(orderIdTemp, 'entregado', metodoPagoSeleccionado, clienteNombreTemp, clienteCcNitTemp);
+                await actualizarEstadoPedido(orderIdTemp, 'entregado', metodoPagoSeleccionado, clienteNombreTemp, clienteCcNitTemp, clienteEmailTemp);
             }
         }
 
@@ -4519,7 +4562,7 @@
                 <datalist id="listaNombresClientes"></datalist>
             </div>
 
-            <div style="margin-bottom: 2rem;">
+            <div style="margin-bottom: 1.5rem;">
                 <label
                     style="display: block; font-size: 13px; font-weight: 600; color: #2d3748; margin-bottom: 8px;">Cédula
                     / NIT</label>
@@ -4527,6 +4570,14 @@
                     style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.2s;"
                     placeholder="Ej: 12345678">
                 <datalist id="listaCcNitClientes"></datalist>
+            </div>
+
+            <div style="margin-bottom: 1.8rem;">
+                <label
+                    style="display: block; font-size: 13px; font-weight: 600; color: #2d3748; margin-bottom: 8px;">Correo Electrónico <span style="color: #3182ce; font-weight: 500; font-size: 12px;">(Para enviar Factura Electrónica)</span></label>
+                <input type="email" id="clienteEmail"
+                    style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.2s;"
+                    placeholder="Ej: cliente@correo.com (Opcional)">
             </div>
 
             <div style="display: grid; gap: 1rem;">
@@ -4700,11 +4751,21 @@
     <div id="modalEstadoImpresion"
         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10002; align-items: center; justify-content: center;">
         <div
-            style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+            style="background: white; border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
             <div id="impresionSpinner" style="font-size: 48px; margin-bottom: 1rem;">⏳</div>
             <h3 id="impresionTitulo" style="font-size: 18px; font-weight: 700; color: #1a202c; margin-bottom: 0.5rem;">
                 Imprimiendo factura...</h3>
-            <p id="impresionMensaje" style="font-size: 14px; color: #718096;">Por favor, espere</p>
+            <p id="impresionMensaje" style="font-size: 14px; color: #718096; line-height: 1.5; margin-bottom: 1rem;">Por favor, espere</p>
+            <div id="impresionAcciones" style="display: none; flex-direction: column; gap: 10px; margin-top: 1.2rem;">
+                <a id="btnVerDian" href="#" target="_blank"
+                    style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%); color: white; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);">
+                    🌐 Ver / Verificar en la DIAN
+                </a>
+                <button onclick="document.getElementById('modalEstadoImpresion').style.display = 'none'"
+                    style="padding: 10px 16px; background: #edf2f7; color: #4a5568; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                    Cerrar
+                </button>
+            </div>
         </div>
     </div>
 

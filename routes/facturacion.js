@@ -24,6 +24,25 @@ router.post('/emitir', protect, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Pedido no encontrado' });
         }
 
+        // ── GUARDIA DE IDEMPOTENCIA ──────────────────────────────────────
+        // Si la factura ya fue procesada, devolver la data guardada sin
+        // volver a llamar a la API (evita error "ya se encuentra validado")
+        if (order.facturaElectronica && order.facturaElectronica.estado === 'PROCESADA') {
+            const fe = order.facturaElectronica;
+            console.log(`ℹ️  Factura ${fe.numero} ya estaba procesada para orden ${orderId}, retornando datos guardados.`);
+            return res.json({
+                success: true,
+                alreadyEmitted: true,
+                message: `La factura ${fe.numero} ya fue emitida y validada anteriormente.`,
+                numero: fe.numero,
+                cufe: fe.cufe,
+                dianUrl: fe.dianUrl,
+                qrUrl: fe.qrUrl,
+                clienteEmail: order.clienteEmail || null
+            });
+        }
+        // ────────────────────────────────────────────────────────────────
+
         // Actualizar datos del cliente si se enviaron
         if (clienteNombre) order.clienteNombre = clienteNombre.trim();
         if (clienteCcNit) order.clienteCcNit = clienteCcNit.trim();
@@ -40,14 +59,19 @@ router.post('/emitir', protect, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Tipo de documento no válido' });
         }
 
+
         if (result.success) {
             // Guardar info de factura en el pedido
-            const docData = (result.data && result.data.data) ? result.data.data : {};
-            const qrObj = result.data?.qr || {};
-            const qrDian = qrObj.qrDian || '';
-            let cufe = docData.cufe || docData.XmlDocumentKey || docData.cude || null;
+            const resData = result.data || {};
+            const docData = resData.document || resData.data || resData || {};
+            const qrObj = resData.qr || docData.qr || {};
+            let qrDian = qrObj.qrDian || docData.qrDian || '';
+            let cufe = docData.cufe || docData.XmlDocumentKey || docData.document_key || docData.cude || null;
             if (!cufe && qrDian && qrDian.includes('documentkey=')) {
                 cufe = qrDian.split('documentkey=')[1].split('&')[0];
+            }
+            if (!qrDian && cufe) {
+                qrDian = `https://catalogo-vpfe.dian.gov.co/document/searchqr?documentkey=${cufe}`;
             }
 
             order.facturaElectronica = {

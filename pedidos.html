@@ -12,6 +12,7 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f7fa;
@@ -65,13 +66,13 @@
         .brand-icon {
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.3);
         }
 
         .brand-text h2 {
@@ -149,7 +150,7 @@
             padding: 12px 1.5rem;
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
             font-size: 14px;
             font-weight: 500;
             position: relative;
@@ -162,8 +163,8 @@
         }
 
         .nav-item.active {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.15) 0%, transparent 100%);
-            color: #667eea;
+            background: linear-gradient(90deg, rgba(24, 58, 55, 0.15) 0%, transparent 100%);
+            color: #183A37;
             font-weight: 700;
         }
 
@@ -174,8 +175,8 @@
             top: 0;
             bottom: 0;
             width: 4px;
-            background: #667eea;
-            box-shadow: 2px 0 10px rgba(102, 126, 234, 0.5);
+            background: #183A37;
+            box-shadow: 2px 0 10px rgba(24, 58, 55, 0.5);
         }
 
         .nav-icon {
@@ -183,7 +184,7 @@
             width: 24px;
             text-align: center;
             opacity: 0.8;
-            transition: transform 0.2s;
+            transition: transform 0.15s ease, opacity 0.15s ease;
         }
 
         .nav-item:hover .nav-icon {
@@ -209,7 +210,7 @@
         .user-avatar-sidebar {
             width: 42px;
             height: 42px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -240,7 +241,7 @@
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease, color 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -260,7 +261,7 @@
             top: 20px;
             width: 45px;
             height: 45px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             border: none;
             border-radius: 12px;
             color: white;
@@ -268,16 +269,15 @@
             cursor: pointer;
             z-index: 1001;
             display: flex;
-            /* Oculto por defecto */
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.4);
+            transition: transform 0.15s ease;
         }
 
         .menu-toggle:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 20px rgba(24, 58, 55, 0.5);
         }
 
         .sidebar-overlay {
@@ -322,24 +322,24 @@
 
         .btn-change-view {
             padding: 10px 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             border: none;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(24, 58, 55, 0.3);
             white-space: nowrap;
         }
 
         .btn-change-view:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(24, 58, 55, 0.4);
         }
 
         .btn-change-view:active {
@@ -539,7 +539,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: border-color 0.15s ease, color 0.15s ease;
         }
 
         .qty-btn:hover {
@@ -569,7 +569,7 @@
             cursor: pointer;
             font-size: 12px;
             font-weight: 600;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease;
         }
 
         .btn-remove:hover {
@@ -610,7 +610,7 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .btn-submit:hover {
@@ -664,10 +664,11 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 1.5rem;
-            transition: all 0.2s;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
             user-select: none;
             -webkit-user-select: none;
             position: relative;
+            contain: layout style;
         }
 
         .mesero-badge {
@@ -675,17 +676,17 @@
             top: -12px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             padding: 4px 15px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
-            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 8px rgba(24, 58, 55, 0.3);
             z-index: 5;
             white-space: nowrap;
-            border: 2px solid #fff;
+            border: 2px solid #F5EFE1;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -777,8 +778,8 @@
         }
 
         .order-card.unified-order {
-            border-left: 5px solid #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, white 100%);
+            border-left: 5px solid #183A37;
+            background: linear-gradient(135deg, rgba(24, 58, 55, 0.03) 0%, white 100%);
         }
 
         .order-items {
@@ -825,16 +826,16 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: background-color 0.15s ease;
         }
 
         .btn-preparar {
-            background: #4299e1;
+            background: #C9A227;
             color: white;
         }
 
         .btn-preparar:hover {
-            background: #3182ce;
+            background: #183A37;
         }
 
         .btn-listo {
@@ -847,12 +848,12 @@
         }
 
         .btn-entregar {
-            background: #9f7aea;
+            background: #C9A227;
             color: white;
         }
 
         .btn-entregar:hover {
-            background: #805ad5;
+            background: #A9881D;
         }
 
         .btn-cancelar {
@@ -1316,7 +1317,112 @@
 
             @page {
                 margin: 0;
-                size: 58mm auto;
+            }
+        }
+
+        @media print {
+
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            body>*:not(#comandaPrintContainer) {
+                display: none !important;
+            }
+
+            #comandaPrintContainer,
+            #comandaPrintContainer * {
+                visibility: visible;
+            }
+
+            #comandaPrintContainer {
+                display: block !important;
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 5mm;
+                color: #000;
+                background: #F5EFE1;
+                font-family: 'Courier New', monospace;
+                box-sizing: border-box;
+                overflow: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .comanda-header {
+                text-align: center;
+                border-bottom: 2px dashed #000;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+
+            .comanda-header h1 {
+                font-size: 20pt;
+                margin: 5px 0;
+            }
+
+            .comanda-mesa {
+                font-size: 24pt;
+                font-weight: bold;
+                text-align: center;
+                margin: 15px 0;
+                border: 2px solid #000;
+                padding: 5px;
+            }
+
+            .comanda-mesero {
+                font-size: 14pt;
+                text-align: center;
+                margin: 5px 0 15px 0;
+                font-weight: bold;
+            }
+
+            .comanda-body {
+                font-size: 14pt;
+                overflow: visible !important;
+            }
+
+            .comanda-item {
+                margin-bottom: 12px;
+                border-bottom: 1px dotted #ccc;
+                padding-bottom: 8px;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .item-main {
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+
+            .item-notes {
+                font-size: 11pt;
+                font-style: italic;
+                margin-top: 4px;
+                padding-left: 20px;
+                color: #333;
+                word-wrap: break-word;
+            }
+
+            .comanda-footer {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 10pt;
+                border-top: 1px dashed #000;
+                padding-top: 10px;
+                page-break-inside: avoid;
+            }
+
+            @page {
+                margin: 0;
+                size: 80mm auto;
             }
         }
 
@@ -1333,7 +1439,7 @@
         /* ESTILOS PARA GESTO DESHACER */
         /* ESTILOS PARA GESTO DESHACER - ESTANDARIZADOS */
         .order-card.ready-to-undo {
-            background-color: #fff5f5 !important;
+            background-color: #FEE2E2 !important;
             border-color: #feb2b2 !important;
             animation: undo-pulse 1.5s infinite;
             transform: scale(1.02);
@@ -1493,8 +1599,8 @@
 
         .table-view-search:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            border-color: #183A37;
+            box-shadow: 0 0 0 4px rgba(24, 58, 55, 0.1);
         }
 
         .table-view-search-wrapper {
@@ -1516,7 +1622,7 @@
 
         .btn-gestionar-mesas {
             padding: 12px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -1527,13 +1633,13 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 12px rgba(24, 58, 55, 0.3);
             white-space: nowrap;
         }
 
         .btn-gestionar-mesas:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(24, 58, 55, 0.4);
         }
 
         .mesas-grid {
@@ -1552,74 +1658,91 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             user-select: none;
             -webkit-user-select: none;
+            padding: 4px;
         }
 
         .mesa-circle:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .mesa-circle:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         .mesa-icon {
-            width: 80px;
-            height: 80px;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+
+        .mesa-icon .mesa-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .mesa-icon .mesa-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .mesa-icon .mesa-badge {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            background: #e53e3e;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 8px;
-            position: relative;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s;
+            border: 2px solid white;
+            z-index: 3;
+            box-shadow: 0 2px 6px rgba(229, 62, 62, 0.4);
         }
 
         .mesa-circle:hover .mesa-icon {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            filter: brightness(1.08);
         }
 
-        .mesa-icon.libre {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        .mesa-icon.ocupada .mesa-svg .table-surface {
+            animation: tablePulse 2s ease-in-out infinite;
         }
 
-        .mesa-icon.ocupada {
-            background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
-            animation: pulseOcupada 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseOcupada {
+        @keyframes tablePulse {
 
             0%,
             100% {
-                box-shadow: 0 6px 20px rgba(229, 62, 62, 0.3);
+                filter: drop-shadow(0 0 4px rgba(229, 62, 62, 0.3));
             }
 
             50% {
-                box-shadow: 0 6px 30px rgba(229, 62, 62, 0.6);
+                filter: drop-shadow(0 0 12px rgba(229, 62, 62, 0.6));
             }
         }
 
-        .mesa-icon::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            right: 3px;
-            bottom: 3px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
         .mesa-name {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #2d3748;
             text-align: center;
-            max-width: 90px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -1629,7 +1752,7 @@
             font-size: 10px;
             font-weight: 600;
             color: #718096;
-            margin-top: 2px;
+            margin-top: 1px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -1647,6 +1770,54 @@
             display: none !important;
         }
 
+        /* ===== MODO ORGANIZAR ===== */
+        .organizing-mode {
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(24, 58, 55, 0.03) 20px,
+                    rgba(24, 58, 55, 0.03) 40px);
+            border: 2px dashed rgba(24, 58, 55, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem !important;
+            transition: all 0.3s ease;
+        }
+
+        .organizing-mode .mesa-circle {
+            cursor: grab !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            transition: box-shadow 0.15s ease, transform 0.05s linear !important;
+        }
+
+        .organizing-mode .mesa-circle:hover {
+            transform: none !important;
+        }
+
+        .organizing-mode .mesa-circle:active {
+            transform: none !important;
+        }
+
+        .organizing-mode .mesa-circle.dragging {
+            cursor: grabbing !important;
+            z-index: 100 !important;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+            transform: scale(1.08) !important;
+        }
+
+        body.is-organizing {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+        }
+
+        body.is-organizing * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+
         /* Responsive mesas */
         @media (max-width: 1024px) {
             .mesas-grid {
@@ -1662,13 +1833,16 @@
             }
 
             .mesa-icon {
-                width: 70px;
-                height: 70px;
-                font-size: 24px;
+                width: 75px;
+                height: 75px;
+            }
+
+            .mesa-icon .mesa-label {
+                font-size: 17px;
             }
 
             .mesa-name {
-                font-size: 12px;
+                font-size: 11px;
             }
 
             .table-view-header {
@@ -1684,9 +1858,12 @@
             }
 
             .mesa-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 20px;
+                width: 65px;
+                height: 65px;
+            }
+
+            .mesa-icon .mesa-label {
+                font-size: 15px;
             }
         }
 
@@ -1869,7 +2046,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(24, 58, 55, 0.4);
             animation: slideUpFadeBtn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             pointer-events: auto;
             max-width: 90vw;
@@ -1917,7 +2094,7 @@
         }
 
         .alimentos-popup {
-            background: #ffffff;
+            background: #FFFFFF;
             border-radius: 16px;
             width: 100%;
             max-width: 420px;
@@ -1944,7 +2121,7 @@
         .alimentos-popup-header {
             padding: 1.25rem 1.5rem;
             border-bottom: 1px solid #e2e8f0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
         }
 
@@ -1986,7 +2163,7 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
-            accent-color: #667eea;
+            accent-color: #183A37;
         }
 
         .alimento-info {
@@ -2060,7 +2237,7 @@
         }
 
         .adj-btn:hover {
-            background: #667eea;
+            background: #183A37;
             color: white;
         }
 
@@ -2127,7 +2304,7 @@
         }
 
         .btn-ver-alimentos {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #183A37 0%, #2B2118 100%);
             color: white;
             border: none;
             padding: 5px 10px;
@@ -2144,7 +2321,7 @@
 
         .btn-ver-alimentos:hover {
             transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 3px 8px rgba(24, 58, 55, 0.4);
         }
 
         .btn-ver-alimentos.has-exclusions {
@@ -2162,10 +2339,242 @@
             display: block;
             margin-bottom: 0.5rem;
         }
+
+        /* ✅ OPTIMIZACIONES RENDIMIENTO - Dispositivos de baja capacidad */
+        .perf-low .sidebar {
+            background: #1a202c !important;
+            transition: none !important;
+        }
+
+        .perf-low .brand-icon {
+            box-shadow: none !important;
+            background: #183A37 !important;
+        }
+
+        .perf-low .menu-toggle {
+            box-shadow: none !important;
+        }
+
+        .perf-low .btn-change-view {
+            box-shadow: none !important;
+        }
+
+        .perf-low .order-card {
+            box-shadow: none !important;
+            border-radius: 8px !important;
+            padding: 1rem !important;
+        }
+
+        .perf-low .order-card:hover {
+            box-shadow: none !important;
+        }
+
+        .perf-low .mesero-badge {
+            box-shadow: none !important;
+            background: #183A37 !important;
+        }
+
+        .perf-low .order-actions {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
+        .perf-low .btn-action {
+            padding: 8px !important;
+            font-size: 11px !important;
+        }
+
+        .perf-low .order-card * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .perf-low .gesture-active-jiggle {
+            animation: none !important;
+        }
+
+        .perf-low .ready-to-undo {
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .ready-to-change-payment {
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .undo-indicator {
+            transition: opacity 0.1s ease !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .payment-method-indicator {
+            transition: opacity 0.1s ease !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low .modal-gestion-content,
+        .perf-low .modal-pedido-mesa-content,
+        .perf-low [class*="modal"] {
+            box-shadow: none !important;
+        }
+
+        .perf-low .onboarding-shortcut-popup {
+            box-shadow: none !important;
+            animation: none !important;
+        }
+
+        .perf-low .notificacion-mandao-alert {
+            animation: none !important;
+            box-shadow: none !important;
+        }
+
+        .perf-low body::before {
+            display: none !important;
+        }
+
+        .perf-low .content-wrapper {
+            transition: none !important;
+        }
+
+        .perf-low .sidebar-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .perf-low .sidebar-nav {
+            scrollbar-width: none;
+        }
+
+        .perf-low table {
+            font-size: 12px;
+        }
+
+        .perf-low .alimentos-popup,
+        .perf-low .modal-content {
+            box-shadow: none !important;
+        }
+
+        .perf-low * {
+            will-change: auto !important;
+        }
+
+        .perf-low .orders-list {
+            contain: layout style;
+        }
+
+        /* Medium: reducir sombras */
+        .perf-medium .order-card {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+        }
+
+        .perf-medium .mesero-badge {
+            box-shadow: 0 2px 4px rgba(24, 58, 55, 0.2) !important;
+        }
+
+        .perf-medium .sidebar {
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.08) !important;
+        }
+
+
+        /* ==================== BOTÓN FLOTANTE BLUETOOTH ==================== */
+        #btPrinterFab {
+            position: fixed;
+            bottom: 90px;
+            left: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            background: #334155;
+            color: #94a3b8;
+        }
+
+        #btPrinterFab:active {
+            transform: scale(0.9);
+        }
+
+        #btPrinterFab.connected {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        #btPrinterFab.connected::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 14px;
+            height: 14px;
+            background: #34d399;
+            border-radius: 50%;
+            border: 2px solid #0f172a;
+            animation: btPulse 2s infinite;
+        }
+
+        @keyframes btPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+            }
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 0 6px rgba(52, 211, 153, 0);
+            }
+        }
+
+        #btPrinterFab .bt-tooltip {
+            position: absolute;
+            left: 60px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border: 1px solid #334155;
+        }
+
+        #btPrinterFab:hover .bt-tooltip,
+        #btPrinterFab:active .bt-tooltip {
+            opacity: 1;
+        }
+
+        @media print {
+            #btPrinterFab {
+                display: none !important;
+            }
+        }
     </style>
 
 
+
+    <style>
+        #comandaPrintContainer {
+            display: none;
+        }
+    </style>
+    <link rel="stylesheet" href="/theme.css">
+    <script src="/theme.js" defer></script>
+    <script src="/icons.js" defer></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/performance-mode.js" defer></script>
 </head>
 
 <body>
@@ -2191,65 +2600,64 @@
         <nav class="sidebar-nav">
             <div class="nav-section">
                 <div class="nav-section-title">Principal</div>
-                <a href="productos.html" class="nav-item">
-                    <span class="nav-icon">🍔</span>
+                <a href="productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Platos</span>
                 </a>
                 <a href="pedidos.html" class="nav-item active">
-                    <span class="nav-icon">📝</span>
+                    <span class="nav-icon"></span>
                     <span>Pedidos</span>
                 </a>
-                <a href="gastos.html" class="nav-item">
-                    <span class="nav-icon">💰</span>
+                <a href="gastos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Gastos</span>
                 </a>
-                <a href="qr-generator.html" class="nav-item">
-                    <span class="nav-icon">🔗</span>
+                <a href="qr-generator.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>QR Generador</span>
                 </a>
                 <a href="reportes.html" class="nav-item ">
-                    <span class="nav-icon">📈</span>
+                    <span class="nav-icon"></span>
                     <span>Reportes</span>
                 </a>
-                <a href="facturas.html" class="nav-item">
+                <a href="facturas.html" class="nav-item ">
                     <span class="nav-icon">🧾</span>
                     <span>Historial Facturas</span>
                 </a>
-                <a href="cocina.html" class="nav-item">
-                    <span class="nav-icon">👨‍🍳</span>
+                <a href="cocina.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Cocina</span>
                 </a>
-                <a href="catalogo-productos.html" class="nav-item">
-                    <span class="nav-icon">📋</span>
+                <a href="catalogo-productos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Todos los platos</span>
                 </a>
-                <a href="alimentos.html" class="nav-item">
-                    <span class="nav-icon">🥑</span>
+                <a href="alimentos.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Alimentos</span>
                 </a>
             </div>
 
-            <!-- SOLO PARA ADMINISTRADORES -->
             <div class="nav-section" id="adminSection" style="display: none;">
                 <div class="nav-section-title">Administración</div>
-                <a href="administrador.html" class="nav-item">
-                    <span class="nav-icon">👔</span>
+                <a href="administrador.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Gestión de Meseros</span>
                 </a>
-                <a href="liquidacion.html" class="nav-item">
-                    <span class="nav-icon">💎</span>
+                <a href="liquidacion.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Liquidación</span>
                 </a>
-                <a href="historial-liquidaciones.html" class="nav-item">
-                    <span class="nav-icon">📓</span>
+                <a href="historial-liquidaciones.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Hist. Liquidaciones</span>
                 </a>
-                <a href="solicitudes.html" class="nav-item">
-                    <span class="nav-icon">✔️</span>
+                <a href="solicitudes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Aceptación de Empleados</span>
                 </a>
-                <a href="ajustes.html" class="nav-item">
-                    <span class="nav-icon">⚙️</span>
+                <a href="ajustes.html" class="nav-item ">
+                    <span class="nav-icon"></span>
                     <span>Ajustes</span>
                 </a>
             </div>
@@ -2274,10 +2682,17 @@
                     <h1 class="page-title" id="pageTitlePedidos">🍽️ Gestión de Pedidos</h1>
                     <p class="page-subtitle">Administra los pedidos de tu restaurante</p>
                 </div>
-                <button class="btn-change-view" id="btnChangeViewHeader" onclick="toggleTableView()">
-                    <span id="viewModeIconHeader">📋</span>
-                    <span id="viewModeTextHeader">Vista Normal</span>
-                </button>
+                <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end;">
+                    <button class="btn-change-view" id="btnChangeViewHeader" onclick="toggleTableView()">
+                        <span id="viewModeIconHeader">📋</span>
+                        <span id="viewModeTextHeader">Vista Normal</span>
+                    </button>
+                    <button class="btn-organizar-mesas" id="btnOrganizarMesas" onclick="toggleOrganizeMesas()"
+                        style="display: none; background: #ed8936; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(237, 137, 54, 0.2); transition: all 0.25s ease; font-size: 13px;">
+                        <span id="organizeIcon">🔄</span>
+                        <span id="organizeText">Organizar</span>
+                    </button>
+                </div>
             </div>
 
             <!-- ===== VISTA POR DEFECTO ===== -->
@@ -2364,7 +2779,7 @@
                                 </div>
                             </div>
                             <div id="loadingMoreOrders"
-                                style="display: none; text-align: center; padding: 20px; color: #667eea;">
+                                style="display: none; text-align: center; padding: 20px; color: #183A37;">
                                 <span>Cargando más pedidos...</span>
                             </div>
                             <div id="noMoreOrders"
@@ -2399,6 +2814,13 @@
         </div>
     </div>
 
+    <!-- BOTÓN FLOTANTE BLUETOOTH -->
+    <button id="btPrinterFab" onclick="toggleBluetoothPrinter()" style="display:none;">
+        🖨️
+        <span class="bt-tooltip" id="btTooltip">Conectar impresora Bluetooth</span>
+    </button>
+
+
     <!-- Indicador del modo vista -->
     <div class="view-mode-indicator" id="viewModeIndicator" onclick="toggleTableView()">
         <span id="viewModeIcon">🪑</span>
@@ -2417,6 +2839,7 @@
         let metodoPagoSeleccionado = null;
         let clienteNombreSeleccionado = '';
         let clienteCcNitSeleccionado = '';
+        let clienteEmailSeleccionado = '';
         // DEBE ESTAR después de:
 
         // AGREGAR ESTA LÍNEA:
@@ -2425,6 +2848,10 @@
         let isLoadingMore = false;
         let hasMoreOrders = true;
         let allLoadedOrders = [];
+
+        // Tracking de pedidos impresos localmente para evitar duplicados
+        let printedOrderIds = new Set();
+        const MAX_PRINTED_IDS = 500;
 
         // CARGA INICIAL
         window.addEventListener('DOMContentLoaded', async () => {
@@ -2495,15 +2922,19 @@
                 Swal.fire({ icon: (('Error de conexión. Recargue la página.').toLowerCase().includes("error") || ('Error de conexión. Recargue la página.').toLowerCase().includes("falla") || ('Error de conexión. Recargue la página.').toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Error de conexión. Recargue la página.', timer: 3000, showConfirmButton: false });
             }
 
+            // ✅ Infinite scroll con throttle para no bloquear el hilo principal
+            let scrollThrottleTimer = null;
             window.addEventListener('scroll', () => {
-                if (isLoadingMore || !hasMoreOrders) return;
-
-                const scrollPosition = window.innerHeight + window.scrollY;
-                const documentHeight = document.documentElement.offsetHeight;
-
-                if (scrollPosition >= documentHeight - 200) {
-                    loadOrders(false);
-                }
+                if (scrollThrottleTimer) return;
+                scrollThrottleTimer = setTimeout(() => {
+                    scrollThrottleTimer = null;
+                    if (isLoadingMore || !hasMoreOrders) return;
+                    const scrollPosition = window.innerHeight + window.scrollY;
+                    const documentHeight = document.documentElement.offsetHeight;
+                    if (scrollPosition >= documentHeight - 200) {
+                        loadOrders(false);
+                    }
+                }, 150);
             });
 
             // GESTIÓN DE GESTOS (DESHACER ESTADO + CAMBIAR MÉTODO DE PAGO)
@@ -2668,7 +3099,7 @@
                 text: `El pedido pasará de "${currentStatus}" a "${previousStatus}"`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#4299e1',
+                confirmButtonColor: '#C9A227',
                 cancelButtonColor: '#718096',
                 confirmButtonText: 'Sí, deshacer',
                 cancelButtonText: 'Cancelar'
@@ -3001,7 +3432,7 @@
                             placeholder="📝 Nota para este plato (ej: sin cebolla, bien asado...)" 
                             value="${item.nota || ''}" 
                             oninput="setItemNote(${index}, this.value, 'default')"
-                            style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; background: #fffaf0;"
+                            style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; background: #FFFAF0;"
                         >
                     </div>
                     ${tieneAlimentos ? `
@@ -3086,7 +3517,7 @@
                         <p>${productoNombre}</p>
                     </div>
                     <div class="alimentos-popup-body">
-                        <p style="font-size: 12px; color: #718096; margin-bottom: 8px; padding: 8px; background: #f7fafc; border-radius: 8px; border-left: 3px solid #667eea;">
+                        <p style="font-size: 12px; color: #718096; margin-bottom: 8px; padding: 8px; background: #f7fafc; border-radius: 8px; border-left: 3px solid #183A37;">
                             Desmarca los alimentos que el cliente <b>no quiere</b>. Esos ingredientes <b>no se descontarán</b> del inventario.
                         </p>
                         ${alimentosDelProducto.map(alimento => {
@@ -3251,12 +3682,14 @@
                     producto: item.producto._id,
                     cantidad: item.cantidad,
                     precio: item.producto.precio,
+                    nombreProducto: item.producto.nombre,
                     alimentosExcluidos: item.alimentosExcluidos || [],
                     alimentosAjustados: item.alimentosAjustados || [],
                     nota: item.nota || ''
                 })),
                 notas: notas,
                 userId: currentUser._id,
+                meseroNombre: currentUser.nombre,
                 ignorarStockAlimentos: productosConAlimentosAgotados.length > 0
             };
 
@@ -3275,6 +3708,7 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    imprimirComanda(data.data); // Usar respuesta del servidor (tiene _id)
                     Swal.fire({ icon: (('✅ Pedido creado exitosamente').toLowerCase().includes("error") || ('✅ Pedido creado exitosamente').toLowerCase().includes("falla") || ('✅ Pedido creado exitosamente').toLowerCase().includes("incorrect")) ? "error" : "success", text: '✅ Pedido creado exitosamente', timer: 3000, showConfirmButton: false });
                     document.getElementById('orderForm').reset();
                     selectedItems = [];
@@ -3331,7 +3765,10 @@
                     if (reset) {
                         allLoadedOrders = newOrders;
                     } else {
-                        allLoadedOrders = [...allLoadedOrders, ...newOrders];
+                        // ✅ Push en lugar de spread para no crear arrays nuevos
+                        for (let i = 0; i < newOrders.length; i++) {
+                            allLoadedOrders.push(newOrders[i]);
+                        }
                     }
 
                     displayOrders(allLoadedOrders, reset);
@@ -3341,6 +3778,12 @@
                     // Señal para la vista de mesas
                     window.ordersHaveLoaded = true;
                     if (isTableView && mesasData.length > 0) renderMesas(mesasData);
+
+                    // ✅ Notificar al bridge de impresión
+                    try {
+                        const printChannel = new BroadcastChannel('jc-print-channel');
+                        printChannel.postMessage('check-prints');
+                    } catch (e) { }
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -3351,183 +3794,156 @@
         }
 
 
+        // ✅ Cache de HTML para evitar re-render innecesario
+        let _lastOrdersHash = '';
+
         function displayOrders(orders, reset = false) {
             const list = document.getElementById('ordersList');
 
             if (orders.length === 0) {
-                list.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <p>No hay pedidos registrados</p>
-            </div>
-        `;
+                if (list.children.length > 0) {
+                    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>No hay pedidos registrados</p></div>`;
+                }
                 return;
             }
 
-            // ORDENAR: Separar en tres grupos
-            const pendientesPreparando = orders.filter(o => ['pendiente', 'preparando'].includes(o.estado));
-            const listos = orders.filter(o => o.estado === 'listo');
-            const cancelados = orders.filter(o => o.estado === 'cancelado');
-            const entregados = orders.filter(o => o.estado === 'entregado');
+            // ✅ Hash ligero para detectar si realmente cambió algo
+            const ordersHash = orders.map(o => `${o._id}:${o.estado}:${o.items.length}:${o.total}:${(o.pagos || []).length}`).join('|');
+            if (!reset && ordersHash === _lastOrdersHash) return; // No hay cambios, skip render
+            _lastOrdersHash = ordersHash;
 
-            pendientesPreparando.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            listos.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            cancelados.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-            entregados.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            // ORDENAR: Separar en grupos
+            const pendientesPreparando = [];
+            const listos = [];
+            const cancelados = [];
+            const entregados = [];
 
-            const orderedOrders = [...pendientesPreparando, ...listos, ...cancelados, ...entregados];
+            for (let i = 0; i < orders.length; i++) {
+                const o = orders[i];
+                if (o.estado === 'pendiente' || o.estado === 'preparando') pendientesPreparando.push(o);
+                else if (o.estado === 'listo') listos.push(o);
+                else if (o.estado === 'cancelado') cancelados.push(o);
+                else if (o.estado === 'entregado') entregados.push(o);
+            }
 
-            // Filtrar por origen si se selecciona "mandao"
+            const sortByDate = (a, b) => new Date(a.createdAt) - new Date(b.createdAt);
+            pendientesPreparando.sort(sortByDate);
+            listos.sort(sortByDate);
+            cancelados.sort(sortByDate);
+            entregados.sort(sortByDate);
+
+            const orderedOrders = pendientesPreparando.concat(listos, cancelados, entregados);
+
             const filtroEstado = document.getElementById('filterEstado').value;
             const finalOrders = filtroEstado === 'mandao'
                 ? orderedOrders.filter(o => o.source === 'mandao')
                 : orderedOrders;
 
-            // Always overwrite innerHTML to prevent duplicates and maintain sorting across all loaded pages
-            list.innerHTML = finalOrders.map(order => {
-                const isMandao = order.source === 'mandao';
-                // Generar HTML para items con estados individuales
-                const itemsHTML = order.items.map((item, itemIndex) => {
-                    const nombre = item.productoInfo ? item.productoInfo.nombre :
-                        (item.producto && item.producto.nombre ? item.producto.nombre :
-                            (item.nombreProducto || 'Producto eliminado'));
+            // ✅ Usar DocumentFragment para batch DOM update
+            const fragment = document.createDocumentFragment();
 
-                    // Agrupar por estado
-                    const grupos = item.estadosIndividuales || [{ cantidad: item.cantidad, estado: 'pendiente' }];
+            for (let i = 0; i < finalOrders.length; i++) {
+                const order = finalOrders[i];
+                const div = document.createElement('div');
+                div.innerHTML = buildOrderCardHTML(order);
+                fragment.appendChild(div.firstElementChild);
+            }
 
-                    return grupos.map(grupo => `
-                <div class="order-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #f7fafc; border-radius: 8px; margin-bottom: 8px;">
-                    <div style="flex: 1;">
-                        <span class="item-name" style="font-weight: 600; color: #2d3748;">${nombre}</span>
-                        <span class="item-qty" style="margin-left: 8px; color: #667eea; font-weight: 700;">x${grupo.cantidad}</span>
-                        ${item.nota ? `<div style="font-size: 11px; color: #e53e3e; font-weight: 700; margin-top: 2px;">📝 ${item.nota}</div>` : ''}
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 14px; font-weight: 700; color: #1a202c;">$${(item.precio * grupo.cantidad).toLocaleString('es-CO')}</span>
-                        ${order.estado !== 'entregado' && order.estado !== 'cancelado' ? `
-                            <span class="status-badge status-${grupo.estado}" style="font-size: 10px; padding: 4px 8px;">${grupo.estado}</span>
-                            <button onclick="cambiarEstadoProducto('${order._id}', ${itemIndex}, ${grupo.cantidad}, '${grupo.estado}')" 
-                                    style="padding: 4px 8px; background: #4299e1; color: white; border: none; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;">
-                                ▶️
-                            </button>
-                        ` : `
-                            <span class="status-badge status-${grupo.estado}" style="font-size: 10px; padding: 4px 8px;">${grupo.estado}</span>
-                        `}
-                    </div>
-                </div>
-            `).join('');
-                }).join('');
+            list.innerHTML = '';
+            list.appendChild(fragment);
+        }
 
-                return `
-            <div class="order-card ${isMandao ? 'mandao-order' : ''} ${order._isUnified ? 'unified-order' : ''}" id="order-card-${order._id}" data-id="${order._id}" data-metodo="${order.metodoPago || ''}" data-recibo="${order.reciboDia || false}" ${order._subOrderIds ? `data-sub-ids='${JSON.stringify(order._subOrderIds)}'` : ''} ${order._isUnified ? 'data-unified="true"' : ''}>
-                <div class="mesero-badge">👤 ${order.mesero || 'Mesero'}</div>
+        // ✅ Función separada para construir HTML de tarjeta (más ligera)
+        function buildOrderCardHTML(order) {
+            const isMandao = order.source === 'mandao';
+            const isActivo = order.estado !== 'entregado' && order.estado !== 'cancelado';
+            const mesero = order.mesero || 'Mesero';
+
+            // Items HTML inline
+            let itemsHTML = '';
+            for (let i = 0; i < order.items.length; i++) {
+                const item = order.items[i];
+                const nombre = item.productoInfo ? item.productoInfo.nombre :
+                    (item.producto?.nombre || item.nombreProducto || 'Prod eliminado');
+                const grupos = item.estadosIndividuales || [{ cantidad: item.cantidad, estado: 'pendiente' }];
+
+                for (let g = 0; g < grupos.length; g++) {
+                    const grupo = grupos[g];
+                    const precio = item.precio * grupo.cantidad;
+                    itemsHTML += `<div class="order-item" style="display:flex;align-items:center;justify-content:space-between;padding:8px;background:#f7fafc;border-radius:6px;margin-bottom:6px;">
+                        <div style="flex:1"><span class="item-name" style="font-weight:600;color:#2d3748">${nombre}</span><span class="item-qty" style="margin-left:6px;color:#183A37;font-weight:700">x${grupo.cantidad}</span>${item.nota ? `<div style="font-size:10px;color:#e53e3e;font-weight:700;margin-top:1px">📝 ${item.nota}</div>` : ''}</div>
+                        <div style="display:flex;align-items:center;gap:6px">
+                            <span style="font-size:13px;font-weight:700;color:#1a202c">$${precio.toLocaleString('es-CO')}</span>
+                            ${isActivo ? `<span class="status-badge status-${grupo.estado}" style="font-size:9px;padding:3px 6px">${grupo.estado}</span><button onclick="cambiarEstadoProducto('${order._id}',${i},${grupo.cantidad},'${grupo.estado}')" style="padding:3px 6px;background:#C9A227;color:white;border:none;border-radius:4px;font-size:10px;cursor:pointer;font-weight:600">▶️</button>` : `<span class="status-badge status-${grupo.estado}" style="font-size:9px;padding:3px 6px">${grupo.estado}</span>`}
+                        </div>
+                    </div>`;
+                }
+            }
+
+            // Pagos info inline (simplificado)
+            let pagosHTML = '';
+            if (order.pagos && order.pagos.length > 0) {
+                const totalPagado = order.totalPagado || 0;
+                const porcentaje = Math.round((totalPagado / order.total) * 100);
+                const saldo = order.total - totalPagado;
+                pagosHTML = `<div style="background:#f0fff4;border:1px solid #c6f6d5;border-radius:8px;padding:8px;margin:6px 0">
+                    <div style="background:#e2e8f0;border-radius:4px;height:6px;margin:4px 0;overflow:hidden"><div style="background:#48bb78;height:100%;width:${porcentaje}%"></div></div>
+                    <div style="display:flex;justify-content:space-between;font-size:10px;color:#718096"><span>Pagado: $${totalPagado.toLocaleString('es-CO')} (${porcentaje}%)</span>${saldo > 0 ? `<span style="color:#e53e3e;font-weight:700">Falta: $${saldo.toLocaleString('es-CO')}</span>` : '<span style="color:#38a169;font-weight:700">✅</span>'}</div>
+                </div>`;
+            }
+
+            // Actions inline
+            let actionsHTML = '';
+            if (isActivo) {
+                actionsHTML = '<div class="order-actions">';
+                if (order.estado === 'pendiente') {
+                    actionsHTML += isMandao
+                        ? `<button class="btn-action" style="background:#f59e0b;color:white" onclick="updateOrderStatus('${order._id}','preparando')">✅ Aceptar</button>`
+                        : `<button class="btn-action btn-preparar" onclick="updateOrderStatus('${order._id}','preparando')">👨‍🍳 Preparar</button><button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}','listo')">✅ Listo</button>`;
+                } else if (order.estado === 'preparando') {
+                    actionsHTML += isMandao
+                        ? `<button class="btn-action" style="background:#10b981;color:white" onclick="updateOrderStatus('${order._id}','listo')">👨‍🍳 Listo</button>`
+                        : `<button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}','listo')">✅ Listo</button>`;
+                }
+
+                const tienePagosParciales = order.pagos && order.pagos.length > 0 && (order.totalPagado || 0) < order.total;
+                const saldoRestante = tienePagosParciales ? order.total - (order.totalPagado || 0) : order.total;
+                const pagarTexto = tienePagosParciales ? `💳 Restante: $${saldoRestante.toLocaleString('es-CO')}` : '💳 Pagar';
+
+                if (order.estado === 'listo') {
+                    actionsHTML += `<button class="btn-action btn-entregar" onclick="updateOrderStatus('${order._id}','entregado')">${pagarTexto}</button>`;
+                } else {
+                    actionsHTML += `<button class="btn-action btn-entregar" onclick="pagarDirecto('${order._id}')">${pagarTexto}</button>`;
+                }
+                actionsHTML += `<button class="btn-action btn-cancelar" onclick="cancelOrder('${order._id}')">❌ Cancelar</button></div>`;
+            }
+
+            const metodoColor = order.metodoPago === 'transferencia' ? '#183A37' : order.metodoPago === 'mixto' ? '#A9881D' : '#48bb78';
+            const metodoLabel = order.metodoPago === 'transferencia' ? 'Transferencia' : order.metodoPago === 'mixto' ? 'Mixto' : 'Efectivo';
+
+            return `<div class="order-card${isMandao ? ' mandao-order' : ''}${order._isUnified ? ' unified-order' : ''}" id="order-card-${order._id}" data-id="${order._id}" data-metodo="${order.metodoPago || ''}" data-recibo="${order.reciboDia || false}"${order._subOrderIds ? ` data-sub-ids='${JSON.stringify(order._subOrderIds)}'` : ''}${order._isUnified ? ' data-unified="true"' : ''}>
+                <div class="mesero-badge">👤 ${mesero}</div>
                 <div class="undo-indicator">↩️ DESHACER</div>
                 <div class="payment-method-indicator" id="payment-indicator-${order._id}">💳 CAMBIAR</div>
                 <div class="order-header">
                     <div class="order-info">
-                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
                             ${isMandao ? '<span class="source-badge source-mandao"><span class="mandao-icon">🚲</span> MANDAO</span>' : ''}
-                            ${order._isUnified ? `<span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; background: linear-gradient(135deg, #667eea, #764ba2); color: white; box-shadow: 0 2px 8px rgba(102,126,234,0.3);">🏪 ${order._subOrderCount} Locales</span>` : ''}
+                            ${order._isUnified ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;background:#183A37;color:white">🏪 ${order._subOrderCount} Locales</span>` : ''}
                             <h3>Mesa ${order.mesa}</h3>
                         </div>
-                        <div class="order-meta">
-                            ${new Date(order.createdAt).toLocaleString('es-CO')}
-                            ${order.metodoPago ? `<br><strong style="color: ${order.metodoPago === 'transferencia' ? '#667eea' : order.metodoPago === 'mixto' ? '#805ad5' : '#48bb78'};">💳 ${order.metodoPago === 'transferencia' ? 'Transferencia' : order.metodoPago === 'mixto' ? 'Mixto' : 'Efectivo'}</strong>` : ''}
-                        </div>
+                        <div class="order-meta">${new Date(order.createdAt).toLocaleString('es-CO')}${order.metodoPago ? `<br><strong style="color:${metodoColor}">💳 ${metodoLabel}</strong>` : ''}</div>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="display:flex;gap:6px;align-items:center">
                         <span class="status-badge status-${order.estado}">${order.estado === 'entregado' ? 'pagado' : order.estado}</span>
-
-                        ${order.estado !== 'entregado' && order.estado !== 'cancelado' ? `
-                            <button onclick="abrirModalEditar('${order._id}')" style="padding: 6px 12px; background: #805ad5; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 4px;">
-                                ✏️ Editar
-                            </button>
-                        ` : ''}
+                        ${isActivo ? `<button onclick="abrirModalEditar('${order._id}')" style="padding:5px 10px;background:#A9881D;color:white;border:none;border-radius:5px;font-size:11px;cursor:pointer;font-weight:600">✏️ Editar</button>` : ''}
                     </div>
                 </div>
-                <div class="order-items">
-                    ${itemsHTML}
-                </div>
-                ${order.notas ? `<p style="font-size: 12px; color: #718096; font-style: italic; margin: 8px 0;">📝 ${order.notas}</p>` : ''}
-                <div class="order-total">
-                    <span>Total:</span>
-                    <span>$${order.total.toLocaleString('es-CO')}</span>
-                </div>
-                ${renderPagosInfo(order)}
-                ${getOrderActions(order)}
-            </div>
-        `;
-            }).join('');
-        }
-
-        // ✅ RENDERIZAR INFO DE PAGOS PARCIALES
-        function renderPagosInfo(order) {
-            if (!order.pagos || order.pagos.length === 0) return '';
-            const totalPagado = order.totalPagado || 0;
-            const saldoRestante = order.total - totalPagado;
-            const porcentaje = Math.round((totalPagado / order.total) * 100);
-
-            const pagosEfectivo = order.pagos.filter(p => p.metodo === 'efectivo').reduce((s, p) => s + p.monto, 0);
-            const pagosTransferencia = order.pagos.filter(p => p.metodo === 'transferencia').reduce((s, p) => s + p.monto, 0);
-
-            return `
-                <div style="background: linear-gradient(135deg, #f0fff4, #ebf8ff); border: 1px solid #c6f6d5; border-radius: 10px; padding: 10px 12px; margin: 8px 0;">
-                    <div style="font-size: 11px; font-weight: 700; color: #2d3748; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">💰 Pagos Realizados</div>
-                    ${pagosEfectivo > 0 ? `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #38a169; margin-bottom: 3px;"><span>💵 Efectivo</span><span style="font-weight: 700;">$${pagosEfectivo.toLocaleString('es-CO')}</span></div>` : ''}
-                    ${pagosTransferencia > 0 ? `<div style="display: flex; justify-content: space-between; font-size: 12px; color: #667eea; margin-bottom: 3px;"><span>📱 Transferencia</span><span style="font-weight: 700;">$${pagosTransferencia.toLocaleString('es-CO')}</span></div>` : ''}
-                    <div style="background: #e2e8f0; border-radius: 6px; height: 8px; margin: 6px 0 4px; overflow: hidden;">
-                        <div style="background: linear-gradient(90deg, #48bb78, #38a169); height: 100%; width: ${porcentaje}%; border-radius: 6px; transition: width 0.5s ease;"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #718096;">
-                        <span>Pagado: $${totalPagado.toLocaleString('es-CO')} (${porcentaje}%)</span>
-                        ${saldoRestante > 0 ? `<span style="color: #e53e3e; font-weight: 700;">Falta: $${saldoRestante.toLocaleString('es-CO')}</span>` : '<span style="color: #38a169; font-weight: 700;">✅ Completo</span>'}
-                    </div>
-                </div>
-            `;
-        }
-
-        function getOrderActions(order) {
-            if (order.estado === 'entregado' || order.estado === 'cancelado') return '';
-
-            const isMandao = order.source === 'mandao';
-            const tienePagosParciales = order.pagos && order.pagos.length > 0 && (order.totalPagado || 0) < order.total;
-            const saldoRestante = tienePagosParciales ? order.total - (order.totalPagado || 0) : order.total;
-            let actions = '<div class="order-actions">';
-
-            if (order.estado === 'pendiente') {
-                if (isMandao) {
-                    actions += `<button class="btn-action" style="background: #f59e0b; color: white;" onclick="updateOrderStatus('${order._id}', 'preparando')">✅ Aceptar Mandao</button>`;
-                } else {
-                    actions += `<button class="btn-action btn-preparar" onclick="updateOrderStatus('${order._id}', 'preparando')">👨‍🍳 Preparar</button>`;
-                    actions += `<button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}', 'listo')">✅ Listo</button>`;
-                }
-            }
-
-            if (order.estado === 'preparando') {
-                if (isMandao) {
-                    actions += `<button class="btn-action" style="background: #10b981; color: white;" onclick="updateOrderStatus('${order._id}', 'listo')">👨‍🍳 Marcar Listo</button>`;
-                } else {
-                    actions += `<button class="btn-action btn-listo" onclick="updateOrderStatus('${order._id}', 'listo')">✅ Listo</button>`;
-                }
-            }
-
-            // Botón de Pagar - muestra saldo restante si hay pagos parciales
-            const pagarTexto = tienePagosParciales
-                ? `💳 Pagar Restante: $${saldoRestante.toLocaleString('es-CO')}`
-                : '💳 Pagar';
-
-            if (order.estado === 'listo') {
-                actions += `<button class="btn-action btn-entregar" onclick="updateOrderStatus('${order._id}', 'entregado')">${pagarTexto}</button>`;
-            } else {
-                actions += `<button class="btn-action btn-entregar" onclick="pagarDirecto('${order._id}')">${pagarTexto}</button>`;
-            }
-
-            if (order.estado !== 'entregado' && order.estado !== 'cancelado') {
-                actions += `<button class="btn-action btn-cancelar" onclick="cancelOrder('${order._id}')">❌ Cancelar</button>`;
-            }
-
-            actions += '</div>';
-            return actions;
+                <div class="order-items">${itemsHTML}</div>
+                ${order.notas ? `<p style="font-size:11px;color:#718096;font-style:italic;margin:6px 0">📝 ${order.notas}</p>` : ''}
+                <div class="order-total"><span>Total:</span><span>$${order.total.toLocaleString('es-CO')}</span></div>
+                ${pagosHTML}${actionsHTML}
+            </div>`;
         }
 
         async function pagarDirecto(orderId) {
@@ -3670,7 +4086,7 @@
                 porcentajeLabel.style.color = '#38a169';
             } else {
                 porcentajeLabel.textContent = `Paga ${porcentajeDelTotal}% del total (${porcentajeDelRestante}% del restante)`;
-                porcentajeLabel.style.color = '#667eea';
+                porcentajeLabel.style.color = '#183A37';
             }
         }
 
@@ -3718,6 +4134,8 @@
                 // Limpiar inputs de datos de cliente
                 document.getElementById('clienteNombre').value = '';
                 document.getElementById('clienteCcNit').value = '';
+                const emailInputModal = document.getElementById('clienteEmail');
+                if (emailInputModal) emailInputModal.value = '';
 
                 // Mostrar modal de datos del cliente
                 document.getElementById('modalDatosCliente').style.display = 'flex';
@@ -3749,7 +4167,7 @@
                             html: `<div style="text-align: center;">
                                 <div style="font-size: 28px; font-weight: 800; color: #38a169; margin: 10px 0;">$${monto.toLocaleString('es-CO')}</div>
                                 <div style="font-size: 14px; color: #718096;">${metodoPagoSeleccionado === 'efectivo' ? '💵 Efectivo' : '📱 Transferencia'}</div>
-                                <div style="margin-top: 12px; padding: 8px; background: #fff5f5; border-radius: 8px; color: #e53e3e; font-weight: 600;">
+                                <div style="margin-top: 12px; padding: 8px; background: #FEE2E2; border-radius: 8px; color: #e53e3e; font-weight: 600;">
                                     Saldo restante: $${nuevoSaldo.toLocaleString('es-CO')}
                                 </div>
                             </div>`,
@@ -3807,6 +4225,8 @@
         async function confirmarDatosCliente() {
             clienteNombreSeleccionado = document.getElementById('clienteNombre').value.trim();
             clienteCcNitSeleccionado = document.getElementById('clienteCcNit').value.trim();
+            const emailInput = document.getElementById('clienteEmail');
+            clienteEmailSeleccionado = emailInput ? emailInput.value.trim() : '';
 
             // Cerrar modal de datos del cliente
             document.getElementById('modalDatosCliente').style.display = 'none';
@@ -3814,8 +4234,26 @@
             // Obtener los datos completos del pedido antes de preguntar por impresión
             await obtenerDatosPedidoParaImprimir(currentOrderIdForPayment);
 
-            // Mostrar modal de confirmación de impresión
-            document.getElementById('modalConfirmarImpresion').style.display = 'flex';
+            // Verificar si hay impresora Bluetooth (local o compartida)
+            const hasPrinter = typeof BluetoothPrinter !== 'undefined' && 
+                (BluetoothPrinter.isConnected() || BluetoothPrinter.isAnyRestaurantPrinterConnected());
+
+            if (hasPrinter && pedidoParaImprimir) {
+                // Hay impresora → imprimir factura AUTOMÁTICAMENTE sin modal
+                try {
+                    await imprimirFacturaPOS();
+                } catch (error) {
+                    console.error('Error al imprimir factura:', error);
+                }
+            } else {
+                // NO hay impresora → mostrar alerta y continuar sin imprimir
+                if (typeof BluetoothPrinter !== 'undefined' && !BluetoothPrinter.isConnected() && !BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                    // La alerta ya la muestra imprimirFacturaPOS internamente
+                }
+            }
+
+            // Registrar el pago final (continúa sin esperar impresión)
+            confirmarImpresion(false);
         }
 
         async function obtenerDatosPedidoParaImprimir(orderId) {
@@ -3843,23 +4281,123 @@
             modal.style.display = 'none';
 
             if (imprimir && pedidoParaImprimir) {
+                // Mostrar opciones de factura
+                document.getElementById('modalTipoFactura').style.display = 'flex';
+                return; // Pausamos flujo hasta que elija el tipo
+            }
+
+            // Si NO imprime, procesamos directamente
+            procesarPostImpresion();
+        }
+
+        async function emitirFactura(tipo) {
+            document.getElementById('modalTipoFactura').style.display = 'none';
+
+            if (tipo === 'pos' || tipo === 'ambas') {
                 try {
                     await imprimirFacturaPOS();
                 } catch (error) {
-                    console.error('Error al imprimir:', error);
+                    console.error('Error al imprimir POS:', error);
                 }
             }
 
+            if (tipo === 'electronica' || tipo === 'ambas') {
+                try {
+                    await enviarFacturaElectronica(pedidoParaImprimir._id);
+                } catch (error) {
+                    console.error('Error enviando factura electrónica:', error);
+                }
+            }
+
+            procesarPostImpresion();
+        }
+
+        async function enviarFacturaElectronica(orderId) {
+            try {
+                mostrarEstadoImpresion('imprimiendo'); // Muestra el modal
+                document.getElementById('impresionTitulo').textContent = 'Emitiendo Factura Electrónica...';
+                document.getElementById('impresionMensaje').textContent = 'Validando con DIAN y MATIAS API...';
+                const acciones = document.getElementById('impresionAcciones');
+                if (acciones) acciones.style.display = 'none';
+                
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('No hay sesión activa');
+
+                const response = await fetch(`${API_URL}/facturacion/emitir`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        tipo: 'electronica',
+                        clienteNombre: clienteNombreSeleccionado,
+                        clienteCcNit: clienteCcNitSeleccionado,
+                        clienteEmail: clienteEmailSeleccionado
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('impresionSpinner').textContent = '✅';
+                    document.getElementById('impresionTitulo').textContent = data.alreadyEmitted ? 'Factura Ya Emitida' : '¡Factura Electrónica Emitida!';
+                    
+                    let msg = data.alreadyEmitted
+                        ? `Esta orden ya contaba con la factura <strong>${data.numero || ''}</strong> validada.`
+                        : `Factura <strong>${data.numero || ''}</strong> emitida y validada con éxito.`;
+
+                    if (data.clienteEmail) {
+                        msg += `<br><span style="color: #2b6cb0; font-weight: 600; font-size: 13px; display: inline-block; margin-top: 6px;">✉️ Enviada al correo: ${data.clienteEmail}</span>`;
+                    }
+                    document.getElementById('impresionMensaje').innerHTML = msg;
+
+                    if (data.dianUrl && acciones) {
+                        const btnDian = document.getElementById('btnVerDian');
+                        if (btnDian) {
+                            btnDian.href = data.dianUrl;
+                            btnDian.style.display = 'inline-block';
+                        }
+                        acciones.style.display = 'flex';
+                        setTimeout(() => {
+                            if (document.getElementById('modalEstadoImpresion').style.display === 'flex') {
+                                document.getElementById('modalEstadoImpresion').style.display = 'none';
+                            }
+                        }, 8000);
+                    } else {
+                        setTimeout(() => {
+                            document.getElementById('modalEstadoImpresion').style.display = 'none';
+                        }, 3000);
+                    }
+                } else {
+                    throw new Error(data.message || 'Error al emitir');
+                }
+            } catch (error) {
+                console.error('Error factura electrónica:', error);
+                document.getElementById('impresionTitulo').textContent = 'Error';
+                document.getElementById('impresionMensaje').textContent = error.message;
+                document.getElementById('impresionSpinner').textContent = '❌';
+                const acciones = document.getElementById('impresionAcciones');
+                if (acciones) acciones.style.display = 'none';
+                setTimeout(() => {
+                    document.getElementById('modalEstadoImpresion').style.display = 'none';
+                }, 4000);
+            }
+        }
+
+        async function procesarPostImpresion() {
             // Registrar el pago final usando pago-parcial API
             const orderIdTemp = currentOrderIdForPayment;
             const clienteNombreTemp = clienteNombreSeleccionado;
             const clienteCcNitTemp = clienteCcNitSeleccionado;
+            const clienteEmailTemp = clienteEmailSeleccionado;
             const montoFinal = window._montoParaPago || (pedidoParaImprimir ? pedidoParaImprimir.total : 0);
 
             currentOrderIdForPayment = null;
             pedidoParaImprimir = null;
             clienteNombreSeleccionado = '';
             clienteCcNitSeleccionado = '';
+            clienteEmailSeleccionado = '';
             window._montoParaPago = null;
 
             try {
@@ -3874,7 +4412,8 @@
                         metodo: metodoPagoSeleccionado,
                         monto: montoFinal,
                         clienteNombre: clienteNombreTemp,
-                        clienteCcNit: clienteCcNitTemp
+                        clienteCcNit: clienteCcNitTemp,
+                        clienteEmail: clienteEmailTemp
                     })
                 });
 
@@ -3927,210 +4466,6 @@
                     modal.style.display = 'none';
                 }, 3000);
             }
-        }
-
-        async function imprimirFacturaPOS() {
-            if (!pedidoParaImprimir) {
-                throw new Error('No hay datos del pedido para imprimir');
-            }
-
-            try {
-                // Preparar los datos visuales
-                crearElementoImpresion();
-                
-                // Ocultar el modal de estado para evitar que bloquee la pantalla o el Swal
-                const modalImpresion = document.getElementById('modalEstadoImpresion');
-                if (modalImpresion) modalImpresion.style.display = 'none';
-                
-                const hasBridge = localStorage.getItem('autoPrintComanda') === 'true';
-
-                if (hasBridge) {
-                    const result = await Swal.fire({
-                        title: 'Imprimir Factura',
-                        text: 'Tienes el Print Bridge activado. ¿Cómo deseas imprimir?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        showDenyButton: true,
-                        confirmButtonText: '🔌 Vía Print Bridge',
-                        denyButtonText: '🪟 Vía Windows',
-                        cancelButtonText: 'Cancelar'
-                    });
-
-                    if (result.isConfirmed) {
-                        // Vía Bridge
-                        if (modalImpresion) {
-                            modalImpresion.style.display = 'flex';
-                            document.getElementById('impresionTitulo').textContent = 'Enviando a Bridge...';
-                        }
-                        const datosFactura = {
-                            _id: pedidoParaImprimir._id,
-                            mesa: pedidoParaImprimir.mesa,
-                            items: pedidoParaImprimir.items,
-                            total: pedidoParaImprimir.total,
-                            restauranteNombre: currentUser.nombreRestaurante || "RESTAURANTE"
-                        };
-                        try {
-                            const response = await fetch('http://127.0.0.1:3001/print-factura', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(datosFactura)
-                            });
-                            const data = await response.json();
-                            if (data.success) {
-                                console.log('✅ Impresión enviada al Bridge exitosamente');
-                            } else {
-                                console.warn('❌ Error del Bridge, usando fallback a Windows:', data.message);
-                                Swal.fire({
-                                    title: 'Bridge sin responder',
-                                    text: 'Hubo un error con el Bridge. Imprimiendo vía normal...',
-                                    icon: 'warning',
-                                    timer: 2500,
-                                    showConfirmButton: false
-                                });
-                                setTimeout(() => { window.print(); }, 500);
-                            }
-                        } catch (err) {
-                            console.warn('❌ Error de conexión al Bridge, usando fallback a Windows:', err);
-                            Swal.fire({
-                                title: 'Bridge no detectado',
-                                text: 'No se pudo conectar al Bridge. Imprimiendo vía normal...',
-                                icon: 'warning',
-                                timer: 2500,
-                                showConfirmButton: false
-                            });
-                            setTimeout(() => { window.print(); }, 500);
-                        }
-                    } else if (result.isDenied) {
-                        // Vía Windows directo
-                        window.print();
-                    }
-                } else {
-                    // No tiene bridge activo, saltar directo a Windows
-                    window.print();
-                }
-
-            } catch (error) {
-                console.error('Error al imprimir:', error);
-                throw error;
-            }
-        }
-
-        function crearElementoImpresion() {
-            // Remover si ya existe
-            removerElementoImpresion();
-
-            const fecha = new Date(pedidoParaImprimir.createdAt);
-            const fechaStr = fecha.toLocaleDateString('es-CO', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-            const horaStr = fecha.toLocaleTimeString('es-CO', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            const metodoPagoTexto = metodoPagoSeleccionado === 'transferencia' ? 'TRANSFERENCIA' : 'EFECTIVO';
-            const nombreRestaurante = currentUser.nombreRestaurante || 'RESTAURANTE';
-            const nitRestaurante = currentUser.nitRestaurante ? `NIT: ${currentUser.nitRestaurante}` : '';
-
-            // Datos del cliente
-            const clienteHTML = pedidoParaImprimir.clienteNombre || clienteNombreSeleccionado ? `
-                <div class="print-info-row">
-                    <span class="print-info-label">Cliente:</span>
-                    <span>${(pedidoParaImprimir.clienteNombre || clienteNombreSeleccionado).toUpperCase()} 222222222222</span>
-                </div>
-                <div class="print-info-row">
-                    <span class="print-info-label">CC/NIT:</span>
-                    <span>${pedidoParaImprimir.clienteCcNit || clienteCcNitSeleccionado || '---'}</span>
-                </div>
-            ` : '';
-
-            // Generar filas de productos
-            const productosHTML = pedidoParaImprimir.items.map(item => {
-                const nombre = item.productoInfo ? item.productoInfo.nombre :
-                    (item.nombreProducto || 'Producto');
-                const cantidad = item.cantidad;
-                const precio = item.precio;
-                const subtotal = cantidad * precio;
-
-                return `
-            <tr>
-                <td>${nombre}</td>
-                <td style="text-align: center;">${cantidad}</td>
-                <td style="text-align: right;">$${precio.toLocaleString('es-CO')}</td>
-                <td style="text-align: right; font-weight: bold;">$${subtotal.toLocaleString('es-CO')}</td>
-            </tr>
-        `;
-            }).join('');
-
-            // Crear contenedor de impresión
-            const printContainer = document.createElement('div');
-            printContainer.id = 'print-container';
-            printContainer.innerHTML = `
-        <div class="print-header">
-            <h1>${nombreRestaurante}</h1>
-            ${nitRestaurante ? `<div style="font-size: 12px; font-weight: bold; margin-bottom: 5px;">${nitRestaurante}</div>` : ''}
-            <div class="print-subtitle">FACTURA DE VENTA</div>
-        </div>
-        
-        <div class="print-info-section">
-            <div class="print-info-row">
-                <span class="print-info-label">Fecha:</span>
-                <span>${fechaStr}</span>
-            </div>
-            <div class="print-info-row">
-                <span class="print-info-label">Hora:</span>
-                <span>${horaStr}</span>
-            </div>
-            ${clienteHTML}
-            <div class="print-info-row">
-                <span class="print-info-label">Mesa:</span>
-                <span>${pedidoParaImprimir.mesa}</span>
-            </div>
-            <div class="print-info-row">
-                <span class="print-info-label">Pedido:</span>
-                <span>#${pedidoParaImprimir._id.slice(-6).toUpperCase()}</span>
-            </div>
-        </div>
-        
-        <div class="print-metodo-pago">
-            💳 ${metodoPagoTexto}
-        </div>
-        
-        <table class="print-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th style="text-align: center;">Cant.</th>
-                    <th style="text-align: right;">Precio</th>
-                    <th style="text-align: right;">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${productosHTML}
-            </tbody>
-        </table>
-        
-        <div class="print-total-section">
-            <div class="print-total-row">
-                <span>TOTAL:</span>
-                <span>$${pedidoParaImprimir.total.toLocaleString('es-CO')}</span>
-            </div>
-        </div>
-        
-        <div class="print-footer">
-            <p><strong>¡Gracias por su compra!</strong></p>
-            <p>Vuelva pronto</p>
-        </div>
-    `;
-
-            document.body.appendChild(printContainer);
-        }
-
-        function removerElementoImpresion() {
-            const printContainers = document.querySelectorAll('#print-container');
-            printContainers.forEach(container => container.remove());
         }
 
         function generarComandosESCPOS() {
@@ -4341,7 +4676,22 @@
 
                 if (data.success) {
                     console.log('✅ Pedido actualizado correctamente');
-                    await loadOrders(true);
+
+                    // ✅ Actualizar estado localmente sin recargar todo
+                    const orderIndex = allLoadedOrders.findIndex(o => o._id === orderId);
+                    if (orderIndex !== -1) {
+                        allLoadedOrders[orderIndex].estado = newStatus;
+                        if (metodoPago) allLoadedOrders[orderIndex].metodoPago = metodoPago;
+                        if (data.data) {
+                            if (data.data.pagos) allLoadedOrders[orderIndex].pagos = data.data.pagos;
+                            if (data.data.totalPagado !== undefined) allLoadedOrders[orderIndex].totalPagado = data.data.totalPagado;
+                            if (data.data.items) allLoadedOrders[orderIndex].items = data.data.items;
+                        }
+                    }
+                    _lastOrdersHash = ''; // Forzar re-render
+                    displayOrders(allLoadedOrders, true);
+
+                    mostrarNotificacionExito(`✅ Pedido actualizado a "${newStatus}"`);
                 } else {
                     console.error('❌ Error del servidor:', data.message);
                     Swal.fire({ icon: (('Error: ' + data.message).toLowerCase().includes("error") || ('Error: ' + data.message).toLowerCase().includes("falla") || ('Error: ' + data.message).toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Error: ' + data.message, timer: 3000, showConfirmButton: false });
@@ -4399,36 +4749,45 @@
 
 
         // ========================
-        // SISTEMA DE TIEMPO REAL PARA PEDIDOS
+        // SISTEMA DE TIEMPO REAL PARA PEDIDOS (OPTIMIZADO)
         // ========================
 
         let lastOrderCountPedidos = 0;
         let isFirstLoadPedidos = true;
         let pollingIntervalPedidos = null;
 
-        const notificationSoundPedidos = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGmi/7OSfTRAMUKvj8LJgGgU7k9XxxncpBSh+zPLaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBQ==');
+        const notificationSoundPedidos = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGmi/7OSfTRAMUKvj8LJgGgU7k9XxxncpBSh+zPLaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBSh+zPPaizsKGGS56+mjUhELTKXh8bllHAU2jdTxxnkqBQ==');
 
         function playNotificationSoundPedidos() {
             notificationSoundPedidos.play().catch(e => console.log('No se pudo reproducir el sonido:', e));
         }
 
-        async function autoRefreshOrdersPedidos() {
-            // Si no hay usuario, no hacer refresh
-            if (!currentUser || !currentUser._id) {
-                return;
+        // ✅ Comparación ligera sin JSON.stringify completo
+        function ordersChanged(oldOrders, newOrders) {
+            if (oldOrders.length !== newOrders.length) return true;
+            for (let i = 0; i < newOrders.length; i++) {
+                const o = oldOrders[i];
+                const n = newOrders[i];
+                if (!o || !n) return true;
+                if (o._id !== n._id || o.estado !== n.estado || o.total !== n.total || o.items.length !== n.items.length) return true;
+                if ((o.pagos || []).length !== (n.pagos || []).length) return true;
             }
+            return false;
+        }
+
+        async function autoRefreshOrdersPedidos() {
+            if (!currentUser || !currentUser._id) return;
+
+            // ✅ Pausar si la pestaña no está visible
+            if (document.hidden) return;
 
             const token = localStorage.getItem('token');
             if (!token) {
-                console.warn('⚠️ No hay token, deteniendo auto-refresh');
-                if (pollingIntervalPedidos) {
-                    clearInterval(pollingIntervalPedidos);
-                }
+                if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
                 return;
             }
 
             const estado = document.getElementById('filterEstado')?.value || '';
-
             let url = `${API_URL}/orders?userId=${currentUser._id}`;
             if (estado) url += `&estado=${estado}`;
 
@@ -4438,15 +4797,12 @@
                         'Authorization': `Bearer ${token}`,
                         'Cache-Control': 'no-cache'
                     },
-                    signal: AbortSignal.timeout(5000) // Timeout de 5 segundos
+                    signal: AbortSignal.timeout(8000)
                 });
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        console.warn('⚠️ Token expirado en auto-refresh');
-                        if (pollingIntervalPedidos) {
-                            clearInterval(pollingIntervalPedidos);
-                        }
+                        if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
                         return;
                     }
                     throw new Error(`HTTP ${response.status}`);
@@ -4457,38 +4813,32 @@
                 if (data.success) {
                     const newOrders = data.data;
 
-                    // Detectar cambios en los pedidos existentes
-                    const currentOrdersString = JSON.stringify(newOrders.map(o => ({
-                        id: o._id,
-                        estado: o.estado,
-                        itemsCount: o.items.length,
-                        total: o.total
-                    })));
-
-                    const previousOrdersString = JSON.stringify((window.previousOrders || []).map(o => ({
-                        id: o._id,
-                        estado: o.estado,
-                        itemsCount: o.items.length,
-                        total: o.total
-                    })));
-
-                    // Si hay cambios, actualizar
-                    if (currentOrdersString !== previousOrdersString) {
+                    // ✅ Comparación ligera en lugar de JSON.stringify completo
+                    if (ordersChanged(window.previousOrders || [], newOrders)) {
                         displayOrders(newOrders);
                         document.getElementById('orderCount').textContent = data.count;
 
-                        // Detectar nuevo pedido (Lógica original de notificación)
-                        if (!isFirstLoadPedidos && newOrders.length > lastOrderCountPedidos) {
-                            const newestOrder = newOrders[0];
-                            playNotificationSoundPedidos();
-
-                            if (newestOrder.source === 'mandao') {
-                                mostrarNotificacionExito('🚲 ¡TIENES UN MANDAO!');
-                                if (typeof alertarNuevoPedidoMandao === 'function') {
-                                    alertarNuevoPedidoMandao();
-                                }
-                            } else {
-                                mostrarNotificacionExito('🔔 Nuevo pedido recibido');
+                        if (!isFirstLoadPedidos) {
+                            const prevIds = new Set((window.previousOrders || []).map(o => o._id));
+                            const actuallyNewOrders = newOrders.filter(o => !prevIds.has(o._id));
+                            
+                            if (actuallyNewOrders.length > 0) {
+                                playNotificationSoundPedidos();
+                                
+                                actuallyNewOrders.forEach(newOrder => {
+                                    if (newOrder.source === 'mandao') {
+                                        mostrarNotificacionExito('🚲 ¡TIENES UN MANDAO!');
+                                        if (typeof alertarNuevoPedidoMandao === 'function') alertarNuevoPedidoMandao();
+                                    } else {
+                                        mostrarNotificacionExito('🔔 Nuevo pedido recibido');
+                                    }
+                                    
+                                    // AUTO IMPRIMIR (Impresora Bluetooth conectada a la tablet)
+                                    if (typeof imprimirComanda === 'function') {
+                                        console.log('🖨️ Auto-imprimiendo nuevo pedido remoto:', newOrder._id);
+                                        imprimirComanda(newOrder);
+                                    }
+                                });
                             }
                         }
                     }
@@ -4498,26 +4848,36 @@
                     isFirstLoadPedidos = false;
                 }
             } catch (error) {
-                // Solo mostrar error si no es timeout o network error común
                 if (error.name !== 'TimeoutError' && error.name !== 'AbortError') {
-                    console.warn('⚠️ Error en auto-refresh (se reintentará):', error.message);
+                    console.warn('⚠️ Error en auto-refresh:', error.message);
                 }
-                // No hacer nada, simplemente esperar al siguiente ciclo
             }
         }
-        // Iniciar polling cuando currentUser esté listo
+
+        // ✅ Polling adaptativo: 3s normal, 8s en bajo rendimiento
+        const pollingDelay = (window.__deviceCaps && window.__deviceCaps.tier === 'low') ? 8000 :
+            (window.__deviceCaps && window.__deviceCaps.tier === 'medium') ? 5000 : 3000;
+
         const waitForUserPedidos = setInterval(() => {
             if (currentUser && currentUser._id) {
                 clearInterval(waitForUserPedidos);
-                pollingIntervalPedidos = setInterval(autoRefreshOrdersPedidos, 3000);
-                console.log('✅ Sistema de tiempo real activado en Pedidos');
+                pollingIntervalPedidos = setInterval(autoRefreshOrdersPedidos, pollingDelay);
+                console.log(`✅ Sistema de tiempo real activado (polling: ${pollingDelay}ms)`);
             }
         }, 100);
 
-        window.addEventListener('beforeunload', () => {
-            if (pollingIntervalPedidos) {
-                clearInterval(pollingIntervalPedidos);
+        // ✅ Pausar/reanudar polling al cambiar visibilidad
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
+            } else if (currentUser && currentUser._id) {
+                pollingIntervalPedidos = setInterval(autoRefreshOrdersPedidos, pollingDelay);
+                autoRefreshOrdersPedidos(); // Refresh inmediato al volver
             }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (pollingIntervalPedidos) clearInterval(pollingIntervalPedidos);
         });
 
 
@@ -4585,10 +4945,10 @@
                     -
                 </button>
                 <div style="min-width: 80px; text-align: center;">
-                    <div id="cantidadSeleccionada" style="font-size: 32px; font-weight: 800; color: #667eea;">1</div>
+                    <div id="cantidadSeleccionada" style="font-size: 32px; font-weight: 800; color: #183A37;">1</div>
                     <div style="font-size: 12px; color: #718096;">de ${cantidadTotal}</div>
                 </div>
-                <button onclick="ajustarCantidadModal(1)" style="width: 50px; height: 50px; background: #667eea; border: none; border-radius: 10px; font-size: 24px; cursor: pointer; font-weight: 700; color: white;">
+                <button onclick="ajustarCantidadModal(1)" style="width: 50px; height: 50px; background: #183A37; border: none; border-radius: 10px; font-size: 24px; cursor: pointer; font-weight: 700; color: white;">
                     +
                 </button>
             </div>
@@ -4735,22 +5095,9 @@
             }, 2500);
         }
 
-        // Agregar estilos de animación
+        // ✅ Solo estilos que no existen en el bloque principal
         const style = document.createElement('style');
         style.textContent = `
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-    }
-    @keyframes slideUp {
-        from { transform: translateY(30px); opacity: 0; }
-        to { transform: translateY(0); opacity: 1; }
-    }
-
     .notificacion-mandao-alert {
         position: fixed;
         top: 50%;
@@ -4763,12 +5110,11 @@
         font-size: 24px;
         font-weight: 900;
         z-index: 20000;
-        box-shadow: 0 0 100px rgba(245, 158, 11, 0.5);
         border: 4px solid white;
         text-align: center;
-        animation: shake 0.5s infinite, fadeInOut 3s forwards;
         pointer-events: none;
     }
+    .perf-low .notificacion-mandao-alert { box-shadow: none !important; animation: none !important; }
 `;
         document.head.appendChild(style);
 
@@ -4799,7 +5145,7 @@
 
             // ✅ MOSTRAR MODAL INMEDIATAMENTE con loading
             document.getElementById('modalEditarPedido').style.display = 'flex';
-            document.getElementById('editProductsList').innerHTML = '<p style="text-align: center; color: #667eea; padding: 2rem;">⏳ Cargando...</p>';
+            document.getElementById('editProductsList').innerHTML = '<p style="text-align: center; color: #183A37; padding: 2rem;">⏳ Cargando...</p>';
 
             // Obtener los datos completos del pedido
             const token = localStorage.getItem('token');
@@ -4898,7 +5244,7 @@
                             placeholder="Notas para este plato..." 
                             value="${item.nota || ''}" 
                             oninput="setItemNoteEdicion(${index}, this.value)"
-                            style="width: 100%; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 12px; background: #fffaf0;"
+                            style="width: 100%; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 12px; background: #FFFAF0;"
                         >
                     </div>
                 </div>
@@ -5239,7 +5585,7 @@
                 <datalist id="listaNombresClientes"></datalist>
             </div>
 
-            <div style="margin-bottom: 2rem;">
+            <div style="margin-bottom: 1.5rem;">
                 <label
                     style="display: block; font-size: 13px; font-weight: 600; color: #2d3748; margin-bottom: 8px;">Cédula
                     / NIT</label>
@@ -5247,6 +5593,14 @@
                     style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.2s;"
                     placeholder="Ej: 12345678">
                 <datalist id="listaCcNitClientes"></datalist>
+            </div>
+
+            <div style="margin-bottom: 1.8rem;">
+                <label
+                    style="display: block; font-size: 13px; font-weight: 600; color: #2d3748; margin-bottom: 8px;">Correo Electrónico <span style="color: #3182ce; font-weight: 500; font-size: 12px;">(Para enviar Factura Electrónica)</span></label>
+                <input type="email" id="clienteEmail"
+                    style="width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.2s;"
+                    placeholder="Ej: cliente@correo.com (Opcional)">
             </div>
 
             <div style="display: grid; gap: 1rem;">
@@ -5280,7 +5634,7 @@
                 </button>
 
                 <button onclick="confirmarMetodoPago('transferencia')"
-                    style="padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    style="padding: 1rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <span style="font-size: 24px;">📱</span>
                     <span>Transferencia</span>
                 </button>
@@ -5346,7 +5700,7 @@
             </div>
 
             <button onclick="pagarMontoParcial()"
-                style="width: 100%; padding: 0.85rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem;">
+                style="width: 100%; padding: 0.85rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem;">
                 Confirmar Pago Parcial
             </button>
 
@@ -5365,19 +5719,52 @@
             style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <h3 style="font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 1rem; text-align: center;">🖨️
                 Imprimir Factura</h3>
-            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Deseas imprimir la
-                factura en la impresora POS?</p>
+            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Deseas emitir la
+                factura para este pedido?</p>
 
             <div style="display: grid; gap: 1rem;">
                 <button onclick="confirmarImpresion(true)"
-                    style="padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <span style="font-size: 24px;">🖨️</span>
-                    <span>Sí, imprimir</span>
+                    style="padding: 1rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 24px;">📝</span>
+                    <span>Sí, emitir factura</span>
                 </button>
 
                 <button onclick="confirmarImpresion(false)"
                     style="padding: 1rem; background: #e2e8f0; color: #2d3748; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                    No imprimir
+                    No emitir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para seleccionar tipo de factura -->
+    <div id="modalTipoFactura"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10001; align-items: center; justify-content: center;">
+        <div
+            style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 1rem; text-align: center;">📄
+                Tipo de Factura</h3>
+            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Qué tipo de factura deseas emitir?</p>
+
+            <div style="display: grid; gap: 1rem;">
+                <button onclick="emitirFactura('pos')"
+                    style="padding: 1rem; background: #183A37; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 20px;">🖨️</span>
+                    <span>Factura POS</span>
+                </button>
+                <button onclick="emitirFactura('electronica')"
+                    style="padding: 1rem; background: #2B2118; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 20px;">📧</span>
+                    <span>Factura Electrónica</span>
+                </button>
+                <button onclick="emitirFactura('ambas')"
+                    style="padding: 1rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 20px;">📑</span>
+                    <span>Ambas</span>
+                </button>
+                <button onclick="document.getElementById('modalTipoFactura').style.display = 'none'; document.getElementById('modalConfirmarImpresion').style.display = 'flex';"
+                    style="padding: 0.5rem; background: #e2e8f0; color: #2d3748; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px;">
+                    Volver
                 </button>
             </div>
         </div>
@@ -5387,11 +5774,21 @@
     <div id="modalEstadoImpresion"
         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10002; align-items: center; justify-content: center;">
         <div
-            style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
+            style="background: white; border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center;">
             <div id="impresionSpinner" style="font-size: 48px; margin-bottom: 1rem;">⏳</div>
             <h3 id="impresionTitulo" style="font-size: 18px; font-weight: 700; color: #1a202c; margin-bottom: 0.5rem;">
                 Imprimiendo factura...</h3>
-            <p id="impresionMensaje" style="font-size: 14px; color: #718096;">Por favor, espere</p>
+            <p id="impresionMensaje" style="font-size: 14px; color: #718096; line-height: 1.5; margin-bottom: 1rem;">Por favor, espere</p>
+            <div id="impresionAcciones" style="display: none; flex-direction: column; gap: 10px; margin-top: 1.2rem;">
+                <a id="btnVerDian" href="#" target="_blank"
+                    style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%); color: white; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);">
+                    🌐 Ver / Verificar en la DIAN
+                </a>
+                <button onclick="document.getElementById('modalEstadoImpresion').style.display = 'none'"
+                    style="padding: 10px 16px; background: #edf2f7; color: #4a5568; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s;">
+                    Cerrar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -5501,7 +5898,7 @@
                         <input type="number" id="bulkCantidad" min="1" max="50" value="10"
                             style="width: 70px; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px;">
                         <button onclick="crearMesasEnBloque()"
-                            style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">Crear</button>
+                            style="padding: 8px 16px; background: #183A37; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">Crear</button>
                     </div>
                 </div>
             </div>
@@ -5518,10 +5915,14 @@
             </div>
 
             <!-- Lista de mesas -->
-            <div style="margin-bottom: 1rem;">
+            <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
                 <label
                     style="font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; letter-spacing: 0.5px;">Mesas
                     registradas</label>
+                <button onclick="eliminarTodasLasMesas()"
+                    style="padding: 6px 12px; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                    🗑️ Eliminar todas
+                </button>
             </div>
             <div id="listaMesasGestion" style="max-height: 300px; overflow-y: auto;">
                 <p style="text-align: center; color: #a0aec0; padding: 2rem;">Cargando mesas...</p>
@@ -5545,14 +5946,14 @@
             </div>
 
             <div
-                style="padding: 12px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 10px; margin-bottom: 1.5rem;">
+                style="padding: 12px; background: linear-gradient(135deg, rgba(24,58,55,0.1), rgba(43,33,24,0.1)); border-radius: 10px; margin-bottom: 1.5rem;">
                 <label
                     style="display: block; font-size: 13px; font-weight: 600; color: #2d3748; margin-bottom: 6px; text-align: center;">Mesa
                     / Ubicación</label>
                 <input type="text" id="inputMesaMesa"
-                    style="width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 700; color: #667eea;"
+                    style="width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; text-align: center; font-weight: 700; color: #183A37;"
                     placeholder="Ej: Mesa 5">
-                <span style="display: none; font-size: 14px; font-weight: 700; color: #667eea;"
+                <span style="display: none; font-size: 14px; font-weight: 700; color: #183A37;"
                     id="mesaSeleccionadaLabel">Mesa seleccionada</span>
             </div>
 
@@ -5618,11 +6019,15 @@
         let mesaSeleccionadaNombre = '';
         let keySequence = [];
         let keySequenceTimer = null;
+        let isOrganizingMesas = false;
+        let draggingMesa = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
 
         // RESTAURAR MODO GUARDADO
         document.addEventListener('DOMContentLoaded', () => {
             const savedMode = localStorage.getItem('tableViewMode');
-            
+
             if (savedMode === 'normal') {
                 // Esperar a que los pedidos REALMENTE carguen para cambiar a normal
                 const waitForOrders = setInterval(() => {
@@ -5635,7 +6040,9 @@
                 // ✅ FIX: Modo mesas es el default — cargar mesas inmediatamente
                 // No esperar a ordersHaveLoaded, cargar mesas en paralelo
                 loadMesas();
-                
+                const btnOrg = document.getElementById('btnOrganizarMesas');
+                if (btnOrg) btnOrg.style.display = 'flex';
+
                 // Además, cuando los pedidos terminen de cargar, re-renderizar
                 // para que las mesas muestren su estado (ocupada/libre)
                 const waitForOrdersThenRefresh = setInterval(() => {
@@ -5676,18 +6083,22 @@
             const tableView = document.getElementById('tableView');
             const headerIcon = document.getElementById('viewModeIconHeader');
             const headerText = document.getElementById('viewModeTextHeader');
+            const btnOrganizar = document.getElementById('btnOrganizarMesas');
 
             if (isTableView) {
                 defaultView.classList.add('hidden');
                 tableView.classList.add('active');
                 if (headerIcon) headerIcon.textContent = '📋';
                 if (headerText) headerText.textContent = 'Vista Normal';
+                if (btnOrganizar) btnOrganizar.style.display = 'flex';
                 loadMesas();
             } else {
                 defaultView.classList.remove('hidden');
                 tableView.classList.remove('active');
                 if (headerIcon) headerIcon.textContent = '🪑';
                 if (headerText) headerText.textContent = 'Vista Mesas';
+                if (btnOrganizar) btnOrganizar.style.display = 'none';
+                if (isOrganizingMesas) toggleOrganizeMesas();
             }
 
             // Guardar modo en localStorage
@@ -5722,7 +6133,7 @@
         // RENDERIZAR MESAS CON ESTADO
         function renderMesas(mesas) {
             const grid = document.getElementById('mesasGrid');
-            const searchVal = document.getElementById('mesaSearchInput').value.toLowerCase().trim();
+            const searchVal = document.getElementById('mesaSearchInput') ? document.getElementById('mesaSearchInput').value.toLowerCase().trim() : '';
 
             let mesasFiltradas = mesas;
             if (searchVal) {
@@ -5738,32 +6149,288 @@
             `;
                 return;
             }
-            
+
+            // Set min-height to grid to avoid collapse if mesas are absolutely positioned
+            if (mesasFiltradas.some(m => m.positionX != null && m.positionY != null)) {
+                grid.style.position = 'relative';
+                const maxY = Math.max(...mesasFiltradas.map(m => m.positionY || 0)) + 120;
+                grid.style.minHeight = Math.max(maxY, 400) + 'px';
+            } else {
+                grid.style.position = '';
+                grid.style.minHeight = '';
+            }
 
             grid.innerHTML = mesasFiltradas.map(mesa => {
                 // Contar TODOS los pedidos activos de esta mesa
-                const pedidosActivos = allLoadedOrders.filter(o =>
+                const pedidosActivos = (typeof allLoadedOrders !== 'undefined' ? allLoadedOrders : []).filter(o =>
                     o.mesa && String(o.mesa).toLowerCase().trim() === mesa.nombre.toLowerCase().trim() &&
                     !['entregado', 'cancelado'].includes(o.estado)
                 );
                 const isOcupada = pedidosActivos.length > 0;
                 const estadoClass = isOcupada ? 'ocupada' : 'libre';
 
-                // Icono dentro del círculo
+                // Label dentro de la mesa
                 const iconContent = mesa.nombre.match(/\d+/) ? mesa.nombre.match(/\d+/)[0] : mesa.nombre.charAt(0).toUpperCase();
-                const badge = pedidosActivos.length > 1 ? `<div style="position:absolute;top:-4px;right:-4px;background:#e53e3e;color:white;font-size:10px;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;">${pedidosActivos.length}</div>` : '';
+                const badge = pedidosActivos.length > 1 ? `<div class="mesa-badge">${pedidosActivos.length}</div>` : '';
+
+                const stylePosition = (mesa.positionX != null && mesa.positionY != null)
+                    ? `position: absolute; left: ${mesa.positionX}px; top: ${mesa.positionY}px;`
+                    : '';
+
+                // Colores de la mesa según estado
+                const tableColor = isOcupada ? '#e53e3e' : '#48bb78';
+                const tableLight = isOcupada ? '#fc8181' : '#68d391';
+                const tableDark = isOcupada ? '#c53030' : '#2f855a';
+                const chairColor = isOcupada ? '#c53030' : '#2f855a';
+                const chairLight = isOcupada ? '#e53e3e' : '#48bb78';
+
+                // SVG de mesa redonda con 4 sillas (vista superior)
+                const tableSVG = `
+                <svg class="mesa-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <g class="table-surface">
+                        <!-- Sombra de la mesa -->
+                        <ellipse cx="52" cy="52" rx="28" ry="28" fill="rgba(0,0,0,0.1)"/>
+                        
+                        <!-- Silla arriba -->
+                        <rect x="38" y="8" width="24" height="14" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="40" y="10" width="20" height="10" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Silla abajo -->
+                        <rect x="38" y="78" width="24" height="14" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="40" y="80" width="20" height="10" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Silla izquierda -->
+                        <rect x="8" y="38" width="14" height="24" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="10" y="40" width="10" height="20" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Silla derecha -->
+                        <rect x="78" y="38" width="14" height="24" rx="5" fill="${chairColor}" opacity="0.9"/>
+                        <rect x="80" y="40" width="10" height="20" rx="4" fill="${chairLight}" opacity="0.5"/>
+                        
+                        <!-- Mesa circular principal -->
+                        <circle cx="50" cy="50" r="26" fill="${tableColor}"/>
+                        <circle cx="50" cy="50" r="23" fill="${tableLight}" opacity="0.3"/>
+                        <circle cx="50" cy="50" r="22" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+                        
+                        <!-- Reflejo de luz -->
+                        <ellipse cx="43" cy="42" rx="10" ry="8" fill="rgba(255,255,255,0.12)" transform="rotate(-20,43,42)"/>
+                    </g>
+                </svg>`;
 
                 return `
-                <div class="mesa-circle" onclick="onMesaClick('${mesa._id}', '${mesa.nombre.replace(/'/g, "\\'")}', '${isOcupada}')">
+                <div class="mesa-circle" data-id="${mesa._id}" style="${stylePosition}" onclick="onMesaClick('${mesa._id}', '${mesa.nombre.replace(/'/g, "\\'")}', '${isOcupada}')">
                     <div class="mesa-icon ${estadoClass}" style="position:relative;">
-                        ${iconContent}${badge}
+                        ${tableSVG}
+                        <span class="mesa-label">${iconContent}</span>
+                        ${badge}
                     </div>
                     <div class="mesa-name">${mesa.nombre}</div>
                     <div class="mesa-status-text ${estadoClass}">${isOcupada ? (pedidosActivos.length > 1 ? pedidosActivos.length + ' pedidos' : 'Ocupada') : 'Libre'}</div>
                 </div>
             `;
             }).join('');
+
+            if (isOrganizingMesas) {
+                grid.classList.add('organizing-mode');
+            }
         }
+
+        function toggleOrganizeMesas() {
+            isOrganizingMesas = !isOrganizingMesas;
+            const btn = document.getElementById('btnOrganizarMesas');
+            const icon = document.getElementById('organizeIcon');
+            const text = document.getElementById('organizeText');
+            const grid = document.getElementById('mesasGrid');
+
+            if (isOrganizingMesas) {
+                btn.style.background = '#48bb78';
+                icon.textContent = '✅';
+                text.textContent = 'Guardar';
+                document.body.classList.add('is-organizing');
+
+                const circles = grid.querySelectorAll('.mesa-circle');
+                const gridRect = grid.getBoundingClientRect();
+                const scrollTop = grid.scrollTop || 0;
+
+                // 1) Capture each circle's current visual position BEFORE changing layout
+                const positions = [];
+                circles.forEach(circle => {
+                    const rect = circle.getBoundingClientRect();
+                    positions.push({
+                        el: circle,
+                        x: rect.left - gridRect.left,
+                        y: rect.top - gridRect.top + scrollTop
+                    });
+                });
+
+                // 2) Set grid to relative and fix height
+                grid.style.position = 'relative';
+                grid.style.minHeight = Math.max(gridRect.height, 500) + 'px';
+
+                // 3) Now place each circle at the EXACT same visual position with absolute
+                positions.forEach(({ el, x, y }) => {
+                    const mesaId = el.dataset.id;
+                    const mesa = mesasData.find(m => m._id === mesaId);
+
+                    if (mesa.positionX == null || mesa.positionY == null) {
+                        mesa.positionX = x;
+                        mesa.positionY = y;
+                    }
+
+                    el.style.position = 'absolute';
+                    el.style.left = mesa.positionX + 'px';
+                    el.style.top = mesa.positionY + 'px';
+                    el.style.willChange = 'transform, left, top';
+                });
+
+                // 4) Add organizing-mode AFTER positioning (so the border/bg appears after)
+                grid.classList.add('organizing-mode');
+
+            } else {
+                btn.style.background = '#ed8936';
+                icon.textContent = '🔄';
+                text.textContent = 'Organizar';
+                grid.classList.remove('organizing-mode');
+                document.body.classList.remove('is-organizing');
+
+                const circles = grid.querySelectorAll('.mesa-circle');
+                circles.forEach(circle => {
+                    circle.classList.remove('dragging');
+                    circle.style.willChange = '';
+                });
+
+                guardarPosicionesMesas();
+            }
+        }
+
+        async function guardarPosicionesMesas() {
+            const token = localStorage.getItem('token');
+            const posiciones = mesasData.filter(m => m.positionX != null).map(m => ({
+                _id: m._id,
+                positionX: m.positionX,
+                positionY: m.positionY
+            }));
+
+            if (posiciones.length === 0) return;
+
+            try {
+                const response = await fetch(`${API_URL}/mesas/positions`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ posiciones })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    const notif = document.createElement('div');
+                    notif.textContent = '✅ Posiciones de mesas guardadas';
+                    notif.style.cssText = 'position:fixed;top:80px;right:20px;background:#48bb78;color:white;padding:1rem 1.5rem;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 4px 12px rgba(72,187,120,0.4);z-index:10000;animation:slideInRight 0.3s ease-out;';
+                    document.body.appendChild(notif);
+                    setTimeout(() => notif.remove(), 2500);
+                }
+            } catch (err) {
+                console.error('Error al guardar posiciones:', err);
+            }
+        }
+
+        // ── Drag helpers ──
+        let dragRAF = null;
+        let dragTargetX = 0;
+        let dragTargetY = 0;
+
+        function startDrag(circle, clientX, clientY) {
+            draggingMesa = circle;
+            const rect = circle.getBoundingClientRect();
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+            circle.classList.add('dragging');
+        }
+
+        function moveDrag(clientX, clientY) {
+            if (!draggingMesa) return;
+            const grid = document.getElementById('mesasGrid');
+            const gridRect = grid.getBoundingClientRect();
+
+            let x = clientX - gridRect.left - dragOffsetX;
+            let y = clientY - gridRect.top - dragOffsetY;
+
+            x = Math.max(0, Math.min(x, gridRect.width - draggingMesa.offsetWidth));
+            y = Math.max(0, y); // Allow expanding downward
+
+            // Auto-expand grid if near bottom
+            const currentMinH = parseFloat(grid.style.minHeight) || 500;
+            if (y + draggingMesa.offsetHeight + 40 > currentMinH) {
+                grid.style.minHeight = (y + draggingMesa.offsetHeight + 80) + 'px';
+            }
+
+            dragTargetX = x;
+            dragTargetY = y;
+
+            if (!dragRAF) {
+                dragRAF = requestAnimationFrame(() => {
+                    if (draggingMesa) {
+                        draggingMesa.style.left = dragTargetX + 'px';
+                        draggingMesa.style.top = dragTargetY + 'px';
+                    }
+                    dragRAF = null;
+                });
+            }
+        }
+
+        function endDrag() {
+            if (!draggingMesa) return;
+            draggingMesa.classList.remove('dragging');
+
+            const mesaId = draggingMesa.dataset.id;
+            const mesa = mesasData.find(m => m._id === mesaId);
+            if (mesa) {
+                mesa.positionX = parseFloat(draggingMesa.style.left);
+                mesa.positionY = parseFloat(draggingMesa.style.top);
+            }
+            draggingMesa = null;
+            if (dragRAF) { cancelAnimationFrame(dragRAF); dragRAF = null; }
+        }
+
+        // Mouse events
+        document.addEventListener('mousedown', (e) => {
+            if (!isOrganizingMesas) return;
+            const circle = e.target.closest('.mesa-circle');
+            if (circle) { e.preventDefault(); startDrag(circle, e.clientX, e.clientY); }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isOrganizingMesas || !draggingMesa) return;
+            e.preventDefault();
+            moveDrag(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (!isOrganizingMesas) return;
+            endDrag();
+        });
+
+        // Touch events
+        document.addEventListener('touchstart', (e) => {
+            if (!isOrganizingMesas) return;
+            const circle = e.target.closest('.mesa-circle');
+            if (circle && e.touches.length === 1) {
+                startDrag(circle, e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isOrganizingMesas || !draggingMesa) return;
+            e.preventDefault();
+            moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            if (!isOrganizingMesas) return;
+            endDrag();
+        });
 
         // BUSCADOR DE MESAS
         document.addEventListener('DOMContentLoaded', () => {
@@ -5783,6 +6450,7 @@
         let mesaEditingOrderId = null; // ID del pedido que se está editando
 
         function onMesaClick(mesaId, mesaNombre, isOcupada) {
+            if (isOrganizingMesas) return; // Prevent click when organizing
             mesaSeleccionadaNombre = mesaNombre.trim();
             mesaEditingOrderId = null;
 
@@ -5803,7 +6471,7 @@
 
         function mostrarMenuMesaOcupada(mesaId, mesaNombre, pedidosActivos) {
             const estadoEmojis = { 'pendiente': '⏳', 'preparando': '👨‍🍳', 'listo': '✅' };
-            const estadoColors = { 'pendiente': '#f6ad55', 'preparando': '#667eea', 'listo': '#48bb78' };
+            const estadoColors = { 'pendiente': '#f6ad55', 'preparando': '#183A37', 'listo': '#48bb78' };
 
             const pedidosHTML = pedidosActivos.map((p, idx) => {
                 const totalItems = p.items.reduce((s, i) => s + i.cantidad, 0);
@@ -5821,7 +6489,7 @@
                     <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">${totalItems} items — ${truncProd}</div>
                     <div style="font-size: 15px; font-weight: 800; color: #48bb78;">$${p.total.toLocaleString('es-CO')}</div>
                     ${p.notas ? `<div style="font-size: 11px; color: #92400e; margin-top: 4px;">📝 ${p.notas}</div>` : ''}
-                    <div style="font-size: 11px; color: #667eea; margin-top: 6px; font-weight: 600;">✏️ Toca para editar</div>
+                    <div style="font-size: 11px; color: #183A37; margin-top: 6px; font-weight: 600;">✏️ Toca para editar</div>
                 </div>
             `;
             }).join('');
@@ -6032,7 +6700,7 @@
                             placeholder="Nota para este plato..." 
                             value="${item.nota || ''}" 
                             oninput="setItemNote(${index}, this.value, 'mesa')"
-                            style="flex: 1; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 12px; background: #fffaf0;"
+                            style="flex: 1; padding: 6px 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 12px; background: #FFFAF0;"
                         >
                         ${tieneAlimentos ? `
                             <button type="button" class="btn-ver-alimentos ${tieneExclusiones ? 'has-exclusions' : ''}" onclick="mostrarAlimentosPopup('${item.producto._id}', ${index}, 'mesa')" style="margin-top: 0; padding: 6px; font-size: 11px;">
@@ -6089,7 +6757,8 @@
                     alimentosAjustados: item.alimentosAjustados || [],
                     nota: item.nota || ''
                 })),
-                notas: notas
+                notas: notas,
+                meseroNombre: currentUser.nombre
             };
 
             if (!isEditing) {
@@ -6114,6 +6783,7 @@
                 const data = await response.json();
 
                 if (data.success) {
+                    imprimirComanda(data.data); // Usar respuesta del servidor (tiene _id)
                     cerrarModalPedidoMesa();
                     mostrarNotificacionExito(isEditing
                         ? '✅ Pedido actualizado: ' + mesaActualizada
@@ -6164,12 +6834,15 @@
                     container.innerHTML = data.data.map(mesa => `
                     <div class="mesa-list-item" id="mesa-item-${mesa._id}">
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #183A37, #2B2118); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 13px;">
                                 ${mesa.nombre.match(/\d+/) ? mesa.nombre.match(/\d+/)[0] : mesa.nombre.charAt(0)}
                             </div>
                             <span style="font-weight: 600; color: #2d3748; font-size: 14px;">${mesa.nombre}</span>
                         </div>
-                        <button class="btn-delete-mesa" onclick="eliminarMesa('${mesa._id}')" title="Eliminar">🗑️</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn-edit-mesa" onclick="editarNombreMesa('${mesa._id}', '${mesa.nombre}')" title="Editar" style="background: none; border: none; font-size: 16px; cursor: pointer;">✏️</button>
+                            <button class="btn-delete-mesa" onclick="eliminarMesa('${mesa._id}')" title="Eliminar">🗑️</button>
+                        </div>
                     </div>
                 `).join('');
                 } else {
@@ -6263,6 +6936,77 @@
             }
         }
 
+        async function editarNombreMesa(mesaId, nombreActual) {
+            const { value: nuevoNombre } = await Swal.fire({
+                title: 'Editar nombre de la mesa',
+                input: 'text',
+                inputValue: nombreActual,
+                showCancelButton: true,
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) {
+                        return 'El nombre no puede estar vacío';
+                    }
+                }
+            });
+
+            if (nuevoNombre && nuevoNombre.trim() !== nombreActual) {
+                const token = localStorage.getItem('token');
+                try {
+                    const response = await fetch(`${API_URL}/mesas/${mesaId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ nombre: nuevoNombre.trim() })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        mostrarNotificacionExito('✅ Nombre actualizado');
+                        cargarListaMesasGestion();
+                    } else {
+                        Swal.fire({ icon: 'error', text: data.message, timer: 2000, showConfirmButton: false });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
+
+        async function eliminarTodasLasMesas() {
+            const confirmacion = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Se eliminarán TODAS las mesas registradas",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#718096',
+                confirmButtonText: 'Sí, eliminar todas',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (confirmacion.isConfirmed) {
+                const token = localStorage.getItem('token');
+                try {
+                    const response = await fetch(`${API_URL}/mesas/all/delete`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        mostrarNotificacionExito('✅ Todas las mesas eliminadas');
+                        cargarListaMesasGestion();
+                    } else {
+                        Swal.fire({ icon: 'error', text: data.message, timer: 2000, showConfirmButton: false });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        }
+
         async function importarMesasDePedidos() {
             const btn = document.getElementById('btnImportarMesas');
             btn.disabled = true;
@@ -6309,7 +7053,7 @@
                     <p style="margin: 0 0 6px 0; font-weight: 800; font-size: 16px; color: #e2e8f0;">¡Prueba la nueva vista de mesas!</p>
                     <p style="margin: 0; color: #94a3b8; font-size: 14px; line-height: 1.4;">Presiona <kbd>${keyPrefix}</kbd> + <kbd>J</kbd> + <kbd>C</kbd> para activar el modo minimalista.</p>
                 </div>
-                <button onclick="dismissShortcutOnboarding()" style="background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.5); color: #818cf8; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: all 0.2s; white-space: nowrap; margin-left: auto;">¡Entendido!</button>
+                <button onclick="dismissShortcutOnboarding()" style="background: rgba(24, 58, 55, 0.2); border: 1px solid rgba(24, 58, 55, 0.5); color: #C9A227; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 700; transition: all 0.2s; white-space: nowrap; margin-left: auto;">¡Entendido!</button>
             `;
                 document.body.appendChild(onboarding);
             }, 1500);
@@ -6327,9 +7071,285 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkAndShowShortcutOnboarding();
         });
+
     </script>
+    <script src="scripts/bluetooth-printer.js"></script>
+    <script>
+
+// ==================== LÓGICA DE IMPRESIÓN DE COMANDA ====================
+        async function imprimirComanda(orderData) {
+            const orderId = orderData._id || orderData.id || orderData.pedidoId;
+            
+            // Evitar duplicados: si ya imprimimos este pedido localmente, no imprimir de nuevo
+            if (orderId && printedOrderIds.has(orderId)) {
+                console.log(`🖨️ Pedido ${orderId} ya impreso localmente, saltando duplicado`);
+                return;
+            }
+
+            console.log("🖨️ Iniciando impresión de comanda...");
+            console.log("[pedidos] orderData received:", JSON.stringify(orderData));
+            console.log("[pedidos] orderData.items:", orderData.items ? orderData.items.length : 0);
+
+            const isAndroid = /android/i.test(navigator.userAgent);
+
+            // === PRIORIDAD 1: Bluetooth directo (tablet) ===
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                try {
+                    await BluetoothPrinter.printComanda(orderData);
+                    console.log("✅ Comanda impresa vía Bluetooth directo");
+                    // Marcar como impreso
+                    if (orderId) {
+                        printedOrderIds.add(orderId);
+                        if (printedOrderIds.size > MAX_PRINTED_IDS) {
+                            const first = printedOrderIds.values().next().value;
+                            printedOrderIds.delete(first);
+                        }
+                    }
+                    return;
+                } catch (btErr) {
+                    console.warn("⚠️ Error Bluetooth:", btErr.message);
+                }
+            }
+
+            // === SIN IMPRESORA BLUETOOTH CONECTADA ===
+            // En Android: mostrar alerta grande, NO intentar Bridge ni window.print()
+            if (isAndroid) {
+                showNoPrinterAlertPedidos();
+                return;
+            }
+
+            // En NO Android (Desktop): intentar Bridge PC como fallback
+            try {
+                const bridgeRes = await fetch('http://127.0.0.1:3001/print-comanda', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                if (bridgeRes.ok) {
+                    console.log("✅ Comanda enviada al Bridge PC");
+                    // Marcar como impreso
+                    if (orderId) {
+                        printedOrderIds.add(orderId);
+                        if (printedOrderIds.size > MAX_PRINTED_IDS) {
+                            const first = printedOrderIds.values().next().value;
+                            printedOrderIds.delete(first);
+                        }
+                    }
+                    return;
+                }
+            } catch (e) {
+                console.log("⚠️ Bridge PC no disponible");
+            }
+
+            // Último recurso: NO window.print(), mostrar alerta
+            showNoPrinterAlertPedidos();
+        }
+
+        // Alerta grande en pedidos.html cuando no hay impresora (solo Android)
+        function showNoPrinterAlertPedidos() {
+            // VERIFICAR ESTADO COMPARTIDO: Si otro dispositivo del restaurante tiene impresora, NO mostrar alerta
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                const info = BluetoothPrinter.getSharedPrinterInfo();
+                if (info.connected && info.printerName) {
+                    console.log(`[pedidos] Otro dispositivo tiene impresora: ${info.printerName}, no muestro alerta`);
+                    showSharedPrinterToast(info.printerName);
+                    return;
+                }
+            }
+
+            // VERIFICAR PREFERENCIA: Si usuario desactivó alertas en Ajustes, no mostrar
+            if (localStorage.getItem('noPrinterAlertEnabled') === 'false') {
+                return;
+            }
+
+            // VERIFICAR PREFERENCIA: Si usuario dijo "No usar impresora" (legacy), no mostrar
+            if (localStorage.getItem('jcrt-hide-no-printer-alert') === 'true') {
+                return;
+            }
+
+            // Eliminar alerta anterior si existe
+            const existing = document.getElementById('noPrinterAlertPedidos');
+            if (existing) existing.remove();
+
+            const alert = document.createElement('div');
+            alert.id = 'noPrinterAlertPedidos';
+            alert.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.85); z-index: 100000;
+                display: flex; align-items: center; justify-content: center;
+                padding: 20px; animation: fadeIn 0.3s ease;
+            `;
+            alert.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1e293b, #0f172a);
+                    border: 2px solid #ef4444; border-radius: 20px;
+                    padding: 32px; max-width: 400px; width: 100%;
+                    text-align: center; box-shadow: 0 20px 60px rgba(239,68,68,0.3);
+                    animation: slideUp 0.4s ease;
+                ">
+                    <div style="font-size: 64px; margin-bottom: 16px;">🖨️</div>
+                    <h2 style="color: #fef2f2; margin: 0 0 12px; font-size: 22px; font-weight: 800;">
+                        Sin impresora conectada
+                    </h2>
+                    <p style="color: #fca5a5; margin: 0 0 24px; font-size: 15px; line-height: 1.5;">
+                        Para imprimir la comanda, conecta una impresora Bluetooth
+                        tocando el botón <strong style="color: #f87171;">🖨️</strong> en la esquina inferior derecha.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button onclick="disableNoPrinterAlert()"
+                            style="
+                                width: 100%; padding: 16px; font-size: 16px; font-weight: 700;
+                                background: linear-gradient(135deg, #64748b, #475569);
+                                color: white; border: none; border-radius: 12px;
+                                cursor: pointer; transition: transform 0.1s;
+                            "
+                            ontouchstart="this.style.transform='scale(0.98)'"
+                            ontouchend="this.style.transform='scale(1)'"
+                        >
+                            🚫 No usar impresora
+                        </button>
+                        <button onclick="this.closest('#noPrinterAlertPedidos').remove()"
+                            style="
+                                width: 100%; padding: 16px; font-size: 16px; font-weight: 700;
+                                background: linear-gradient(135deg, #ef4444, #dc2626);
+                                color: white; border: none; border-radius: 12px;
+                                cursor: pointer; transition: transform 0.1s;
+                            "
+                            ontouchstart="this.style.transform='scale(0.98)'"
+                            ontouchend="this.style.transform='scale(1)'"
+                        >
+                            🔔 Recordármelo
+                        </button>
+                    </div>
+                </div>
+                <style>
+                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+                </style>
+            `;
+            document.body.appendChild(alert);
+        }
+
+        function disableNoPrinterAlert() {
+            localStorage.setItem('jcrt-hide-no-printer-alert', 'true');
+            localStorage.setItem('noPrinterAlertEnabled', 'false'); // Sync with Ajustes
+            const alert = document.getElementById('noPrinterAlertPedidos');
+            if (alert) alert.remove();
+        }
+
+        // Toast suave cuando otro dispositivo imprime
+        function showSharedPrinterToast(printerName) {
+            const existing = document.getElementById('sharedPrinterToast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'sharedPrinterToast';
+            toast.style.cssText = `
+                position: fixed; bottom: 100px; left: 16px; right: 16px; z-index: 100000;
+                animation: slideUp 0.3s ease;
+            `;
+            toast.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #064e3b, #047857);
+                    border: 2px solid #34d399; border-radius: 12px;
+                    padding: 16px 20px; display: flex; align-items: center; gap: 12px;
+                    color: #ecfdf5; box-shadow: 0 8px 30px rgba(52,211,153,0.3);
+                ">
+                    <div style="font-size: 24px;">🖨️</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; font-size: 14px;">Imprimiendo desde otro dispositivo</div>
+                        <div style="color: #a7f3d0; font-size: 12px;">${printerName}</div>
+                    </div>
+                </div>
+                <style>@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }</style>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // ==================== BLUETOOTH PRINTER UI ====================
+        function updateBtFabUI() {
+            const fab = document.getElementById('btPrinterFab');
+            const tooltip = document.getElementById('btTooltip');
+            if (!fab) return;
+
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isConnected()) {
+                fab.classList.add('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltip">✅ ' + (BluetoothPrinter.getPrinterName() || 'Conectada') + '</span>';
+            } else {
+                fab.classList.remove('connected');
+                fab.innerHTML = '🖨️<span class="bt-tooltip" id="btTooltip">Conectar impresora Bluetooth</span>';
+            }
+        }
+
+        async function toggleBluetoothPrinter() {
+            if (typeof BluetoothPrinter === 'undefined') {
+                Swal.fire('Error', 'Módulo Bluetooth no cargado', 'error');
+                return;
+            }
+
+            if (BluetoothPrinter.isConnected()) {
+                const result = await Swal.fire({
+                    title: '🖨️ Impresora Bluetooth',
+                    html: `<p style="margin-bottom:8px">Conectada a: <strong>${BluetoothPrinter.getPrinterName()}</strong></p><p style="font-size:13px;color:#94a3b8">Las comandas se imprimen automáticamente al hacer un pedido.</p>`,
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonText: '❌ Desconectar',
+                    cancelButtonText: 'Cerrar',
+                    confirmButtonColor: '#dc2626'
+                });
+
+                if (result.isConfirmed) {
+                    BluetoothPrinter.disconnect();
+                    updateBtFabUI();
+                    Swal.fire({ title: 'Desconectada', icon: 'info', timer: 1500, showConfirmButton: false });
+                }
+            } else {
+                const res = await BluetoothPrinter.connect();
+                if (res.success) {
+                    updateBtFabUI();
+                    Swal.fire({
+                        title: '✅ Conectada',
+                        text: `Impresora: ${res.name}. Las comandas se imprimirán automáticamente.`,
+                        icon: 'success',
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                } else if (res.error) {
+                    Swal.fire('Error', res.error, 'error');
+                }
+            }
+        }
+
+        // Init: show FAB if Bluetooth is supported and try auto-reconnect
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof BluetoothPrinter !== 'undefined' && BluetoothPrinter.isSupported()) {
+                document.getElementById('btPrinterFab').style.display = 'flex';
+                await BluetoothPrinter.tryAutoReconnect();
+                updateBtFabUI();
+                
+                // Verificar impresora al cargar la página (solo Android)
+                const isAndroid = /android/i.test(navigator.userAgent);
+                if (isAndroid) {
+                    // Pequeño delay para que el sync compartido se inicialice
+                    setTimeout(() => {
+                        if (!BluetoothPrinter.isConnected() && !BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                            showNoPrinterAlertPedidos();
+                        } else if (!BluetoothPrinter.isConnected() && BluetoothPrinter.isAnyRestaurantPrinterConnected()) {
+                            const info = BluetoothPrinter.getSharedPrinterInfo();
+                            if (info.printerName) showSharedPrinterToast(info.printerName);
+                        }
+                    }, 1000);
+                }
+            }
+        });
+
+        // Listen for connect/disconnect events from the module
+        window.addEventListener('bt-printer-connected', () => updateBtFabUI());
+        window.addEventListener('bt-printer-disconnected', () => updateBtFabUI());
+    </script>
+    <script src="scripts/print-logic.js"></script>
     <script src="scripts/print-monitor.js"></script>
     <script src="scripts/tech-support-alert.js"></script>
 </body>
-
 </html>

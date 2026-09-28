@@ -454,6 +454,8 @@ router.get('/', protect, checkPermission('verPedidos'), async (req, res) => {
       mandaoOrderId: 1,
       clienteNombre: 1,
       clienteCcNit: 1,
+      clienteEmail: 1,
+      facturaElectronica: 1,
       hubOrderGroup: 1,
       meseroHubId: 1,
       mesero: 1
@@ -1115,6 +1117,7 @@ router.patch('/:id/estado', protect, checkPermission('editarPedidos'), async (re
         if (metodoPago) currentOrder.metodoPago = metodoPago;
         if (req.body.clienteNombre) currentOrder.clienteNombre = req.body.clienteNombre;
         if (req.body.clienteCcNit) currentOrder.clienteCcNit = req.body.clienteCcNit;
+        if (req.body.clienteEmail) currentOrder.clienteEmail = req.body.clienteEmail;
       }
 
       await currentOrder.save();
@@ -1159,7 +1162,7 @@ router.patch('/:id/estado', protect, checkPermission('editarPedidos'), async (re
 // ✅ NUEVA RUTA: Registrar pago parcial/completo
 router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), async (req, res) => {
   try {
-    const { metodo, monto, clienteNombre, clienteCcNit } = req.body;
+    const { metodo, monto, clienteNombre, clienteCcNit, clienteEmail } = req.body;
     const validMethods = ['efectivo', 'transferencia'];
 
     if (!metodo || !validMethods.includes(metodo)) {
@@ -1288,6 +1291,7 @@ router.post('/:id/pago-parcial', protect, checkPermission('editarPedidos'), asyn
 
         if (clienteNombre) currentOrder.clienteNombre = clienteNombre;
         if (clienteCcNit) currentOrder.clienteCcNit = clienteCcNit;
+        if (clienteEmail) currentOrder.clienteEmail = clienteEmail;
       } else {
         todasCompletas = false;
       }

@@ -11,6 +11,9 @@ const getBaseUrl = (environment) => {
  * Format the invoice JSON structure for MATIAS API
  */
 const formatInvoicePayload = (order, userConfig) => {
+    const clienteEmail = (order.clienteEmail && order.clienteEmail.trim()) ? order.clienteEmail.trim() : null;
+    const destinatarioEmail = clienteEmail || userConfig.email || "jcdev.software@gmail.com";
+
     // 1. Customer Data
     const customer = {
         country_id: "45",
@@ -21,7 +24,7 @@ const formatInvoicePayload = (order, userConfig) => {
         tax_level_id: 5,
         company_name: order.clienteNombre && order.clienteNombre.trim() ? order.clienteNombre.trim() : "Consumidor Final",
         dni: order.clienteCcNit && order.clienteCcNit.trim() ? order.clienteCcNit.trim() : "222222222222",
-        email: userConfig.email || "jcdev.software@gmail.com",
+        email: destinatarioEmail,
         address: userConfig.direccion || "Calle Principal"
     };
 
@@ -107,6 +110,8 @@ const formatInvoicePayload = (order, userConfig) => {
         document_number: String(userConfig.currentNumber || 1),
         operation_type_id: 1,
         type_document_id: 7, // 7 = Factura electrónica estándar
+        graphic_representation: 1,
+        send_email: (clienteEmail && clienteEmail.includes('@')) ? 1 : 0,
         payments: payments,
         customer: customer,
         lines: lines,
@@ -121,9 +126,41 @@ const formatInvoicePayload = (order, userConfig) => {
 };
 
 /**
+ * Synchronize currentNumber with MATIAS API by finding the highest document number already emitted
+ */
+const syncConsecutivoConMatias = async (user) => {
+    try {
+        const config = user.matiasConfig;
+        const token = user.getMatiasToken();
+        const baseUrl = getBaseUrl(config.environment);
+        const res = await axios.get(`${baseUrl}/documents`, {
+            headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+            timeout: 7000
+        });
+        const docs = (res.data && res.data.dataRecords && res.data.dataRecords.data) || [];
+        let maxNum = config.currentNumber || 0;
+        for (const doc of docs) {
+            if (doc.document_number) {
+                const match = doc.document_number.match(/\d+$/);
+                if (match) {
+                    const num = parseInt(match[0], 10);
+                    if (num > maxNum) maxNum = num;
+                }
+            }
+        }
+        await User.updateOne({ _id: user._id }, { 'matiasConfig.currentNumber': maxNum });
+        console.log(`🔄 Sincronización MATIAS: consecutivo actualizado de ${config.currentNumber} a ${maxNum}`);
+        return maxNum;
+    } catch (e) {
+        console.warn('⚠️ No se pudo sincronizar consecutivo automáticamente con MATIAS:', e.message);
+        return null;
+    }
+};
+
+/**
  * Emit an electronic invoice
  */
-const emitirFactura = async (order, userId) => {
+const emitirFactura = async (order, userId, retryCount = 0) => {
     // Atomic update to increment consecutive number
     const user = await User.findOneAndUpdate(
         { _id: userId, 'matiasConfig.activo': true },
@@ -164,12 +201,6 @@ const emitirFactura = async (order, userId) => {
             numero: `${payload.prefix}${payload.document_number}`
         };
     } catch (error) {
-        // Rollback increment on error
-        await User.updateOne(
-            { _id: userId },
-            { $inc: { 'matiasConfig.currentNumber': -1 } }
-        );
-
         let errorMessage = 'Error al comunicar con MATIAS API';
         if (error.response && error.response.data) {
             errorMessage = error.response.data.message || JSON.stringify(error.response.data);
@@ -177,7 +208,27 @@ const emitirFactura = async (order, userId) => {
                 errorMessage += ': ' + JSON.stringify(error.response.data.errors);
             }
         }
-        
+
+        const isAlreadyValidated = errorMessage.toLowerCase().includes('ya se encuentra validado') ||
+                                   errorMessage.toLowerCase().includes('already validated') ||
+                                   errorMessage.toLowerCase().includes('ya existe');
+
+        // Si el número ya fue validado en DIAN/MATIAS, NO decrementar (evita bucle de error).
+        // En su lugar, sincronizamos con MATIAS y reintentamos con el nuevo consecutivo.
+        if (isAlreadyValidated && retryCount < 2) {
+            console.log(`⚠️ Consecutivo ${payload.prefix}${payload.document_number} en conflicto ("${errorMessage}"). Sincronizando y reintentando...`);
+            await syncConsecutivoConMatias(user);
+            return emitirFactura(order, userId, retryCount + 1);
+        }
+
+        if (!isAlreadyValidated) {
+            // Solo hacer rollback si fue un error transitorio que no quemó el consecutivo
+            await User.updateOne(
+                { _id: userId },
+                { $inc: { 'matiasConfig.currentNumber': -1 } }
+            );
+        }
+
         throw new Error(errorMessage);
     }
 };

@@ -166,6 +166,12 @@ const orderSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  clienteEmail: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    default: ''
+  },
   
   // ✅ FACTURACIÓN ELECTRÓNICA MATIAS
   facturaElectronica: {
@@ -175,7 +181,9 @@ const orderSchema = new mongoose.Schema({
     estado: { type: String, default: null },       // status desde MATIAS
     fechaEmision: { type: Date, default: null },
     xmlUrl: { type: String, default: null },       // Link al XML
-    pdfUrl: { type: String, default: null }        // Link al PDF
+    pdfUrl: { type: String, default: null },       // Link al PDF
+    qrUrl: { type: String, default: null },        // Link al código QR
+    dianUrl: { type: String, default: null }       // Link directo de consulta DIAN
   },
   
   // ✅ MULTI-LOCAL HUB: Mesero que creó el pedido (cuando es hub)
@@ -240,11 +248,13 @@ orderSchema.pre('save', function (next) {
 });
 
 orderSchema.virtual('totalFormateado').get(function () {
-  return `$${this.total.toLocaleString('es-CO')}`;
+  const val = typeof this.total === 'number' ? this.total : 0;
+  return `$${val.toLocaleString('es-CO')}`;
 });
 
 orderSchema.virtual('totalItems').get(function () {
-  return this.items.reduce((sum, item) => sum + item.cantidad, 0);
+  if (!Array.isArray(this.items)) return 0;
+  return this.items.reduce((sum, item) => sum + (item.cantidad || 0), 0);
 });
 
 orderSchema.set('toJSON', { virtuals: true });
