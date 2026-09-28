@@ -18,6 +18,17 @@ const productSchema = new mongoose.Schema({
     trim: true,
     maxlength: [50, 'La categoría no puede exceder 50 caracteres']
   },
+  impuesto: {
+    tipo: {
+      type: String,
+      enum: ['NINGUNO', 'IVA', 'INC'],
+      default: 'NINGUNO'
+    },
+    porcentaje: {
+      type: Number,
+      default: 0
+    }
+  },
   descripcion: {
     type: String,
     trim: true,

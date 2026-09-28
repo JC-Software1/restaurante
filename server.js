@@ -12,6 +12,7 @@ const mesasRoutes = require('./routes/mesas');
 const productsRoutes = require('./routes/Products');
 const mandaoRoutes = require('./routes/mandao'); // ✅ Integración Mandao
 const pushRoutes = require('./routes/push'); // ✅ Push notifications
+const facturacionRoutes = require('./routes/facturacion'); // ✅ Facturación Electrónica
 const { protect } = require('./middleware/auth');
 require('dotenv').config();
 
@@ -106,6 +107,7 @@ app.use('/api/liquidaciones', protect, liquidacionesRoutes);
 app.use('/api/admin-meseros', protect, adminMeserosRoutes);
 app.use('/api/alimentos', alimentosRoutes);
 app.use('/api/mesas', protect, mesasRoutes);
+app.use('/api/facturacion', facturacionRoutes);
 
 // Ruta principal (sirve index.html desde public)
 app.get('/', (req, res) => {

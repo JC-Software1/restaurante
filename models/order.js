@@ -166,6 +166,18 @@ const orderSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  
+  // ✅ FACTURACIÓN ELECTRÓNICA MATIAS
+  facturaElectronica: {
+    uuid: { type: String, default: null },         // ID en MATIAS API
+    cufe: { type: String, default: null },         // CUFE de la factura DIAN
+    numero: { type: String, default: null },       // Número generado (ej. SETT1)
+    estado: { type: String, default: null },       // status desde MATIAS
+    fechaEmision: { type: Date, default: null },
+    xmlUrl: { type: String, default: null },       // Link al XML
+    pdfUrl: { type: String, default: null }        // Link al PDF
+  },
+  
   // ✅ MULTI-LOCAL HUB: Mesero que creó el pedido (cuando es hub)
   meseroHubId: {
     type: mongoose.Schema.Types.ObjectId,

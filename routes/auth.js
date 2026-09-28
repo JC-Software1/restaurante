@@ -1116,4 +1116,83 @@ router.post('/switch-account', async (req, res) => {
   }
 });
 
+// ==========================================
+// CONFIGURACIÓN DE MATIAS API
+// ==========================================
+
+// Obtener configuración MATIAS
+router.get('/matias-config', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false, message: 'No autorizado' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secreto-super-seguro-cambiar-en-produccion');
+        const user = await User.findById(decoded.id);
+
+        if (!user || user.rol !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Requiere rol de administrador' });
+        }
+
+        // Return config without the token (for security) or just a masked token
+        const config = user.matiasConfig || {};
+        const maskedToken = config.token ? '********' : '';
+        
+        res.json({
+            success: true,
+            data: {
+                ...config,
+                token: maskedToken // Never send real token to frontend
+            }
+        });
+    } catch (error) {
+        console.error('Error al obtener config MATIAS:', error);
+        res.status(500).json({ success: false, message: 'Error al obtener configuración' });
+    }
+});
+
+// Actualizar configuración MATIAS
+router.put('/matias-config', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ success: false, message: 'No autorizado' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secreto-super-seguro-cambiar-en-produccion');
+        const user = await User.findById(decoded.id);
+
+        if (!user || user.rol !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Requiere rol de administrador' });
+        }
+
+        const updates = req.body;
+        
+        // Ensure matiasConfig exists
+        if (!user.matiasConfig) {
+            user.matiasConfig = {};
+        }
+
+        // Apply updates
+        const fields = ['nit', 'dv', 'nombreEmpresa', 'direccion', 'telefono', 'email', 'municipioId', 
+                       'resolutionNumber', 'prefix', 'from', 'to', 'currentNumber', 'resolutionDate', 
+                       'resolutionEndDate', 'softwareId', 'softwarePin', 'environment', 'activo'];
+                       
+        fields.forEach(field => {
+            if (updates[field] !== undefined) {
+                user.matiasConfig[field] = updates[field];
+            }
+        });
+
+        // Only update token if a new one is provided (not the masked string)
+        if (updates.token && updates.token !== '********') {
+            user.matiasConfig.token = updates.token; // Pre-save hook will encrypt it
+        }
+
+        await user.save();
+
+        res.json({ success: true, message: 'Configuración MATIAS guardada exitosamente' });
+    } catch (error) {
+        console.error('Error al guardar config MATIAS:', error);
+        res.status(500).json({ success: false, message: 'Error al guardar configuración' });
+    }
+});
+
 module.exports = router;

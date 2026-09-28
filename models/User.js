@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { encrypt, decrypt } = require('../utils/cryptoUtils');
 
 const userSchema = new mongoose.Schema({
   nombre: {
@@ -82,6 +83,29 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: ''
+  },
+  
+  // CONFIGURACIÓN MATIAS API
+  matiasConfig: {
+    token: { type: String, default: '' },           // PAT de MATIAS (Se guardará cifrado)
+    nit: { type: String, default: '' },              // NIT del restaurante
+    dv: { type: String, default: '' },               // Dígito de verificación
+    nombreEmpresa: { type: String, default: '' },     // Razón social
+    direccion: { type: String, default: '' },         // Dirección fiscal
+    telefono: { type: String, default: '' },          // Teléfono
+    email: { type: String, default: '' },             // Email para facturas
+    municipioId: { type: Number, default: 1006 },     // ID municipio DIAN
+    resolutionNumber: { type: String, default: '' },  // Resolución DIAN
+    prefix: { type: String, default: '' },            // Prefijo de factura
+    from: { type: Number, default: 1 },               // Desde
+    to: { type: Number, default: 1000 },              // Hasta
+    currentNumber: { type: Number, default: 0 },      // Consecutivo actual
+    resolutionDate: { type: String, default: '' },     // Fecha resolución
+    resolutionEndDate: { type: String, default: '' },  // Vencimiento resolución
+    softwareId: { type: String, default: '' },         // ID software DIAN
+    softwarePin: { type: String, default: '' },        // PIN software
+    environment: { type: String, enum: ['sandbox', 'production'], default: 'sandbox' },
+    activo: { type: Boolean, default: false }          // ¿Facturación activada?
   }
 }, {
   timestamps: true,
@@ -94,6 +118,11 @@ userSchema.index({ activo: 1 });
 userSchema.index({ nombreRestaurante: 1, sede: 1, bloqueado: 1 });
 // Encriptar password antes de guardar
 userSchema.pre('save', async function (next) {
+  // Encrypt MATIAS token if it was modified and is not empty
+  if (this.isModified('matiasConfig.token') && this.matiasConfig.token && !this.matiasConfig.token.includes(':')) {
+      this.matiasConfig.token = encrypt(this.matiasConfig.token);
+  }
+
   if (!this.isModified('password')) {
     return next();
   }
@@ -106,6 +135,12 @@ userSchema.pre('save', async function (next) {
     next(error);
   }
 });
+
+// Método para obtener el token de MATIAS desencriptado
+userSchema.methods.getMatiasToken = function () {
+    if (!this.matiasConfig || !this.matiasConfig.token) return null;
+    return decrypt(this.matiasConfig.token);
+};
 
 // Método para comparar passwords
 userSchema.methods.compararPassword = async function (passwordIngresado) {

@@ -2861,12 +2861,62 @@
             modal.style.display = 'none';
 
             if (imprimir && pedidoParaImprimir) {
-                try {
-                    await imprimirFacturaPOS();
-                } catch (error) {
-                    console.error('Error al imprimir:', error);
-                }
+                // Wait for the next modal
+                document.getElementById('modalTipoFactura').style.display = 'flex';
+                return;
             }
+
+            procesarPagoPostImpresion();
+        }
+
+        async function elegirTipoFactura(tipo) {
+            document.getElementById('modalTipoFactura').style.display = 'none';
+            try {
+                if (tipo === 'POS' || tipo === 'AMBAS') {
+                    await imprimirFacturaPOS();
+                }
+
+                if (tipo === 'ELECTRONICA' || tipo === 'AMBAS') {
+                    const token = localStorage.getItem('token');
+                    Swal.fire({
+                        title: 'Generando Factura Electrónica...',
+                        didOpen: () => Swal.showLoading(),
+                        allowOutsideClick: false
+                    });
+                    
+                    const res = await fetch(`${API_URL}/facturacion/emitir`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            orderId: currentOrderIdForPayment,
+                            tipo: 'electronica'
+                        })
+                    });
+                    const result = await res.json();
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            text: `Factura ${result.numero} generada con éxito`,
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire('Atención', result.message || 'No se pudo generar la factura electrónica', 'warning');
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Error', 'Error al procesar la factura electrónica', 'error');
+            }
+            
+            procesarPagoPostImpresion();
+        }
+
+        async function procesarPagoPostImpresion() {
 
             const orderIdTemp = currentOrderIdForPayment;
             const clienteNombreTemp = clienteNombreSeleccionado;
@@ -4800,6 +4850,33 @@
                     No imprimir
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal para tipo de factura -->
+    <div id="modalTipoFactura"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10001; align-items: center; justify-content: center;">
+        <div
+            style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 1rem; text-align: center;">📄
+                Tipo de Factura</h3>
+            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Qué tipo de factura deseas emitir?</p>
+
+            <div style="display: grid; gap: 1rem;">
+                <button onclick="elegirTipoFactura('POS')"
+                    style="padding: 1rem; background: #e2e8f0; color: #2d3748; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    🖨️ Factura POS
+                </button>
+                <button onclick="elegirTipoFactura('ELECTRONICA')"
+                    style="padding: 1rem; background: #e2e8f0; color: #2d3748; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    📄 Factura Electrónica
+                </button>
+                <button onclick="elegirTipoFactura('AMBAS')"
+                    style="padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    📋 Ambas
+                </button>
+            </div>
+            <button onclick="document.getElementById('modalTipoFactura').style.display='none'" style="margin-top: 1rem; width: 100%; padding: 0.75rem; background: none; border: 1px solid #cbd5e1; border-radius: 10px; cursor: pointer;">Cancelar</button>
         </div>
     </div>
 

@@ -648,6 +648,26 @@
                                 <input type="text" id="categoria" class="form-input" required>
                             </div>
 
+                            <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label class="form-label" for="impuestoTipo">Tipo Impuesto</label>
+                                    <select id="impuestoTipo" class="form-input">
+                                        <option value="NINGUNO">Ninguno (0%)</option>
+                                        <option value="INC">INC (Impoconsumo)</option>
+                                        <option value="IVA">IVA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label class="form-label" for="impuestoPorcentaje">% Impuesto</label>
+                                    <select id="impuestoPorcentaje" class="form-input">
+                                        <option value="0">0%</option>
+                                        <option value="5">5%</option>
+                                        <option value="8">8%</option>
+                                        <option value="19">19%</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label class="form-label" for="precio">Precio (COP) *</label>
                                 <input type="number" id="precio" class="form-input" required>
@@ -924,6 +944,8 @@
             const precio = document.getElementById('precio').value;
             const categoria = document.getElementById('categoria').value.trim();
             const descripcion = document.getElementById('descripcion').value.trim();
+            const impuestoTipo = document.getElementById('impuestoTipo').value;
+            const impuestoPorcentaje = parseFloat(document.getElementById('impuestoPorcentaje').value) || 0;
 
             if (!nombre || !precio || !categoria) {
                 Swal.fire({ icon: (('Complete todos los campos obligatorios').toLowerCase().includes("error") || ('Complete todos los campos obligatorios').toLowerCase().includes("falla") || ('Complete todos los campos obligatorios').toLowerCase().includes("incorrect")) ? "error" : "success", text: 'Complete todos los campos obligatorios', timer: 3000, showConfirmButton: false });
@@ -935,6 +957,10 @@
                 precio: parseFloat(precio),
                 categoria,
                 descripcion,
+                impuesto: {
+                    tipo: impuestoTipo,
+                    porcentaje: impuestoPorcentaje
+                },
                 imagen: document.getElementById('imagenUrl').value,
                 disponible: true,
                 userId: currentUser._id
@@ -992,6 +1018,15 @@
                     document.getElementById('precio').value = product.precio;
                     document.getElementById('categoria').value = product.categoria;
                     document.getElementById('descripcion').value = product.descripcion || '';
+                    
+                    if (product.impuesto) {
+                        document.getElementById('impuestoTipo').value = product.impuesto.tipo || 'NINGUNO';
+                        document.getElementById('impuestoPorcentaje').value = product.impuesto.porcentaje || '0';
+                    } else {
+                        document.getElementById('impuestoTipo').value = 'NINGUNO';
+                        document.getElementById('impuestoPorcentaje').value = '0';
+                    }
+                    
                     document.getElementById('imagenUrl').value = product.imagen || '';
 
                     if (product.imagen) {
