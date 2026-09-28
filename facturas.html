@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial de Facturas – JC Restaurant</title>
+  <meta name="description" content="Consulta todas las facturas electrónicas emitidas, verifica su estado en la DIAN y descarga los documentos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161921;
+      --surface2: #1e222d;
+      --border: #2a2f3d;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e8eaf0;
+      --text2: #9aa3b5;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .navbar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 24px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .navbar a.back { color: var(--text2); text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 6px; transition: color .2s; }
+    .navbar a.back:hover { color: var(--text); }
+    .navbar h1 { font-size: 18px; font-weight: 600; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .navbar .spacer { flex: 1; }
+    .badge-count { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; display: flex; align-items: center; gap: 14px; transition: transform .2s, box-shadow .2s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .stat-icon.purple { background: rgba(108,99,255,.18); color: var(--accent); }
+    .stat-icon.green  { background: rgba(34,197,94,.18);  color: var(--green);  }
+    .stat-icon.yellow { background: rgba(245,158,11,.18); color: var(--yellow); }
+    .stat-icon.blue   { background: rgba(96,165,250,.18); color: #60a5fa; }
+    .stat-label { font-size: 12px; color: var(--text2); margin-bottom: 2px; }
+    .stat-value { font-size: 20px; font-weight: 700; }
+    .toolbar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .search-box { flex: 1; min-width: 220px; position: relative; }
+    .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text2); font-size: 14px; }
+    .search-box input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px 10px 40px; color: var(--text); font-size: 14px; outline: none; transition: border-color .2s; }
+    .search-box input:focus { border-color: var(--accent); }
+    .search-box input::placeholder { color: var(--text2); }
+    select.filter { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; color: var(--text); font-size: 14px; outline: none; cursor: pointer; transition: border-color .2s; }
+    select.filter:focus { border-color: var(--accent); }
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead th { background: var(--surface2); padding: 14px 16px; text-align: left; font-weight: 600; font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td { padding: 14px 16px; vertical-align: middle; }
+    .num-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(108,99,255,.15); color: var(--accent2); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
+    .num-badge i { font-size: 10px; }
+    .cliente-name { font-weight: 500; }
+    .cliente-nit  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .cliente-email{ font-size: 11px; color: var(--accent2); margin-top: 2px; }
+    .monto { font-weight: 700; font-size: 14px; }
+    .estado-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
+    .estado-badge.procesada { background: rgba(34,197,94,.15);  color: var(--green);  }
+    .estado-badge.pendiente { background: rgba(245,158,11,.15); color: var(--yellow); }
+    .estado-badge.error     { background: rgba(239,68,68,.15);  color: var(--red);    }
+    .fecha-text { font-size: 13px; }
+    .fecha-hora { font-size: 11px; color: var(--text2); }
+    .actions-cell { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn-action { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; transition: opacity .2s, transform .1s; }
+    .btn-action:hover { opacity: .85; transform: translateY(-1px); }
+    .btn-action:active { transform: scale(.97); }
+    .btn-dian   { background: rgba(108,99,255,.2); color: var(--accent2); }
+    .btn-qr     { background: rgba(34,197,94,.18); color: var(--green);  }
+    .btn-copy   { background: var(--surface2); color: var(--text2); }
+    .btn-action.disabled { opacity:.35; pointer-events:none; }
+    .empty-state { text-align: center; padding: 80px 20px; color: var(--text2); }
+    .empty-state i { font-size: 48px; margin-bottom: 16px; opacity: .4; display: block; }
+    .empty-state p { font-size: 15px; }
+    .loading-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast { position: fixed; bottom: 28px; right: 28px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow); opacity: 0; transform: translateY(12px); transition: opacity .3s, transform .3s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast i.ok { color: var(--green); }
+    @media (max-width: 768px) {
+      thead th:nth-child(5), td:nth-child(5) { display: none; }
+      .btn-action span { display: none; }
+      .btn-action { padding: 7px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="cocina.html" class="back"><i class="fas fa-arrow-left"></i> Volver</a>
+  <h1><i class="fas fa-file-invoice"></i> &nbsp;Historial de Facturas</h1>
+  <span class="spacer"></span>
+  <span class="badge-count" id="totalCount">–</span>
+</nav>
+
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon purple"><i class="fas fa-file-invoice"></i></div>
+      <div><div class="stat-label">Total emitidas</div><div class="stat-value" id="statTotal">–</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+      <div><div class="stat-label">Procesadas</div><div class="stat-value" id="statProcesadas">–</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon yellow"><i class="fas fa-dollar-sign"></i></div>
+      <div><div class="stat-label">Valor total facturado</div><div class="stat-value" id="statMonto">–</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon blue"><i class="fas fa-envelope"></i></div>
+      <div><div class="stat-label">Con email enviado</div><div class="stat-value" id="statEmail">–</div></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input id="searchInput" type="text" placeholder="Buscar por cliente, número, NIT, correo…" oninput="filterTable()" />
+    </div>
+    <select class="filter" id="filterEstado" onchange="filterTable()">
+      <option value="">Todos los estados</option>
+      <option value="PROCESADA">Procesada</option>
+      <option value="PENDIENTE">Pendiente</option>
+      <option value="ERROR">Error</option>
+    </select>
+    <select class="filter" id="filterMes" onchange="filterTable()">
+      <option value="">Todos los meses</option>
+    </select>
+  </div>
+
+  <div class="table-wrap" id="tableWrap">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando facturas…</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-check-circle ok"></i> <span id="toastMsg"></span></div>
+
+<script>
+  const API = '/api';
+  let allFacturas = [];
+
+  function getToken() {
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
+  }
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + getToken() };
+  }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+  function fmt(n) {
+    return '$' + Number(n || 0).toLocaleString('es-CO');
+  }
+  function fmtDate(d) {
+    if (!d) return { fecha: '–', hora: '' };
+    const dt = new Date(d);
+    const fecha = dt.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    const hora  = dt.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+    return { fecha, hora };
+  }
+
+  async function loadFacturas() {
+    try {
+      const r = await fetch(API + '/facturacion/historial', { headers: authHeaders() });
+      const data = await r.json();
+      if (!data.success) throw new Error(data.message);
+      allFacturas = data.facturas || [];
+      buildMonthFilter();
+      updateStats(allFacturas);
+      renderTable(allFacturas);
+    } catch (e) {
+      document.getElementById('tableWrap').innerHTML =
+        '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error al cargar: ' + e.message + '</p></div>';
+    }
+  }
+
+  function buildMonthFilter() {
+    const meses = new Set();
+    allFacturas.forEach(function(f) {
+      const d = f.facturaElectronica && f.facturaElectronica.fechaEmision;
+      if (d) {
+        const dt = new Date(d);
+        meses.add(dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0'));
+      }
+    });
+    const sel = document.getElementById('filterMes');
+    [...meses].sort().reverse().forEach(function(m) {
+      const parts = m.split('-');
+      const label = new Date(parts[0], parts[1]-1).toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+      const opt = document.createElement('option');
+      opt.value = m;
+      opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+      sel.appendChild(opt);
+    });
+  }
+
+  function updateStats(lista) {
+    document.getElementById('statTotal').textContent      = lista.length;
+    document.getElementById('totalCount').textContent     = lista.length + ' facturas';
+    document.getElementById('statProcesadas').textContent = lista.filter(function(f){ return f.facturaElectronica && f.facturaElectronica.estado === 'PROCESADA'; }).length;
+    document.getElementById('statMonto').textContent      = fmt(lista.reduce(function(s,f){ return s + (f.total||0); }, 0));
+    document.getElementById('statEmail').textContent      = lista.filter(function(f){ return f.clienteEmail; }).length;
+  }
+
+  function filterTable() {
+    const q   = document.getElementById('searchInput').value.toLowerCase().trim();
+    const est = document.getElementById('filterEstado').value;
+    const mes = document.getElementById('filterMes').value;
+    const filtered = allFacturas.filter(function(f) {
+      const fe = f.facturaElectronica || {};
+      const str = [f.clienteNombre, f.clienteCcNit, f.clienteEmail, fe.numero, fe.cufe, f.mesa].join(' ').toLowerCase();
+      if (q && !str.includes(q)) return false;
+      if (est && fe.estado !== est) return false;
+      if (mes && fe.fechaEmision) {
+        const dt  = new Date(fe.fechaEmision);
+        const key = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0');
+        if (key !== mes) return false;
+      }
+      return true;
+    });
+    updateStats(filtered);
+    renderTable(filtered);
+  }
+
+  function renderTable(lista) {
+    const wrap = document.getElementById('tableWrap');
+    if (!lista.length) {
+      wrap.innerHTML = '<div class="empty-state"><i class="fas fa-file-invoice"></i><p>No se encontraron facturas</p></div>';
+      return;
+    }
+    const rows = lista.map(function(f) {
+      const fe  = f.facturaElectronica || {};
+      const fd  = fmtDate(fe.fechaEmision);
+      const est = (fe.estado || 'PENDIENTE').toUpperCase();
+      const estClass = est === 'PROCESADA' ? 'procesada' : est === 'ERROR' ? 'error' : 'pendiente';
+      const estIcon  = est === 'PROCESADA' ? 'fa-check-circle' : est === 'ERROR' ? 'fa-times-circle' : 'fa-clock';
+
+      const dianBtn = fe.dianUrl
+        ? '<a class="btn-action btn-dian" href="' + fe.dianUrl + '" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i><span>DIAN</span></a>'
+        : '<span class="btn-action btn-dian disabled"><i class="fas fa-external-link-alt"></i><span>DIAN</span></span>';
+
+      const qrBtn = fe.qrUrl
+        ? '<a class="btn-action btn-qr" href="' + fe.qrUrl + '" target="_blank" rel="noopener"><i class="fas fa-qrcode"></i><span>QR</span></a>'
+        : '';
+
+      const cufeShort = fe.cufe ? fe.cufe.substring(0,12) + '…' : '–';
+      const cufeEsc   = fe.cufe ? fe.cufe.replace(/'/g, "\\'") : '';
+      const copyBtn   = fe.cufe
+        ? '<button class="btn-action btn-copy" onclick="copyCufe(\'' + cufeEsc + '\')"><i class="fas fa-copy"></i><span>CUFE</span></button>'
+        : '';
+
+      const nitHtml   = f.clienteCcNit  ? '<div class="cliente-nit"><i class="fas fa-id-card" style="font-size:10px;margin-right:4px"></i>' + f.clienteCcNit + '</div>' : '';
+      const emailHtml = f.clienteEmail  ? '<div class="cliente-email"><i class="fas fa-envelope" style="font-size:10px;margin-right:4px"></i>' + f.clienteEmail + '</div>' : '';
+
+      return '<tr>'
+        + '<td><div class="num-badge"><i class="fas fa-hashtag"></i>' + (fe.numero || 'Sin número') + '</div></td>'
+        + '<td><div class="cliente-name">' + (f.clienteNombre || 'Sin nombre') + '</div>' + nitHtml + emailHtml + '</td>'
+        + '<td><span class="monto">' + fmt(f.total) + '</span></td>'
+        + '<td><span class="estado-badge ' + estClass + '"><i class="fas ' + estIcon + '"></i>' + est + '</span></td>'
+        + '<td title="' + (fe.cufe||'') + '">' + cufeShort + '</td>'
+        + '<td><div class="fecha-text">' + fd.fecha + '</div><div class="fecha-hora">' + fd.hora + '</div></td>'
+        + '<td><div class="actions-cell">' + dianBtn + qrBtn + copyBtn + '</div></td>'
+        + '</tr>';
+    }).join('');
+
+    wrap.innerHTML = '<table>'
+      + '<thead><tr>'
+      + '<th>Número</th><th>Cliente</th><th>Monto</th><th>Estado</th><th>CUFE</th><th>Fecha emisión</th><th>Acciones</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+
+  function copyCufe(cufe) {
+    navigator.clipboard.writeText(cufe).then(function(){ showToast('CUFE copiado al portapapeles'); });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!getToken()) { window.location.href = 'index.html'; return; }
+    loadFacturas();
+  });
+</script>
+</body>
+</html>
