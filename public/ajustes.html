@@ -665,6 +665,78 @@
                     <button class="btn-save" onclick="sincronizarMeseros()" style="margin-top: 0; padding: 8px 15px; font-size: 13px;">🔄 Sincronizar</button>
                 </div>
             </div>
+
+            <!-- MATIAS API CONFIGURATION -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <div class="card-icon">🧾</div>
+                    <h3>Facturación Electrónica (MATIAS API)</h3>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Activar Facturación</label>
+                        <select id="matiasActivo" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <option value="false">Desactivado</option>
+                            <option value="true">Activado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Entorno</label>
+                        <select id="matiasEnvironment" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <option value="sandbox">Sandbox (Pruebas)</option>
+                            <option value="production">Producción</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Token (PAT) *</label>
+                        <input type="password" id="matiasToken" placeholder="Pegue el token para actualizarlo" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">NIT Restaurante *</label>
+                        <input type="text" id="matiasNit" placeholder="Ej: 900123456" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Dígito Verificación</label>
+                        <input type="text" id="matiasDv" placeholder="Ej: 1" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Razón Social</label>
+                        <input type="text" id="matiasNombreEmpresa" placeholder="Razón social" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Núm. Resolución *</label>
+                        <input type="text" id="matiasResolutionNumber" placeholder="Ej: 18760000001" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Prefijo Factura</label>
+                        <input type="text" id="matiasPrefix" placeholder="Ej: SETT" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Rango Desde/Hasta</label>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="number" id="matiasFrom" placeholder="Desde" style="width: 50%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <input type="number" id="matiasTo" placeholder="Hasta" style="width: 50%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label" style="font-size: 11px; margin-bottom: 4px;">Consecutivo Actual</label>
+                        <input type="number" id="matiasCurrentNumber" placeholder="Factura actual" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                    <button onclick="guardarMatiasConfig()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        💾 Guardar Configuración MATIAS
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -710,6 +782,8 @@
                     printSection.insertBefore(androidBanner, printSection.firstChild);
                 }
             }
+            
+            cargarMatiasConfig();
         });
 
         function setConnType(type) {
@@ -776,6 +850,92 @@
 
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        async function cargarMatiasConfig() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const res = await fetch(`${API_URL}/auth/matias-config`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                if (data.success && data.data) {
+                    const config = data.data;
+                    if (document.getElementById('matiasActivo')) document.getElementById('matiasActivo').value = config.activo ? 'true' : 'false';
+                    if (document.getElementById('matiasEnvironment')) document.getElementById('matiasEnvironment').value = config.environment || 'sandbox';
+                    
+                    if (config.token) {
+                        document.getElementById('matiasToken').value = '********';
+                    }
+
+                    if (document.getElementById('matiasNit')) document.getElementById('matiasNit').value = config.nit || '';
+                    if (document.getElementById('matiasDv')) document.getElementById('matiasDv').value = config.dv || '';
+                    if (document.getElementById('matiasNombreEmpresa')) document.getElementById('matiasNombreEmpresa').value = config.nombreEmpresa || '';
+                    if (document.getElementById('matiasResolutionNumber')) document.getElementById('matiasResolutionNumber').value = config.resolutionNumber || '';
+                    if (document.getElementById('matiasPrefix')) document.getElementById('matiasPrefix').value = config.prefix || '';
+                    if (document.getElementById('matiasFrom')) document.getElementById('matiasFrom').value = config.from || '1';
+                    if (document.getElementById('matiasTo')) document.getElementById('matiasTo').value = config.to || '1000';
+                    if (document.getElementById('matiasCurrentNumber')) document.getElementById('matiasCurrentNumber').value = config.currentNumber !== undefined ? config.currentNumber : '1';
+                }
+            } catch (e) {
+                console.error('Error cargando configuración MATIAS:', e);
+            }
+        }
+
+        async function guardarMatiasConfig() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    Swal.fire('Error', 'No hay sesión activa. Por favor inicie sesión nuevamente.', 'error');
+                    return;
+                }
+
+                Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading() });
+
+                const body = {
+                    activo: document.getElementById('matiasActivo').value === 'true',
+                    environment: document.getElementById('matiasEnvironment').value,
+                    nit: document.getElementById('matiasNit').value,
+                    dv: document.getElementById('matiasDv').value,
+                    nombreEmpresa: document.getElementById('matiasNombreEmpresa').value,
+                    resolutionNumber: document.getElementById('matiasResolutionNumber').value,
+                    prefix: document.getElementById('matiasPrefix').value,
+                    from: parseInt(document.getElementById('matiasFrom').value) || 1,
+                    to: parseInt(document.getElementById('matiasTo').value) || 1000,
+                    currentNumber: parseInt(document.getElementById('matiasCurrentNumber').value) || 1
+                };
+
+                const rawToken = document.getElementById('matiasToken').value;
+                if (rawToken && rawToken !== '********') {
+                    body.token = rawToken;
+                }
+
+                const res = await fetch(`${API_URL}/auth/matias-config`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Guardado',
+                        text: 'Configuración MATIAS guardada exitosamente'
+                    });
+                } else {
+                    Swal.fire('Error', data.message || 'No se pudo guardar la configuración', 'error');
+                }
+            } catch (e) {
+                console.error('Error:', e);
+                Swal.fire('Error', 'Hubo un error de conexión', 'error');
+            }
         }
 
         function logout() {

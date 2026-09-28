@@ -11,16 +11,24 @@ router.post('/emitir', protect, async (req, res) => {
     try {
         const { orderId, tipo } = req.body; // tipo: 'electronica' o 'pos'
         
-        const order = await Order.findOne({ _id: orderId, userId: req.user._id }).populate('items.producto');
+        const query = { _id: orderId };
+        if (req.userIdsRestaurante && req.userIdsRestaurante.length > 0) {
+            query.userId = { $in: req.userIdsRestaurante };
+        } else {
+            query.userId = req.user._id;
+        }
+
+        const order = await Order.findOne(query).populate('items.producto');
         if (!order) {
             return res.status(404).json({ success: false, message: 'Pedido no encontrado' });
         }
 
+        const adminId = req.mainAdminId || req.user._id;
         let result;
         if (tipo === 'electronica') {
-            result = await emitirFactura(order, req.user._id);
+            result = await emitirFactura(order, adminId);
         } else if (tipo === 'pos') {
-            result = await emitirPos(order, req.user._id);
+            result = await emitirPos(order, adminId);
         } else {
             return res.status(400).json({ success: false, message: 'Tipo de documento no válido' });
         }

@@ -4272,13 +4272,81 @@
             modal.style.display = 'none';
 
             if (imprimir && pedidoParaImprimir) {
+                // Mostrar opciones de factura
+                document.getElementById('modalTipoFactura').style.display = 'flex';
+                return; // Pausamos flujo hasta que elija el tipo
+            }
+
+            // Si NO imprime, procesamos directamente
+            procesarPostImpresion();
+        }
+
+        async function emitirFactura(tipo) {
+            document.getElementById('modalTipoFactura').style.display = 'none';
+
+            if (tipo === 'pos' || tipo === 'ambas') {
                 try {
                     await imprimirFacturaPOS();
                 } catch (error) {
-                    console.error('Error al imprimir:', error);
+                    console.error('Error al imprimir POS:', error);
                 }
             }
 
+            if (tipo === 'electronica' || tipo === 'ambas') {
+                try {
+                    await enviarFacturaElectronica(pedidoParaImprimir._id);
+                } catch (error) {
+                    console.error('Error enviando factura electrónica:', error);
+                }
+            }
+
+            procesarPostImpresion();
+        }
+
+        async function enviarFacturaElectronica(orderId) {
+            try {
+                mostrarEstadoImpresion('imprimiendo'); // Muestra el modal
+                document.getElementById('impresionTitulo').textContent = 'Emitiendo Factura Electrónica...';
+                document.getElementById('impresionMensaje').textContent = 'Por favor, espere';
+                
+                const token = localStorage.getItem('token');
+                if (!token) throw new Error('No hay sesión activa');
+
+                const response = await fetch(`${API_URL}/facturacion/emitir`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        tipo: 'electronica'
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('impresionTitulo').textContent = '¡Factura Electrónica Emitida!';
+                    document.getElementById('impresionMensaje').textContent = `Factura ${data.numero || ''} enviada correctamente a MATIAS`;
+                    document.getElementById('impresionSpinner').textContent = '✅';
+                    setTimeout(() => {
+                        document.getElementById('modalEstadoImpresion').style.display = 'none';
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Error al emitir');
+                }
+            } catch (error) {
+                console.error('Error factura electrónica:', error);
+                document.getElementById('impresionTitulo').textContent = 'Error';
+                document.getElementById('impresionMensaje').textContent = error.message;
+                document.getElementById('impresionSpinner').textContent = '❌';
+                setTimeout(() => {
+                    document.getElementById('modalEstadoImpresion').style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        async function procesarPostImpresion() {
             // Registrar el pago final usando pago-parcial API
             const orderIdTemp = currentOrderIdForPayment;
             const clienteNombreTemp = clienteNombreSeleccionado;
@@ -5601,19 +5669,52 @@
             style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <h3 style="font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 1rem; text-align: center;">🖨️
                 Imprimir Factura</h3>
-            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Deseas imprimir la
-                factura en la impresora POS?</p>
+            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Deseas emitir la
+                factura para este pedido?</p>
 
             <div style="display: grid; gap: 1rem;">
                 <button onclick="confirmarImpresion(true)"
                     style="padding: 1rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <span style="font-size: 24px;">🖨️</span>
-                    <span>Sí, imprimir</span>
+                    <span style="font-size: 24px;">📝</span>
+                    <span>Sí, emitir factura</span>
                 </button>
 
                 <button onclick="confirmarImpresion(false)"
                     style="padding: 1rem; background: #e2e8f0; color: #2d3748; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                    No imprimir
+                    No emitir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para seleccionar tipo de factura -->
+    <div id="modalTipoFactura"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10001; align-items: center; justify-content: center;">
+        <div
+            style="background: white; border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <h3 style="font-size: 20px; font-weight: 700; color: #1a202c; margin-bottom: 1rem; text-align: center;">📄
+                Tipo de Factura</h3>
+            <p style="font-size: 14px; color: #718096; text-align: center; margin-bottom: 1.5rem;">¿Qué tipo de factura deseas emitir?</p>
+
+            <div style="display: grid; gap: 1rem;">
+                <button onclick="emitirFactura('pos')"
+                    style="padding: 1rem; background: #183A37; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 20px;">🖨️</span>
+                    <span>Factura POS</span>
+                </button>
+                <button onclick="emitirFactura('electronica')"
+                    style="padding: 1rem; background: #2B2118; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 20px;">📧</span>
+                    <span>Factura Electrónica</span>
+                </button>
+                <button onclick="emitirFactura('ambas')"
+                    style="padding: 1rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <span style="font-size: 20px;">📑</span>
+                    <span>Ambas</span>
+                </button>
+                <button onclick="document.getElementById('modalTipoFactura').style.display = 'none'; document.getElementById('modalConfirmarImpresion').style.display = 'flex';"
+                    style="padding: 0.5rem; background: #e2e8f0; color: #2d3748; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px;">
+                    Volver
                 </button>
             </div>
         </div>
