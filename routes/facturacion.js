@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 const Order = require('../models/order');
+const Product = require('../models/product');
 const User = require('../models/User');
 const { emitirFactura, emitirPos } = require('../services/matiasApi');
 const axios = require('axios'); // For downloading files
@@ -35,9 +36,10 @@ router.post('/emitir', protect, async (req, res) => {
 
         if (result.success) {
             // Guardar info de factura en el pedido
+            const docData = (result.data && result.data.data) ? result.data.data : {};
             order.facturaElectronica = {
-                uuid: result.data.data.uuid || result.data.data.id, 
-                cufe: result.data.data.cufe || result.data.data.cude,
+                uuid: docData.uuid || docData.id || null, 
+                cufe: docData.cufe || docData.XmlDocumentKey || docData.cude || null,
                 numero: result.numero,
                 estado: 'PROCESADA',
                 fechaEmision: new Date()
