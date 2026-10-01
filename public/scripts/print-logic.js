@@ -145,14 +145,8 @@
                         imprimirVentanaNueva();
                     }
                 } else {
-                    // Sin Bridge, sin Android, sin Bluetooth -> mostrar alerta y NO abrir window.print()
-                    Swal.fire({
-                        title: 'Sin impresora',
-                        text: 'No hay impresora Bluetooth conectada. Conecta una para imprimir facturas.',
-                        icon: 'warning',
-                        timer: 3000,
-                        showConfirmButton: false
-                    });
+                    // Sin Bridge, sin Android, sin Bluetooth -> abrir modal de impresión del navegador
+                    imprimirVentanaNueva();
                 }
             } catch (error) {
                 console.error('Error:', error);
