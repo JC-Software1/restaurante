@@ -105,7 +105,21 @@ router.post('/emitir', protect, async (req, res) => {
     }
 });
 
-// 2. Historial de facturas emitidas
+// 2. Estado de facturación electrónica (para mostrar/ocultar opciones en frontend)
+router.get('/status', protect, async (req, res) => {
+    try {
+        const adminId = req.mainAdminId || req.user._id;
+        const admin = await User.findById(adminId).select('matiasConfig.activo');
+        const activo = !!(admin && admin.matiasConfig && admin.matiasConfig.activo);
+        res.json({ success: true, data: { facturacionElectronicaActiva: activo } });
+    } catch (error) {
+        console.error('Error al obtener estado de facturación:', error);
+        // Ante error, asumimos desactivada (solo se muestra POS)
+        res.json({ success: true, data: { facturacionElectronicaActiva: false } });
+    }
+});
+
+// 3. Historial de facturas emitidas
 router.get('/historial', protect, async (req, res) => {
     try {
         const query = { 'facturaElectronica.estado': { $ne: null } };

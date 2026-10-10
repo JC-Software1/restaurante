@@ -2975,6 +2975,24 @@
             modal.style.display = 'none';
 
             if (imprimir && pedidoParaImprimir) {
+                // Verificar si la facturación electrónica está activada en ajustes
+                let feActiva = false;
+                try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch(`${API_URL}/facturacion/status`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+                    feActiva = !!(data.success && data.data && data.data.facturacionElectronicaActiva);
+                } catch (e) {
+                    console.error('Error consultando estado de facturación:', e);
+                    feActiva = false;
+                }
+                const btnElectronica = document.getElementById('btnFacturaElectronica');
+                const btnAmbas = document.getElementById('btnFacturaAmbas');
+                if (btnElectronica) btnElectronica.style.display = feActiva ? 'flex' : 'none';
+                if (btnAmbas) btnAmbas.style.display = feActiva ? 'flex' : 'none';
+
                 // Mostrar opciones de factura
                 document.getElementById('modalTipoFactura').style.display = 'flex';
                 return; // Pausamos flujo hasta que elija el tipo
@@ -4729,12 +4747,12 @@
                     <span style="font-size: 20px;">🖨️</span>
                     <span>Factura POS</span>
                 </button>
-                <button onclick="emitirFactura('electronica')"
+                <button id="btnFacturaElectronica" onclick="emitirFactura('electronica')"
                     style="padding: 1rem; background: #2B2118; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <span style="font-size: 20px;">📧</span>
                     <span>Factura Electrónica</span>
                 </button>
-                <button onclick="emitirFactura('ambas')"
+                <button id="btnFacturaAmbas" onclick="emitirFactura('ambas')"
                     style="padding: 1rem; background: linear-gradient(135deg, #183A37 0%, #2B2118 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <span style="font-size: 20px;">📑</span>
                     <span>Ambas</span>
