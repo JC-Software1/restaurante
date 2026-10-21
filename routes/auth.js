@@ -4,7 +4,13 @@ const User = require('../models/User');
 const Product = require('../models/Product');
 const Alimento = require('../models/Alimento');
 const AdminMesero = require('../models/AdminMesero');
+const Order = require('../models/order');
+const Expense = require('../models/Expense');
+const Mesa = require('../models/Mesa');
+const Liquidacion = require('../models/liquidacion');
+const PushToken = require('../models/PushToken');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const { loginToMandao } = require('../services/mandaoIntegration');
 const { startSession, endSession, updateActivity } = require('../services/keepAlive');
 
@@ -1192,6 +1198,126 @@ router.put('/matias-config', async (req, res) => {
     } catch (error) {
         console.error('Error al guardar config MATIAS:', error);
         res.status(500).json({ success: false, message: 'Error al guardar configuración' });
+    }
+});
+
+// Eliminar usuarios masivamente + toda la información de sus restaurantes (solo superadmin)
+router.post('/superadmin/eliminar-usuarios', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: 'No autorizado' });
+        }
+
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET || 'secreto-super-seguro-cambiar-en-produccion'
+        );
+
+        const usuarioActual = await User.findById(decoded.id);
+
+        if (!usuarioActual || usuarioActual.rol !== 'superadmin') {
+            return res.status(403).json({ success: false, message: 'No tiene permisos de superadmin' });
+        }
+
+        const { userIds } = req.body;
+
+        if (!Array.isArray(userIds) || userIds.length === 0) {
+            return res.status(400).json({ success: false, message: 'Debe seleccionar al menos un usuario' });
+        }
+
+        // Validar IDs
+        const idsValidos = userIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+
+        if (idsValidos.length === 0) {
+            return res.status(400).json({ success: false, message: 'IDs de usuario inválidos' });
+        }
+
+        // Cargar usuarios seleccionados
+        const usuarios = await User.find({ _id: { $in: idsValidos } });
+
+        if (usuarios.length === 0) {
+            return res.status(404).json({ success: false, message: 'Usuarios no encontrados' });
+        }
+
+        // Prohibir eliminar cuentas superadmin (incluyendo la propia)
+        const superadmins = usuarios.filter(u => u.rol === 'superadmin');
+
+        if (superadmins.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se pueden eliminar cuentas de superadmin'
+            });
+        }
+
+        // Restaurantes afectados
+        const restaurantes = [...new Set(usuarios.map(u => u.nombreRestaurante))];
+
+        // TODOS los usuarios de esos restaurantes (para borrar toda su información,
+        // no solo los seleccionados — la data pertenece al restaurante)
+        const todosUsuariosRestaurante = await User.find({
+            nombreRestaurante: { $in: restaurantes }
+        }).select('_id');
+
+        const todosUserIds = todosUsuariosRestaurante.map(u => u._id);
+        const idsSeleccionados = usuarios.map(u => u._id);
+
+        // Borrar TODA la información registrada por esos restaurantes
+        const [
+            usuariosEliminados,
+            pedidos,
+            productos,
+            gastos,
+            mesas,
+            alimentos,
+            liquidaciones,
+            tokens,
+            relaciones
+        ] = await Promise.all([
+            User.deleteMany({ _id: { $in: idsSeleccionados } }),
+            Order.deleteMany({
+                $or: [
+                    { userId: { $in: todosUserIds } },
+                    { meseroHubId: { $in: todosUserIds } }
+                ]
+            }),
+            Product.deleteMany({ userId: { $in: todosUserIds } }),
+            Expense.deleteMany({ userId: { $in: todosUserIds } }),
+            Mesa.deleteMany({ userId: { $in: todosUserIds } }),
+            Alimento.deleteMany({ userId: { $in: todosUserIds } }),
+            Liquidacion.deleteMany({ userId: { $in: todosUserIds } }),
+            PushToken.deleteMany({ restaurante: { $in: restaurantes } }),
+            AdminMesero.deleteMany({
+                $or: [
+                    { adminId: { $in: todosUserIds } },
+                    { meseroId: { $in: todosUserIds } }
+                ]
+            })
+        ]);
+
+        res.json({
+            success: true,
+            message: `Se eliminaron ${usuariosEliminados.deletedCount} usuario(s) y toda la información de ${restaurantes.length} restaurante(s)`,
+            data: {
+                usuariosEliminados: usuariosEliminados.deletedCount,
+                restaurantes,
+                datosEliminados: {
+                    pedidos: pedidos.deletedCount,
+                    productos: productos.deletedCount,
+                    gastos: gastos.deletedCount,
+                    mesas: mesas.deletedCount,
+                    alimentos: alimentos.deletedCount,
+                    liquidaciones: liquidaciones.deletedCount,
+                    tokens: tokens.deletedCount,
+                    relaciones: relaciones.deletedCount
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error al eliminar usuarios masivamente:', error);
+        res.status(500).json({ success: false, message: 'Error al eliminar los usuarios' });
     }
 });
 

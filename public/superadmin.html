@@ -158,6 +158,64 @@
             box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.16);
         }
 
+        .card-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-seleccionar {
+            padding: 10px 15px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-seleccionar:hover {
+            border-color: #C9A227;
+        }
+
+        .btn-seleccionar.activo {
+            background: #C9A227;
+            border-color: #C9A227;
+            color: white;
+        }
+
+        .btn-eliminar-seleccion {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 12px;
+            background: #e53e3e;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-eliminar-seleccion:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        .btn-eliminar-seleccion:not(:disabled):hover {
+            background: #c53030;
+        }
+
+        .check-seleccion {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #e53e3e;
+        }
+
         .table-container {
             overflow-x: auto;
         }
@@ -394,8 +452,12 @@
         <div class="card">
             <div class="card-header">
                 <h2>Gestión de Usuarios</h2>
-                <input type="text" class="search-box" id="searchInput"
-                    placeholder="Buscar por nombre, email o restaurante...">
+                <div class="card-header-actions">
+                    <button id="btnModoSeleccion" class="btn-seleccionar" onclick="alternarModoSeleccion()">☑ Seleccionar</button>
+                    <button id="btnEliminarSeleccion" class="btn-eliminar-seleccion" onclick="eliminarSeleccionados()" disabled>🗑 Eliminar (0)</button>
+                    <input type="text" class="search-box" id="searchInput"
+                        placeholder="Buscar por nombre, email o restaurante...">
+                </div>
             </div>
 
             <div id="loadingContainer" class="loading">
@@ -407,6 +469,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th id="thSeleccion" style="display: none; width: 40px;"><input type="checkbox" id="checkSeleccionarTodos" class="check-seleccion" onchange="seleccionarTodos(this.checked)"></th>
                             <th>Usuario</th>
                             <th>Email</th>
                             <th>Restaurante</th>
@@ -435,6 +498,8 @@
     <script>
         const API_URL = 'https://restaurante-1-1bo2.onrender.com/api/auth';
         let todosLosUsuarios = [];
+        let modoSeleccion = false;
+        let usuariosSeleccionados = new Set();
 
         // Verificar autenticación al cargar
         window.addEventListener('DOMContentLoaded', async () => {
@@ -509,6 +574,7 @@
 
             tbody.innerHTML = usuarios.map(usuario => `
                 <tr>
+                    ${modoSeleccion ? `<td>${usuario.rol !== 'superadmin' ? `<input type="checkbox" class="check-seleccion" data-id="${usuario._id}" onchange="toggleSeleccion('${usuario._id}', this.checked)" ${usuariosSeleccionados.has(usuario._id) ? 'checked' : ''}>` : ''}</td>` : ''}
                     <td><strong>${usuario.nombre}</strong></td>
                     <td>${usuario.email}</td>
                     <td>${usuario.nombreRestaurante}</td>
@@ -581,6 +647,129 @@
             document.getElementById('totalRestaurantes').textContent = restaurantes;
             document.getElementById('usuariosActivos').textContent = activos;
             document.getElementById('usuariosBloqueados').textContent = bloqueados;
+        }
+
+        // ===== MODO SELECCIÓN Y ELIMINACIÓN MASIVA =====
+
+        function alternarModoSeleccion() {
+            modoSeleccion = !modoSeleccion;
+            usuariosSeleccionados.clear();
+
+            const btnModo = document.getElementById('btnModoSeleccion');
+            const thSeleccion = document.getElementById('thSeleccion');
+
+            if (modoSeleccion) {
+                btnModo.textContent = '✕ Cancelar selección';
+                btnModo.classList.add('activo');
+                thSeleccion.style.display = '';
+            } else {
+                btnModo.textContent = '☑ Seleccionar';
+                btnModo.classList.remove('activo');
+                thSeleccion.style.display = 'none';
+                document.getElementById('checkSeleccionarTodos').checked = false;
+            }
+
+            actualizarBotonEliminar();
+            // Re-renderizar la tabla con el filtro de búsqueda actual
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const usuariosFiltrados = todosLosUsuarios.filter(usuario =>
+                usuario.nombre.toLowerCase().includes(searchTerm) ||
+                usuario.email.toLowerCase().includes(searchTerm) ||
+                usuario.nombreRestaurante.toLowerCase().includes(searchTerm) ||
+                (usuario.sede && usuario.sede.toLowerCase().includes(searchTerm))
+            );
+            mostrarUsuarios(usuariosFiltrados);
+        }
+
+        function toggleSeleccion(userId, checked) {
+            if (checked) {
+                usuariosSeleccionados.add(userId);
+            } else {
+                usuariosSeleccionados.delete(userId);
+            }
+            actualizarBotonEliminar();
+        }
+
+        function seleccionarTodos(checked) {
+            const tbody = document.getElementById('usuariosTable');
+            const checkboxes = tbody.querySelectorAll('.check-seleccion[data-id]');
+            checkboxes.forEach(cb => {
+                cb.checked = checked;
+                const id = cb.dataset.id;
+                if (checked) {
+                    usuariosSeleccionados.add(id);
+                } else {
+                    usuariosSeleccionados.delete(id);
+                }
+            });
+            actualizarBotonEliminar();
+        }
+
+        function actualizarBotonEliminar() {
+            const btn = document.getElementById('btnEliminarSeleccion');
+            const count = usuariosSeleccionados.size;
+            btn.textContent = `🗑 Eliminar (${count})`;
+            btn.disabled = count === 0;
+        }
+
+        async function eliminarSeleccionados() {
+            if (usuariosSeleccionados.size === 0) return;
+
+            const ids = [...usuariosSeleccionados];
+            const usuarios = todosLosUsuarios.filter(u => ids.includes(u._id));
+            const restaurantes = [...new Set(usuarios.map(u => u.nombreRestaurante))];
+
+            const { isConfirmed } = await Swal.fire({
+                icon: 'warning',
+                title: '¿Eliminar usuarios y sus restaurantes?',
+                html: `
+                    <p><strong>${usuarios.length} usuario(s)</strong> serán eliminados:</p>
+                    <p style="margin: 8px 0; font-size: 0.9rem;">${usuarios.map(u => `${u.nombre} (${u.email})`).join('<br>')}</p>
+                    <p style="margin-top: 12px;">Y <strong>TODA la información</strong> de estos restaurantes:</p>
+                    <p style="font-weight: 600;">${restaurantes.join(', ')}</p>
+                    <p style="margin-top: 12px; color: #e53e3e; font-weight: 600;">Esta acción es IRREVERSIBLE.</p>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar todo',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#e53e3e',
+                cancelButtonColor: '#718096'
+            });
+
+            if (!isConfirmed) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                Swal.fire({ title: 'Eliminando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                const response = await fetch(`${API_URL}/superadmin/eliminar-usuarios`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userIds: ids })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Eliminado', text: data.message, timer: 3000, showConfirmButton: false });
+                    usuariosSeleccionados.clear();
+                    modoSeleccion = false;
+                    document.getElementById('btnModoSeleccion').textContent = '☑ Seleccionar';
+                    document.getElementById('btnModoSeleccion').classList.remove('activo');
+                    document.getElementById('thSeleccion').style.display = 'none';
+                    document.getElementById('checkSeleccionarTodos').checked = false;
+                    actualizarBotonEliminar();
+                    await cargarUsuarios();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.message || 'Error al eliminar' });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo contactar con el servidor' });
+            }
         }
 
         async function toggleBloqueo(userId, estadoActual) {
