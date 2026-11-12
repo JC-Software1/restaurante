@@ -518,6 +518,18 @@
             }
         }
 
+        .list-status {
+            text-align: center;
+            padding: 14px 0 4px;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .scroll-sentinel {
+            height: 2px;
+            width: 100%;
+        }
+
         .expense-card {
             background: white;
             border: 1px solid #e2e8f0;
@@ -1118,6 +1130,8 @@
                             <p>Cargando gastos...</p>
                         </div>
                     </div>
+                    <div id="expensesListStatus" class="list-status"></div>
+                    <div id="expensesListSentinel" class="scroll-sentinel"></div>
                 </div>
             </div>
         </div>
@@ -1164,6 +1178,12 @@
         let expenseItems = [];
         let currentEditItems = [];
         let allExpenses = [];
+        let filteredExpenses = [];
+
+        // ===== Paginación infinita (20 en 20) =====
+        const PAGE_SIZE_GASTOS = 20;
+        let gastosRenderizados = 0;
+        let observerGastos = null;
 
         window.addEventListener('DOMContentLoaded', async () => {
             const token = localStorage.getItem('token');
@@ -1526,20 +1546,8 @@
             }, 2000);
         }
 
-        function displayExpenses(expenses) {
-            const list = document.getElementById('expensesList');
-
-            if (expenses.length === 0) {
-                list.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <p>No hay gastos registrados en este período</p>
-            </div>
-        `;
-                return;
-            }
-
-            list.innerHTML = expenses.map(expense => `
+        function renderExpenseCard(expense) {
+            return `
         <div class="expense-card">
             <div class="expense-header">
                 <div>
@@ -1564,7 +1572,71 @@
                 <button class="btn-action btn-delete" onclick="deleteExpense('${expense._id}')">🗑️ Eliminar</button>
             </div>
         </div>
-    `).join('');
+    `;
+        }
+
+        function actualizarEstadoGastos() {
+            const el = document.getElementById('expensesListStatus');
+            if (!el) return;
+            if (filteredExpenses.length === 0) {
+                el.textContent = '';
+                return;
+            }
+            el.innerHTML = gastosRenderizados >= filteredExpenses.length
+                ? `✅ Has llegado al final · ${filteredExpenses.length} registro(s)`
+                : `Mostrando <strong>${gastosRenderizados}</strong> de <strong>${filteredExpenses.length}</strong> registros · sigue bajando para ver más`;
+        }
+
+        function appendExpenses() {
+            const list = document.getElementById('expensesList');
+            if (gastosRenderizados >= filteredExpenses.length) {
+                actualizarEstadoGastos();
+                return;
+            }
+
+            const next = filteredExpenses.slice(gastosRenderizados, gastosRenderizados + PAGE_SIZE_GASTOS);
+            list.insertAdjacentHTML('beforeend', next.map(renderExpenseCard).join(''));
+            gastosRenderizados += next.length;
+            actualizarEstadoGastos();
+
+            // Si el sentinel sigue visible (pantalla grande/pocos elementos), cargar el siguiente lote
+            if (gastosRenderizados < filteredExpenses.length) {
+                const sentinel = document.getElementById('expensesListSentinel');
+                if (sentinel && sentinel.getBoundingClientRect().top < window.innerHeight + 600) {
+                    appendExpenses();
+                }
+            }
+        }
+
+        function initInfiniteScrollGastos() {
+            if (observerGastos) return;
+            const sentinel = document.getElementById('expensesListSentinel');
+            if (sentinel && 'IntersectionObserver' in window) {
+                observerGastos = new IntersectionObserver(() => {
+                    if (gastosRenderizados < filteredExpenses.length) appendExpenses();
+                }, { rootMargin: '600px 0px' });
+                observerGastos.observe(sentinel);
+            }
+        }
+
+        function displayExpenses(expenses) {
+            const list = document.getElementById('expensesList');
+            gastosRenderizados = 0;
+            list.innerHTML = '';
+
+            if (expenses.length === 0) {
+                list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p>No hay gastos registrados en este período</p>
+            </div>
+        `;
+                actualizarEstadoGastos();
+                return;
+            }
+
+            appendExpenses();
+            initInfiniteScrollGastos();
         }
 
 

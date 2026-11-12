@@ -930,6 +930,18 @@
             gap: 1.5rem;
         }
 
+        .list-status {
+            text-align: center;
+            padding: 14px 0 4px;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .scroll-sentinel {
+            height: 2px;
+            width: 100%;
+        }
+
         .order-card {
             background: white;
             border: 2px solid #e2e8f0;
@@ -1527,6 +1539,8 @@
                             <p>Cargando pedidos...</p>
                         </div>
                     </div>
+                    <div id="ordersCardsStatus" class="list-status"></div>
+                    <div id="ordersCardsSentinel" class="scroll-sentinel"></div>
                 </div>
             </div>
 
@@ -1562,6 +1576,8 @@
                             </tbody>
                         </table>
                     </div>
+                    <div id="ordersTableStatus" class="list-status"></div>
+                    <div id="ordersTableSentinel" class="scroll-sentinel"></div>
                 </div>
             </div>
         </div>
@@ -1584,6 +1600,13 @@
         let currentUser = null;
         let allOrders = [];
         let filteredOrders = [];
+
+        // ===== Paginación infinita (20 en 20) =====
+        const PAGE_SIZE_LISTAS = 20;
+        let cardsRenderizados = 0;
+        let tablaRenderizados = 0;
+        let observerCards = null;
+        let observerTabla = null;
         let allProducts = [];
         let currentPeriod = 'hoy';
         
@@ -2151,20 +2174,8 @@
             });
         }
 
-        function displayOrdersCards() {
-            const container = document.getElementById('ordersCards');
-
-            if (filteredOrders.length === 0) {
-                container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">📋</div>
-                <p>No hay pedidos para mostrar en este período</p>
-            </div>
-        `;
-                return;
-            }
-
-            container.innerHTML = filteredOrders.map(order => `
+        function renderOrderCard(order) {
+            return `
         <div class="order-card">
             <div class="order-card-header">
                 <div>
@@ -2247,7 +2258,60 @@
                 <span class="order-total-value">$${(order.total || 0).toLocaleString('es-CO')}</span>
             </div>
         </div>
-    `).join('');
+    `;
+        }
+
+        function actualizarEstadoCards() {
+            const el = document.getElementById('ordersCardsStatus');
+            if (!el) return;
+            if (filteredOrders.length === 0) {
+                el.textContent = '';
+                return;
+            }
+            el.innerHTML = cardsRenderizados >= filteredOrders.length
+                ? `✅ Has llegado al final · ${filteredOrders.length} pedido(s)`
+                : `Mostrando <strong>${cardsRenderizados}</strong> de <strong>${filteredOrders.length}</strong> pedidos · sigue bajando para ver más`;
+        }
+
+        function appendOrdersCards() {
+            const container = document.getElementById('ordersCards');
+            if (cardsRenderizados >= filteredOrders.length) {
+                actualizarEstadoCards();
+                return;
+            }
+
+            const next = filteredOrders.slice(cardsRenderizados, cardsRenderizados + PAGE_SIZE_LISTAS);
+            container.insertAdjacentHTML('beforeend', next.map(renderOrderCard).join(''));
+            cardsRenderizados += next.length;
+            actualizarEstadoCards();
+
+            // Si el sentinel sigue visible (pantalla grande/pocos elementos), cargar el siguiente lote
+            if (cardsRenderizados < filteredOrders.length) {
+                const sentinel = document.getElementById('ordersCardsSentinel');
+                if (sentinel && sentinel.getBoundingClientRect().top < window.innerHeight + 600) {
+                    appendOrdersCards();
+                }
+            }
+        }
+
+        function displayOrdersCards() {
+            const container = document.getElementById('ordersCards');
+            cardsRenderizados = 0;
+            container.innerHTML = '';
+
+            if (filteredOrders.length === 0) {
+                container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <p>No hay pedidos para mostrar en este período</p>
+            </div>
+        `;
+                actualizarEstadoCards();
+                return;
+            }
+
+            appendOrdersCards();
+            initInfiniteScroll();
         }
 
         function updateStatistics() {
@@ -2385,24 +2449,8 @@
                 </div>
             `).join('');
         }
-        function displayOrders() {
-            const tbody = document.getElementById('ordersTableBody');
-
-            if (filteredOrders.length === 0) {
-                tbody.innerHTML = `
-                <tr>
-                    <td colspan="6">
-                        <div class="empty-state">
-                            <div class="empty-icon">📋</div>
-                            <p>No hay pedidos para mostrar</p>
-                        </div>
-                    </td>
-                </tr>
-            `;
-                return;
-            }
-
-            tbody.innerHTML = filteredOrders.map(order => `
+        function renderOrderRow(order) {
+            return `
             <tr>
                 <td>${new Date(order.createdAt).toLocaleDateString('es-CO', {
                 day: '2-digit',
@@ -2417,7 +2465,87 @@
                 <td><span class="status-badge status-${order.estado}">${order.estado}</span></td>
                 <td style="font-weight: 700;">$${order.total.toLocaleString('es-CO')}</td>
             </tr>
-        `).join('');
+        `;
+        }
+
+        function actualizarEstadoTabla() {
+            const el = document.getElementById('ordersTableStatus');
+            if (!el) return;
+            if (filteredOrders.length === 0) {
+                el.textContent = '';
+                return;
+            }
+            el.innerHTML = tablaRenderizados >= filteredOrders.length
+                ? `✅ Has llegado al final · ${filteredOrders.length} pedido(s)`
+                : `Mostrando <strong>${tablaRenderizados}</strong> de <strong>${filteredOrders.length}</strong> pedidos · sigue bajando para ver más`;
+        }
+
+        function appendOrdersRows() {
+            const tbody = document.getElementById('ordersTableBody');
+            if (tablaRenderizados >= filteredOrders.length) {
+                actualizarEstadoTabla();
+                return;
+            }
+
+            const next = filteredOrders.slice(tablaRenderizados, tablaRenderizados + PAGE_SIZE_LISTAS);
+            tbody.insertAdjacentHTML('beforeend', next.map(renderOrderRow).join(''));
+            tablaRenderizados += next.length;
+            actualizarEstadoTabla();
+
+            // Si el sentinel sigue visible, cargar el siguiente lote
+            if (tablaRenderizados < filteredOrders.length) {
+                const sentinel = document.getElementById('ordersTableSentinel');
+                if (sentinel && sentinel.getBoundingClientRect().top < window.innerHeight + 600) {
+                    appendOrdersRows();
+                }
+            }
+        }
+
+        function displayOrders() {
+            const tbody = document.getElementById('ordersTableBody');
+            tablaRenderizados = 0;
+            tbody.innerHTML = '';
+
+            if (filteredOrders.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <p>No hay pedidos para mostrar</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+                actualizarEstadoTabla();
+                return;
+            }
+
+            appendOrdersRows();
+            initInfiniteScroll();
+        }
+
+        // Observadores de scroll infinito (se crean una sola vez)
+        function initInfiniteScroll() {
+            if (!observerCards) {
+                const sentinelCards = document.getElementById('ordersCardsSentinel');
+                if (sentinelCards && 'IntersectionObserver' in window) {
+                    observerCards = new IntersectionObserver(() => {
+                        if (cardsRenderizados < filteredOrders.length) appendOrdersCards();
+                    }, { rootMargin: '600px 0px' });
+                    observerCards.observe(sentinelCards);
+                }
+            }
+
+            if (!observerTabla) {
+                const sentinelTabla = document.getElementById('ordersTableSentinel');
+                if (sentinelTabla && 'IntersectionObserver' in window) {
+                    observerTabla = new IntersectionObserver(() => {
+                        if (tablaRenderizados < filteredOrders.length) appendOrdersRows();
+                    }, { rootMargin: '600px 0px' });
+                    observerTabla.observe(sentinelTabla);
+                }
+            }
         }
 
         function exportToCSV() {
